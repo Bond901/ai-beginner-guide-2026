@@ -1,6 +1,6 @@
 # AI Beginner Guide 2026
 
-> 2026 年 AI 工具入門指南集：從核心概念到實戰操作，幫助初學者快速上手主流 AI 工具。
+> 2026 年 AI 工具入門指南集：從核心概念到實戰操作，8 篇完整指南幫助初學者快速上手主流 AI 工具。
 
 **線上閱讀**：[Bond901.github.io/ai-beginner-guide-2026](https://Bond901.github.io/ai-beginner-guide-2026)
 
@@ -23,6 +23,8 @@
 | [Claude Desktop 入門](guides/claude-desktop-guide.html) | Anthropic 的 Chat 對話、Cowork 桌面自動化、Claude Code 終端開發——三種模式怎麼選、怎麼用 |
 | [OpenAI 三工具入門](guides/openai-tools-guide.html) | ChatGPT、Codex、Codex CLI 各自的定位與適用場景，幫你選對工具 |
 | [Google Gemini 生態系](guides/gemini-tools-guide.html) | Gemini App、AI Studio、NotebookLM、Gemini CLI——Google 四大 AI 工具的使用場景比較 |
+| [AI Agent 擴充機制](guides/ai-extensions-guide-2026.html) | Skill、MCP、Plugin 三層擴充架構的定位差異、運作原理與實務組裝策略 |
+| [AI 時代軟體開發流程](guides/ai-sdlc-guide-2026.html) | 從需求分析到部署維運——AI 如何重塑 SDLC 每個階段的角色分工與工作流程 |
 
 ## 推薦閱讀順序
 
@@ -30,6 +32,8 @@
 2. **Prompt Engineering 演進** — 掌握與 AI 溝通的方法論
 3. **AI 個人化設定精煉** — 學會客製化你的 AI 工具
 4. 挑選一個你想用的平台，閱讀對應的工具指南 → [Claude](guides/claude-desktop-guide.html) · [OpenAI](guides/openai-tools-guide.html) · [Gemini](guides/gemini-tools-guide.html)
+5. **AI Agent 擴充機制** — 理解 Skill / MCP / Plugin 三層架構
+6. **AI 時代軟體開發流程** — 了解 AI 如何改變開發全流程
 
 每篇也可以獨立閱讀，不一定要按順序。
 

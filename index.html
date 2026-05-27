@@ -21,6 +21,8 @@
   --c4-color: #2d3a8c;  --c4-bg: #eef0fa;
   --c5-color: #1a6b4a;  --c5-bg: #e8f5ee;
   --c6-color: #1a3d70;  --c6-bg: #e8eff9;
+  --c7-color: #8c6b1a;  --c7-bg: #faf5e8;
+  --c8-color: #5a3d70;  --c8-bg: #f3eef9;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -171,6 +173,14 @@ body {
 .guide-card.c6 .card-num { color:var(--c6-color); }
 .guide-card.c6 .tag { background:var(--c6-color); color:#fff; }
 
+.guide-card.c7 { background:var(--c7-bg); }
+.guide-card.c7 .card-num { color:var(--c7-color); }
+.guide-card.c7 .tag { background:var(--c7-color); color:#fff; }
+
+.guide-card.c8 { background:var(--c8-bg); }
+.guide-card.c8 .card-num { color:var(--c8-color); }
+.guide-card.c8 .tag { background:var(--c8-color); color:#fff; }
+
 /* ── READING ORDER ── */
 .reading-order {
   border:1px solid var(--border); padding:22px 26px;
@@ -250,9 +260,9 @@ body {
   <div class="hero-inner">
     <div class="hero-label">// AI Beginner Guide · 2026</div>
     <h1>AI 工具入門<br>指南集</h1>
-    <p class="hero-sub">從核心概念到實戰操作，6 篇完整指南帶你快速上手 2026 年主流 AI 工具。每篇獨立閱讀，也可依推薦順序從基礎讀起。</p>
+    <p class="hero-sub">從核心概念到實戰操作，8 篇完整指南帶你快速上手 2026 年主流 AI 工具。每篇獨立閱讀，也可依推薦順序從基礎讀起。</p>
     <div class="hero-meta">
-      <span>6 Guides</span>
+      <span>8 Guides</span>
       <span>繁體中文</span>
       <span>MIT License</span>
       <span>2026-05-27</span>
@@ -343,6 +353,30 @@ body {
     </div>
   </a>
 
+  <a href="guides/ai-extensions-guide-2026.html" class="guide-card c7">
+    <span class="card-arrow">→</span>
+    <div class="card-num">Guide 07 · 進階</div>
+    <h3>AI Agent 擴充機制</h3>
+    <p class="card-desc">Skill、MCP、Plugin——三層擴充架構的定位差異、運作原理與實務組裝策略。</p>
+    <div class="card-tags">
+      <span class="tag">Skill</span>
+      <span class="tag">MCP</span>
+      <span class="tag">Plugin</span>
+    </div>
+  </a>
+
+  <a href="guides/ai-sdlc-guide-2026.html" class="guide-card c8">
+    <span class="card-arrow">→</span>
+    <div class="card-num">Guide 08 · 進階</div>
+    <h3>AI 時代軟體開發流程</h3>
+    <p class="card-desc">從需求分析到部署維運——AI 如何重塑 SDLC 每個階段的角色分工與工作流程。</p>
+    <div class="card-tags">
+      <span class="tag">SDLC</span>
+      <span class="tag">Agentic</span>
+      <span class="tag">Workflow</span>
+    </div>
+  </a>
+
 </div>
 
 <!-- ══ 推薦閱讀順序 ══ -->
@@ -353,6 +387,8 @@ body {
     <li><a href="guides/prompt-engineering-evolution-guide.html">Prompt Engineering 演進</a> — 掌握與 AI 溝通的方法論</li>
     <li><a href="guides/ai-instruction-guide-2026.html">AI 個人化設定精煉</a> — 學會客製化你的 AI 工具</li>
     <li>挑選一個工具指南開始實作 → <a href="guides/claude-desktop-guide.html">Claude</a> · <a href="guides/openai-tools-guide.html">OpenAI</a> · <a href="guides/gemini-tools-guide.html">Gemini</a></li>
+    <li><a href="guides/ai-extensions-guide-2026.html">AI Agent 擴充機制</a> — 理解 Skill / MCP / Plugin 三層架構</li>
+    <li><a href="guides/ai-sdlc-guide-2026.html">AI 時代軟體開發流程</a> — 了解 AI 如何改變開發全流程</li>
   </ol>
 </div>
 
