@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Agent 擴充機制完全指南 2026 — Skill × MCP × Plugin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;900&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#0f0e0d; --paper:#f5f0e8; --warm-mid:#e8e0d0; --border:#c8bfa8; --muted:#7a7060;
+  /* concept colors */
+  --t1-color:#1a3d70; --t1-bg:#e8eff9;   /* Navy  — Skill */
+  --t2-color:#1a7a6e; --t2-bg:#e8f5f3;   /* Teal  — MCP */
+  --t3-color:#6b3db8; --t3-bg:#f0eaf9;   /* Purple — Plugin / Connector */
+  --t4-color:#8c3d1a; --t4-bg:#faf0e8;   /* Amber — Security / Hook */
+  --t5-color:#1a6b4a; --t5-bg:#e8f5ee;   /* Forest — Subagent */
+  /* platform colors */
+  --p-claude:#8c3d1a; --p-claude-bg:#faf0e8;
+  --p-codex:#1a3d70;  --p-codex-bg:#e8eff9;
+  --p-ag:#1a6b4a;     --p-ag-bg:#e8f5ee;
+  --hero-accent:#1a7a6e;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans TC',sans-serif;font-size:15px;line-height:1.75;color:var(--ink);background:var(--paper);}
+
+/* HERO */
+.hero{background:var(--ink);color:var(--paper);padding:56px 48px 48px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-60px;right:-60px;width:300px;height:300px;border:1px solid rgba(245,240,232,.10);border-radius:50%;}
+.hero::after{content:'';position:absolute;bottom:-80px;left:20%;width:220px;height:220px;border:1px solid rgba(245,240,232,.07);border-radius:50%;}
+.hero-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--hero-accent);margin-bottom:16px;}
+.hero h1{font-family:'Noto Serif TC',serif;font-weight:900;font-size:2.4rem;line-height:1.25;margin-bottom:16px;max-width:700px;}
+.hero-sub{font-size:14px;color:rgba(245,240,232,.65);max-width:640px;font-weight:300;line-height:1.7;}
+.hero-badges{display:flex;gap:8px;margin-top:28px;flex-wrap:wrap;}
+.badge{padding:5px 14px;border-radius:2px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.05em;color:#fff;}
+.badge-t1{background:var(--t1-color);} .badge-t2{background:var(--t2-color);}
+.badge-t3{background:var(--t3-color);} .badge-t4{background:var(--t4-color);}
+.badge-t5{background:var(--t5-color);}
+
+/* LAYOUT */
+.container{max-width:820px;margin:0 auto;padding:0 32px;}
+hr.rule{border:none;border-top:1px solid var(--border);margin:40px 0;}
+.section{padding:48px 0 0;}
+.section-number{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.15em;color:var(--muted);margin-bottom:6px;}
+.section h2{font-family:'Noto Serif TC',serif;font-weight:900;font-size:1.7rem;margin-bottom:18px;line-height:1.3;}
+.section > p.intro{font-size:14px;color:var(--muted);margin-bottom:8px;max-width:720px;}
+
+/* TOC */
+.toc{background:var(--warm-mid);border-left:3px solid var(--hero-accent);padding:24px 28px;margin:40px 0 0;}
+.toc-title{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.toc ol{padding-left:20px;font-size:13px;color:var(--muted);line-height:2.2;}
+.toc a{color:inherit;text-decoration:none;} .toc a:hover{color:var(--hero-accent);}
+
+/* OVERVIEW 5-col */
+.mode-overview{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--border);overflow:hidden;margin:32px 0;}
+.mode-card{padding:20px 16px;border-right:1px solid var(--border);}
+.mode-card:last-child{border-right:none;}
+.mode-card.t1{background:var(--t1-bg);} .mode-card.t2{background:var(--t2-bg);}
+.mode-card.t3{background:var(--t3-bg);} .mode-card.t4{background:var(--t4-bg);}
+.mode-card.t5{background:var(--t5-bg);}
+.mode-icon{width:34px;height:34px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:10px;}
+.icon-t1{background:var(--t1-color);} .icon-t2{background:var(--t2-color);}
+.icon-t3{background:var(--t3-color);} .icon-t4{background:var(--t4-color);}
+.icon-t5{background:var(--t5-color);}
+.mode-card h3{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;margin-bottom:6px;line-height:1.4;}
+.mode-card.t1 h3{color:var(--t1-color);} .mode-card.t2 h3{color:var(--t2-color);}
+.mode-card.t3 h3{color:var(--t3-color);} .mode-card.t4 h3{color:var(--t4-color);}
+.mode-card.t5 h3{color:var(--t5-color);}
+.mode-card p{font-size:11.5px;color:var(--muted);line-height:1.5;margin:0;}
+
+/* MODULE SECTION */
+.mode-section{border:1px solid var(--border);margin:24px 0;overflow:hidden;}
+.mode-header{padding:16px 22px;display:flex;align-items:center;gap:14px;}
+.mode-header.t1-h{background:var(--t1-color);} .mode-header.t2-h{background:var(--t2-color);}
+.mode-header.t3-h{background:var(--t3-color);} .mode-header.t4-h{background:var(--t4-color);}
+.mode-header.t5-h{background:var(--t5-color);}
+.mode-header.p-claude{background:var(--p-claude);}
+.mode-header.p-codex{background:var(--p-codex);}
+.mode-header.p-ag{background:var(--p-ag);}
+.mode-header h3{font-family:'Noto Serif TC',serif;font-size:1.1rem;font-weight:900;color:#fff;flex:1;}
+.mode-header .mode-tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.15em;color:rgba(255,255,255,.55);margin-left:auto;white-space:nowrap;}
+.mode-body{padding:20px 22px;background:var(--paper);}
+
+/* FACT GRID */
+.fact-grid{display:grid;grid-template-columns:100px 1fr;border:1px solid var(--border);font-size:13px;overflow:hidden;margin:16px 0;}
+.fact-label{background:var(--warm-mid);padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.1em;display:flex;align-items:flex-start;border-bottom:1px solid var(--border);}
+.fact-value{padding:12px 16px;border-bottom:1px solid var(--border);line-height:1.65;}
+.fact-label:last-of-type{border-bottom:none;}
+.fact-value:last-child{border-bottom:none;}
+.fact-grid > div:last-child,.fact-grid > div:nth-last-child(2){border-bottom:none;}
+
+/* STEPS */
+.steps{margin:14px 0;}
+.step{display:flex;gap:14px;margin-bottom:8px;padding:12px 14px;background:var(--warm-mid);border-left:3px solid transparent;}
+.step.t1-step{border-left-color:var(--t1-color);} .step.t2-step{border-left-color:var(--t2-color);}
+.step.t3-step{border-left-color:var(--t3-color);} .step.t4-step{border-left-color:var(--t4-color);}
+.step.t5-step{border-left-color:var(--t5-color);}
+.step-num{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;min-width:24px;line-height:1.5;}
+.step.t1-step .step-num{color:var(--t1-color);} .step.t2-step .step-num{color:var(--t2-color);}
+.step.t3-step .step-num{color:var(--t3-color);} .step.t4-step .step-num{color:var(--t4-color);}
+.step.t5-step .step-num{color:var(--t5-color);}
+.step-content h4{font-size:13px;font-weight:700;margin-bottom:3px;}
+.step-content p{font-size:12.5px;color:var(--muted);margin:0;line-height:1.55;}
+
+/* TIP BOX */
+.tip-box{border:1px solid var(--border);padding:13px 16px;margin:14px 0;display:flex;gap:12px;background:rgba(245,240,232,.6);}
+.tip-icon{font-size:16px;flex-shrink:0;margin-top:2px;}
+.tip-box p{font-size:13px;margin:0;line-height:1.65;}
+
+/* CODE BLOCK */
+.code-block{background:#1a1814;border-radius:4px;padding:14px 18px;margin:12px 0;font-family:'JetBrains Mono',monospace;font-size:12px;color:#d4c9a8;overflow-x:auto;line-height:1.7;white-space:pre;}
+.code-block .cm{color:#7a7060;} .code-block .ck{color:#8baee0;}
+.code-block .cs{color:#6aad8e;} .code-block .ca{color:#e8904a;}
+
+/* GEN TABLE */
+.gen-table{width:100%;border-collapse:collapse;font-size:12.5px;margin:14px 0;}
+.gen-table th{background:var(--warm-mid);padding:8px 12px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;border:1px solid var(--border);}
+.gen-table td{padding:8px 12px;border:1px solid var(--border);vertical-align:top;line-height:1.6;}
+.gen-table td:first-child{font-weight:600;color:var(--muted);white-space:nowrap;}
+
+/* COMPARE TABLE */
+.compare-table{width:100%;border-collapse:collapse;font-size:12px;margin:18px 0;}
+.compare-table th{padding:9px 10px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;font-weight:700;text-transform:uppercase;border-bottom:2px solid var(--ink);}
+.compare-table th:nth-child(1){background:var(--warm-mid);color:var(--muted);}
+.compare-table th:nth-child(2){background:var(--p-claude-bg);color:var(--p-claude);}
+.compare-table th:nth-child(3){background:var(--p-codex-bg);color:var(--p-codex);}
+.compare-table th:nth-child(4){background:var(--p-ag-bg);color:var(--p-ag);}
+.compare-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top;font-size:12px;line-height:1.6;}
+.compare-table td:first-child{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);background:var(--warm-mid);white-space:nowrap;}
+.compare-table tr:last-child td{border-bottom:none;}
+.yes{color:#1a7a6e;font-weight:700;} .no{color:#c0555a;} .partial{color:#a06020;}
+
+/* LAYER DIAGRAM */
+.layer-stack{display:flex;flex-direction:column;gap:0;margin:16px 0;}
+.layer-row{padding:14px 20px;border:1px solid var(--border);border-bottom:none;display:flex;align-items:center;gap:16px;}
+.layer-row:last-child{border-bottom:1px solid var(--border);}
+.layer-label{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;min-width:80px;text-align:center;padding:4px 10px;border-radius:2px;}
+.layer-l1{background:var(--t1-bg);color:var(--t1-color);} .layer-row.l1{background:rgba(232,239,249,.3);}
+.layer-l2{background:var(--t2-bg);color:var(--t2-color);} .layer-row.l2{background:rgba(232,245,243,.3);}
+.layer-l3{background:var(--t3-bg);color:var(--t3-color);} .layer-row.l3{background:rgba(240,234,249,.3);}
+.layer-l4{background:var(--t4-bg);color:var(--t4-color);} .layer-row.l4{background:rgba(250,240,232,.3);}
+.layer-l5{background:var(--t5-bg);color:var(--t5-color);} .layer-row.l5{background:rgba(232,245,238,.3);}
+.layer-content h4{font-size:13px;font-weight:700;margin-bottom:3px;}
+.layer-content p{font-size:12.5px;color:var(--muted);margin:0;line-height:1.5;}
+
+/* PIPELINE */
+.pipeline{display:flex;align-items:center;gap:6px;margin:12px 0;flex-wrap:wrap;}
+.pipe-box{padding:6px 11px;border:1px solid var(--border);border-radius:2px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;background:var(--warm-mid);white-space:nowrap;}
+.pipe-arrow{color:var(--muted);font-size:14px;}
+.pipe-box.t1{background:var(--t1-bg);border-color:var(--t1-color);color:var(--t1-color);}
+.pipe-box.t2{background:var(--t2-bg);border-color:var(--t2-color);color:var(--t2-color);}
+.pipe-box.t3{background:var(--t3-bg);border-color:var(--t3-color);color:var(--t3-color);}
+.pipe-box.t4{background:var(--t4-bg);border-color:var(--t4-color);color:var(--t4-color);}
+.pipe-box.t5{background:var(--t5-bg);border-color:var(--t5-color);color:var(--t5-color);}
+
+/* DECISION TREE */
+.decision{background:var(--ink);color:var(--paper);padding:26px 30px;margin:24px 0;}
+.decision h3{font-family:'Noto Serif TC',serif;font-size:1.05rem;margin-bottom:18px;}
+.decision-item{display:flex;gap:12px;margin-bottom:9px;align-items:flex-start;}
+.decision-q{font-size:13px;color:rgba(245,240,232,.72);min-width:240px;padding-top:2px;line-height:1.5;}
+.decision-arrow{color:var(--hero-accent);font-size:14px;padding-top:2px;flex-shrink:0;}
+.decision-a{font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:600;line-height:1.5;}
+.a-t1{color:#7baee8;} .a-t2{color:#6aad8e;} .a-t3{color:#c0a8e8;} .a-t4{color:#e8904a;} .a-t5{color:#6abf8e;}
+
+/* ROADMAP */
+.roadmap{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0;}
+.road-card{border:1px solid var(--border);overflow:hidden;}
+.road-head{padding:12px 16px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.08em;}
+.road-head.t1{background:var(--t1-bg);color:var(--t1-color);}
+.road-head.t2{background:var(--t2-bg);color:var(--t2-color);}
+.road-head.t3{background:var(--t3-bg);color:var(--t3-color);}
+.road-body{padding:12px 16px;}
+.road-body ul{list-style:none;padding:0;}
+.road-body ul li{font-size:12px;color:var(--muted);padding:3px 0 3px 14px;position:relative;line-height:1.5;}
+.road-body ul li::before{content:'·';position:absolute;left:0;font-size:16px;line-height:1.2;}
+
+/* ANTI-PATTERN TABLE */
+.anti-table{width:100%;border-collapse:collapse;font-size:12.5px;margin:14px 0;}
+.anti-table th{background:var(--t4-color);color:#fff;padding:8px 12px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;border:1px solid var(--t4-color);}
+.anti-table td{padding:8px 12px;border:1px solid var(--border);vertical-align:top;line-height:1.6;}
+.anti-table td:first-child{font-weight:600;color:var(--t4-color);white-space:nowrap;}
+.anti-table td:nth-child(2){font-size:12px;color:var(--muted);}
+
+/* SOURCE ROW */
+.source-row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
+.src-badge{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;padding:3px 10px;border-radius:2px;border:1px solid var(--border);color:var(--muted);}
+.src-anthropic{border-color:var(--p-claude);color:var(--p-claude);background:var(--p-claude-bg);}
+.src-openai{border-color:var(--p-codex);color:var(--p-codex);background:var(--p-codex-bg);}
+.src-google{border-color:var(--p-ag);color:var(--p-ag);background:var(--p-ag-bg);}
+.src-mcp{border-color:var(--t2-color);color:var(--t2-color);background:var(--t2-bg);}
+
+/* BACK-TO-TOP */
+.back-to-top{position:fixed;bottom:32px;right:32px;width:40px;height:40px;background:var(--ink);color:var(--paper);border:1px solid var(--border);border-radius:2px;font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;line-height:1;cursor:pointer;opacity:0;transform:translateY(8px);transition:opacity .2s ease,transform .2s ease,background .15s ease;z-index:100;}
+.back-to-top.visible{opacity:1;transform:translateY(0);}
+.back-to-top:hover{background:var(--hero-accent);border-color:var(--hero-accent);}
+
+/* FOOTER */
+.footer{margin:56px 0 0;padding:24px 0 32px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+.footer a{color:inherit;text-decoration:none;} .footer a:hover{color:var(--hero-accent);}
+
+/* RESPONSIVE */
+@media(max-width:640px){
+  .hero{padding:36px 20px 32px;} .hero h1{font-size:1.7rem;} .container{padding:0 16px;}
+  .mode-overview{grid-template-columns:repeat(2,1fr);}
+  .mode-card{border-right:none;border-bottom:1px solid var(--border);}
+  .roadmap{grid-template-columns:1fr;}
+  .compare-table{font-size:10px;} .compare-table td,.compare-table th{padding:6px 7px;}
+  .decision-item{flex-direction:column;gap:4px;} .decision-q{min-width:unset;}
+  .back-to-top{bottom:20px;right:20px;}
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-label">// Skill × MCP × Plugin × Connector × Subagent · 2026-05-27</div>
+  <h1>AI Agent 擴充機制<br>完全指南</h1>
+  <p class="hero-sub">Skill（知識層）× MCP（工具層）× Plugin（打包層）× Connector（整合層）× Subagent（角色層）——釐清五個層次的邊界，掌握 Claude / Codex / Antigravity 三大平台的落地設計模式。整合 Claude × Gemini × GPT 三模型分析，以 Anthropic / OpenAI / Google / MCP 官方文件為基準。</p>
+  <div class="hero-badges">
+    <span class="badge badge-t1">Skill 知識層</span>
+    <span class="badge badge-t2">MCP 工具層</span>
+    <span class="badge badge-t3">Plugin / Connector 打包層</span>
+    <span class="badge badge-t4">Hook / Security 治理層</span>
+    <span class="badge badge-t5">Subagent 角色層</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- TOC -->
+<div class="toc">
+  <div class="toc-title">// 目錄</div>
+  <ol>
+    <li><a href="#overview">五層架構一眼看懂</a></li>
+    <li><a href="#concepts">核心概念邊界釐清</a></li>
+    <li><a href="#skill">Skill 深解：設計規範 + SKILL.md 範本</a></li>
+    <li><a href="#mcp">MCP 深解：三原語 + 安全設計</a></li>
+    <li><a href="#plugin">Plugin / Connector 打包層</a></li>
+    <li><a href="#platform">三平台能力對照矩陣</a></li>
+    <li><a href="#claude-platform">Claude（Desktop / Cowork / Code）深解</a></li>
+    <li><a href="#codex-platform">OpenAI Codex 深解</a></li>
+    <li><a href="#ag-platform">Google Antigravity 深解</a></li>
+    <li><a href="#patterns">進階設計模式</a></li>
+    <li><a href="#security">安全與治理</a></li>
+    <li><a href="#antipatterns">常見反模式與校正</a></li>
+    <li><a href="#decision">決策樹：我該用哪一層？</a></li>
+    <li><a href="#roadmap">導入路線：0–12 週行動計畫</a></li>
+  </ol>
+</div>
+
+<!-- §01 OVERVIEW -->
+<div class="section" id="overview">
+  <div class="section-number">// 01</div>
+  <h2>五層架構一眼看懂</h2>
+  <p class="intro">Skill 與 MCP 不是同一層能力。最有效的設計模式是分層組合：每層解決不同問題，不互相越界。</p>
+
+  <div class="mode-overview">
+    <div class="mode-card t1"><div class="mode-icon icon-t1">📋</div><h3>Skill<br>知識層</h3><p>封裝流程、判斷標準、範例、評測——讓 Agent「知道怎麼做」</p></div>
+    <div class="mode-card t2"><div class="mode-icon icon-t2">🔗</div><h3>MCP<br>工具層</h3><p>標準化工具 / 資料連接協定——讓 Agent「能連到外部系統並執行」</p></div>
+    <div class="mode-card t3"><div class="mode-icon icon-t3">📦</div><h3>Plugin / Connector<br>打包層</h3><p>Skill + MCP + Hook 的打包與分發——讓團隊可安裝、版本化、治理</p></div>
+    <div class="mode-card t4"><div class="mode-icon icon-t4">🔒</div><h3>Hook / Security<br>治理層</h3><p>自動守門、權限控制、Prompt Injection 防護——安全邊界</p></div>
+    <div class="mode-card t5"><div class="mode-icon icon-t5">🤖</div><h3>Subagent<br>角色層</h3><p>角色隔離與並行執行——讓測試、資安、文件可同時運行</p></div>
+  </div>
+
+  <div class="layer-stack">
+    <div class="layer-row l1"><div class="layer-label layer-l1">Skill</div><div class="layer-content"><h4>知識層 — 流程 · 規則 · 範例 · 評測</h4><p>SKILL.md + scripts + references。Progressive Disclosure：只在需要時加載</p></div></div>
+    <div class="layer-row l2"><div class="layer-label layer-l2">MCP</div><div class="layer-content"><h4>工具層 — Tools · Resources · Prompts</h4><p>client-server 即時通訊協定。stdio（本地）/ HTTP（遠端）雙傳輸</p></div></div>
+    <div class="layer-row l3"><div class="layer-label layer-l3">Plugin</div><div class="layer-content"><h4>打包層 — Skill + MCP + Hook 的 Namespaced Bundle</h4><p>版本化 · 可安裝 · 可分發至 Marketplace · 組織治理</p></div></div>
+    <div class="layer-row l4"><div class="layer-label layer-l4">Hook</div><div class="layer-content"><h4>治理層 — 自動守門 · 權限控制 · Audit</h4><p>高風險操作審批 · 阻擋危險動作 · Tool Call 記錄</p></div></div>
+    <div class="layer-row l5"><div class="layer-label layer-l5">Subagent</div><div class="layer-content"><h4>角色層 — 並行執行 · 角色隔離 · 專職化</h4><p>測試 Agent / 資安 Agent / 研究 Agent 各司其職</p></div></div>
+  </div>
+
+  <div class="source-row">
+    <span class="src-badge src-anthropic">Anthropic Docs</span>
+    <span class="src-badge src-openai">OpenAI Developers</span>
+    <span class="src-badge src-google">Google Antigravity Docs</span>
+    <span class="src-badge src-mcp">modelcontextprotocol.io</span>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- §02 CONCEPTS -->
+<div class="section" id="concepts">
+  <div class="section-number">// 02</div>
+  <h2>核心概念邊界釐清</h2>
+  <p class="intro">四個最容易混淆的概念——一張表確認邊界，不再錯用。</p>
+
+  <table class="gen-table">
+    <tr><th>概念</th><th>核心定位</th><th>解決問題</th><th>工程本質</th></tr>
+    <tr><td>Skill</td><td>可重用工作流程與專業知識</td><td>讓 Agent「知道怎麼做」</td><td>Markdown 指令 + 範例 + 腳本 + 參考資料（SKILL.md）</td></tr>
+    <tr><td>MCP</td><td>標準化工具 / 資料連接協定</td><td>讓 Agent「能連到外部系統並執行」</td><td>Host + Client + Server 三角 + Tools / Resources / Prompts 原語</td></tr>
+    <tr><td>Plugin</td><td>打包 Skill + MCP + Hook 的發布單位</td><td>讓團隊可安裝、版本化、治理</td><td>Namespaced bundle，含版本、manifest、marketplace 支援</td></tr>
+    <tr><td>Connector</td><td>MCP Server 的產品化包裝</td><td>讓使用者以較低設定成本接入 SaaS</td><td>常為 Claude.ai / Cowork 預建的 Remote MCP 整合</td></tr>
+  </table>
+
+  <div class="tip-box"><span class="tip-icon">🎯</span><p><strong>判斷原則（Gemini 報告）：</strong>MCP 屬於<strong>傳輸與介面層（協定層）</strong>——定義模型與外部世界通訊的開放標準；Skill 屬於<strong>業務與行為層（邏輯層）</strong>——封裝特定領域的專家行為，內部通常會使用多個 MCP Tools。Plugin 是兩者的打包容器。</p></div>
+
+  <div style="margin-top:18px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">使用時機判斷矩陣（GPT 報告）</div>
+  <table class="gen-table">
+    <tr><th>需求情境</th><th>應使用</th><th>原因</th></tr>
+    <tr><td>每次都要貼同一段審查流程</td><td>Skill</td><td>流程可重用，不一定需要外部系統</td></tr>
+    <tr><td>要讀 GitHub issue、建立 PR、查 Linear</td><td>MCP / Connector</td><td>涉及外部服務資料與動作</td></tr>
+    <tr><td>要把 PR Review 流程與 GitHub 工具一起分享給團隊</td><td>Plugin</td><td>需打包 Skill + MCP 設定</td></tr>
+    <tr><td>要讓 Claude Cowork 使用 Gmail / Slack / Drive</td><td>Connector / Plugin</td><td>面向使用者的整合入口</td></tr>
+    <tr><td>要限制危險工具呼叫</td><td>Permission / Hook</td><td>治理層，不應只靠自然語言</td></tr>
+    <tr><td>要讓測試、資安、文件生成並行</td><td>Subagent + Skill</td><td>角色隔離與背景任務</td></tr>
+    <tr><td>要讓同一流程跨多專案安裝</td><td>Plugin Marketplace</td><td>需要版本、命名空間、治理與更新</td></tr>
+  </table>
+</div>
+
+<hr class="rule">
+
+<!-- §03 SKILL -->
+<div class="section" id="skill">
+  <div class="section-number">// 03</div>
+  <h2>Skill 深解：設計規範 + SKILL.md 範本</h2>
+  <p class="intro">Skill 採「Progressive Disclosure」架構：metadata 在 context window 只佔 ~100 token，完整細節只在任務真正需要時才加載，避免 context 爆炸。</p>
+
+  <div class="mode-section">
+    <div class="mode-header t1-h"><span style="font-size:20px">📋</span><h3>Skill 核心機制與規範</h3><span class="mode-tag">PROGRESSIVE DISCLOSURE · SKILL.MD</span></div>
+    <div class="mode-body">
+      <div class="fact-grid">
+        <div class="fact-label">本質</div>
+        <div class="fact-value">模組化能力擴展包：指令（SKILL.md）+ 選用資源（腳本、模板、references）。Claude / Codex / Antigravity 三平台均採 SKILL.md 規格</div>
+        <div class="fact-label">載入機制</div>
+        <div class="fact-value">Progressive Disclosure：Agent 先讀名稱與描述決定是否使用，才完整載入 SKILL.md。Claude Code 官方：Skill 內容只在使用時載入，比把長流程塞進 CLAUDE.md 更節省 context</div>
+        <div class="fact-label">觸發方式</div>
+        <div class="fact-value"><strong>隱式觸發：</strong>agent 根據 description 自動選擇 skill（依 task context 語意匹配）<br><strong>顯式觸發：</strong>使用者直接以 <code>/skill-name</code> 呼叫</div>
+        <div class="fact-label">適合放什麼</div>
+        <div class="fact-value">工作流程（PR Review / Release checklist / Incident postmortem）/ 領域規則（API 規範 / 設計系統）/ Few-shot 範例 / 測試腳本 / Runbook</div>
+        <div class="fact-label">不適合放</div>
+        <div class="fact-value">API key、密碼、內部憑證（安全風險）/ 超長領域知識文件（應放 references，需要時讀）/ 需要即時外部資料的邏輯（應用 MCP）</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mode-section">
+    <div class="mode-header t1-h"><span style="font-size:20px">📝</span><h3>SKILL.md 標準範本</h3><span class="mode-tag">PR REVIEW · CROSS-PLATFORM</span></div>
+    <div class="mode-body">
+<div class="code-block"><span class="cm">---</span>
+<span class="ck">name:</span> <span class="cs">pr-review</span>
+<span class="ck">description:</span> <span class="cs">Review pull requests for correctness, regressions, security</span>
+<span class="cs">  risks, missing tests, and maintainability. Use when asked to</span>
+<span class="cs">  review a PR, diff, branch, or code change.</span>
+<span class="cs">  Do NOT trigger for general code writing tasks.</span>
+<span class="cm">---</span>
+
+<span class="cm"># PR Review Skill</span>
+
+<span class="cm">## Goal</span>
+<span class="cs">Identify high-impact issues before merge.</span>
+
+<span class="cm">## Required Inputs</span>
+<span class="cs">- PR diff</span>
+<span class="cs">- Related issue or acceptance criteria</span>
+<span class="cs">- Test result or CI status</span>
+
+<span class="cm">## Workflow</span>
+<span class="cs">1. Read requirement and acceptance criteria.</span>
+<span class="cs">2. Inspect changed files and adjacent code.</span>
+<span class="cs">3. Check correctness, regression, security, performance, tests.</span>
+<span class="cs">4. Classify findings: P0 (data loss/security/build break) /</span>
+<span class="cs">   P1 (correctness bug / regression) / P2 (maintainability)</span>
+<span class="cs">5. For each P0/P1: location + failure mode + minimal fix + test</span>
+
+<span class="cm">## Output Format</span>
+<span class="cs">Summary → Findings → Required Fixes → Suggested Tests → Risks</span></div>
+
+      <div style="margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">Skill 命名規範（Anthropic 官方）</div>
+      <table class="gen-table">
+        <tr><th>欄位</th><th>規範</th></tr>
+        <tr><td>name</td><td>最多 64 字元 · 只能小寫字母 / 數字 / 連字符 · 不可含 XML tags · 不可用保留字（anthropic / claude）</td></tr>
+        <tr><td>description</td><td>最多 1024 字元 · 不可為空 · 不可含 XML tags · <strong>必須明確說明何時使用與何時不使用</strong></td></tr>
+        <tr><td>SKILL.md 長度</td><td>建議控制在 ~500 tokens 以內（維持 Progressive Disclosure 效率）；長文件放 references/ 子目錄</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="mode-section">
+    <div class="mode-header t1-h"><span style="font-size:20px">✅</span><h3>Skill 品質標準</h3><span class="mode-tag">DESIGN CRITERIA</span></div>
+    <div class="mode-body">
+      <table class="gen-table">
+        <tr><th>標準</th><th>說明</th></tr>
+        <tr><td>Trigger 清楚</td><td>description 必須明確說明何時使用與何時不使用（隱式匹配依賴描述精確度）</td></tr>
+        <tr><td>單一能力</td><td>一個 Skill 只負責一個穩定工作流；觸發超過 3 次以上才值得封裝成 Skill</td></tr>
+        <tr><td>可驗證</td><td>有完成標準、測試方式或評測清單（golden tasks）</td></tr>
+        <tr><td>可組合</td><td>可與 MCP、subagent、hook 搭配；若 Skill 依賴 MCP，應在 plugin / config 層明確宣告</td></tr>
+        <tr><td>可版本化</td><td>重大流程變更應更新版本與 changelog</td></tr>
+        <tr><td>安全</td><td>不放 API key、密碼、內部憑證；只從可信來源安裝；稽核所有腳本與外部依賴</td></tr>
+        <tr><td>不濫用 Context</td><td>長文件放 references/，需要時再讀；不把所有規則塞進一份 SKILL.md</td></tr>
+      </table>
+
+      <div style="margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">Skill 目錄結構</div>
+<div class="code-block"><span class="ca">my-skill/</span>
+  <span class="cs">SKILL.md</span>          <span class="cm">← 核心指令（&lt;500 tokens）</span>
+  <span class="ca">references/</span>       <span class="cm">← 長文件（需要時才讀）</span>
+    <span class="cs">api-guideline.md</span>
+    <span class="cs">test-policy.md</span>
+  <span class="ca">scripts/</span>          <span class="cm">← 執行腳本</span>
+    <span class="cs">validate.py</span>
+  <span class="ca">assets/</span>           <span class="cm">← 模板</span>
+    <span class="cs">template.md</span>
+  <span class="ca">agents/</span>           <span class="cm">← Codex 依賴宣告</span>
+    <span class="cs">openai.yaml</span>       <span class="cm">← 宣告 MCP 依賴</span></div>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- §04 MCP -->
+<div class="section" id="mcp">
+  <div class="section-number">// 04</div>
+  <h2>MCP 深解：三原語 + 安全設計</h2>
+  <p class="intro">MCP（Model Context Protocol）是開放協定，讓 LLM 應用與外部資料源、工具整合。2024/11 Anthropic 發布後已由 Agentic AI Foundation（Linux Foundation）治理，月下載量超過 1 億次（2026/03）。</p>
+
+  <div class="mode-section">
+    <div class="mode-header t2-h"><span style="font-size:20px">🔗</span><h3>MCP 三大 Primitive（原語）</h3><span class="mode-tag">TOOLS · RESOURCES · PROMPTS · TRANSPORT</span></div>
+    <div class="mode-body">
+      <div class="fact-grid">
+        <div class="fact-label">Tools（行動）</div>
+        <div class="fact-value">具型別定義（JSON Schema）且<strong>具副作用</strong>的函式呼叫。讓 Claude 執行操作：建立 issue、發送訊息、操作資料庫。<strong>風險最高</strong>，需最小權限 + 使用者同意</div>
+        <div class="fact-label">Resources（資料）</div>
+        <div class="fact-value">讓 server 暴露<strong>唯讀</strong>資料：files、DB records、API responses、設計稿、Log。風險相對低，但仍需資料範圍限制</div>
+        <div class="fact-label">Prompts（範本）</div>
+        <div class="fact-value">預建的 workflow 模板，可重用的 prompt pattern。服務端提供標準查詢範本與任務模板</div>
+        <div class="fact-label">Transport</div>
+        <div class="fact-value"><strong>stdio</strong>：本地子進程，低延遲，適合 Claude Code / Codex CLI 本機工具<br><strong>HTTP / SSE</strong>：遠端 server，適合 SaaS Connector / Enterprise MCP / VPN 後方內部服務</div>
+      </div>
+
+      <div style="margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">MCP Tool Schema 設計七原則（GPT 報告）</div>
+      <table class="gen-table">
+        <tr><th>原則</th><th>說明</th></tr>
+        <tr><td>最小權限</td><td>每個 tool 只暴露必要能力；read-only 與 write 分成不同 MCP server 或 permission profile</td></tr>
+        <tr><td>明確命名</td><td><code>create_linear_issue</code> 優於 <code>do_action</code>；語意邊界唯一（防 Tool Selection 混淆）</td></tr>
+        <tr><td>嚴格參數</td><td>使用 enum、required、格式限制；無效狀態不可表示</td></tr>
+        <tr><td>可預覽</td><td>高風險 tool 先提供 dry-run 或 preview，再執行實際操作</td></tr>
+        <tr><td>可撤銷</td><td>寫入動作應支援 rollback 或 idempotency</td></tr>
+        <tr><td>可審計</td><td>每次 tool call 記錄 actor / input / output / timestamp</td></tr>
+        <tr><td>不信任描述</td><td>Host 不應盲信 MCP server 的 tool annotation（Prompt Injection 防護）；除非來自可信 server</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="mode-section">
+    <div class="mode-header t2-h"><span style="font-size:20px">⚠️</span><h3>MCP Server 風險分類</h3><span class="mode-tag">RISK LEVELS · SECURITY TIERS</span></div>
+    <div class="mode-body">
+      <table class="gen-table">
+        <tr><th>類型</th><th>範例</th><th>風險等級</th><th>最低控制要求</th></tr>
+        <tr><td>Read-only context server</td><td>文件、知識庫、設計稿、Log 查詢</td><td class="partial">中</td><td>資料範圍限制、資料分類</td></tr>
+        <tr><td>Action server</td><td>GitHub、Linear、Slack、Gmail、部署工具</td><td style="color:#c0555a;font-weight:700;">高</td><td>Approval + Audit + Preview</td></tr>
+        <tr><td>Local system server</td><td>檔案系統、Shell、瀏覽器、自動化工具</td><td style="color:#c0555a;font-weight:700;">高</td><td>Sandbox + 最小 OS 權限 + 目錄限制</td></tr>
+        <tr><td>Internal platform server</td><td>客服、CRM、付款、帳務、資料庫</td><td style="color:#8c1a1a;font-weight:700;">極高</td><td>OAuth + 審批流程 + 完整 Audit Log</td></tr>
+      </table>
+      <div class="tip-box"><span class="tip-icon">⚠️</span><p><strong>MCP 官方規格警告：</strong>MCP 可提供任意資料存取與程式碼執行路徑，必須取得使用者明確同意並謹慎處理安全與資料隱私。Host 不應在未取得使用者同意下向 server 暴露使用者資料。工具描述除非來自可信 server，否則應視為不可信。</p></div>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- §05 PLUGIN -->
+<div class="section" id="plugin">
+  <div class="section-number">// 05</div>
+  <h2>Plugin / Connector 打包層</h2>
+  <p class="intro">Plugin 是 Skill + MCP + Hook 的 Namespaced Bundle，適合需要跨團隊共享、版本化管理、Marketplace 分發時使用。</p>
+
+  <div class="mode-section">
+    <div class="mode-header t3-h"><span style="font-size:20px">📦</span><h3>何時從 Skill 升級為 Plugin？</h3><span class="mode-tag">DECISION · PACKAGING CRITERIA</span></div>
+    <div class="mode-body">
+      <table class="gen-table">
+        <tr><th>條件</th><th>原因</th></tr>
+        <tr><td>多人共用同一套流程</td><td>避免每人手動配置；統一版本與行為</td></tr>
+        <tr><td>需要版本與更新</td><td>可控發布；changelog 追蹤變更</td></tr>
+        <tr><td>需要綁定 MCP server</td><td>降低安裝錯誤；讓 Skill 的 MCP 依賴明確化</td></tr>
+        <tr><td>需要 hooks / permissions</td><td>統一治理；不靠自然語言控制危險操作</td></tr>
+        <tr><td>需要 Marketplace 分發</td><td>便於組織採用；支援版本 pinning 與審核</td></tr>
+      </table>
+
+      <div style="margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">Engineering Review Plugin 組成範例（GPT 報告 §12）</div>
+<div class="code-block"><span class="ca">engineering-review-plugin/</span>
+  <span class="cs">.plugin-manifest</span>
+  <span class="ca">skills/</span>
+    <span class="cs">pr-review/SKILL.md</span>
+    <span class="cs">architecture-review/SKILL.md</span>
+    <span class="cs">security-review/SKILL.md</span>
+  <span class="ca">mcp/</span>
+    <span class="cs">github</span>     <span class="cm">← read-only + write 分開</span>
+    <span class="cs">linear</span>
+    <span class="cs">sentry</span>
+  <span class="ca">agents/</span>
+    <span class="cs">test-runner.md</span>
+    <span class="cs">security-reviewer.md</span>
+  <span class="ca">hooks/</span>
+    <span class="cs">block-secret-read</span>
+    <span class="cs">require-test-summary</span></div>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- §06 PLATFORM COMPARE -->
+<div class="section" id="platform">
+  <div class="section-number">// 06</div>
+  <h2>三平台能力對照矩陣</h2>
+  <p class="intro">整合 Claude 報告能力矩陣 + GPT / Gemini 補充，含 2026 年最新狀態。</p>
+
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>能力 / 特性</th>
+        <th>🖥 Claude（Desktop / Cowork / Code）</th>
+        <th>💻 OpenAI Codex</th>
+        <th>⚡ Google Antigravity 2.0</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Agent Skills</td><td><span class="yes">✓</span> Pro+ · SKILL.md · plugin dir<br><small>Anthropic 17+ 開源 Skills</small></td><td><span class="yes">✓</span> SKILL.md · Codex CLI / IDE<br><small>隱式 + 顯式觸發</small></td><td><span class="yes">✓</span> SKILL.md · Antigravity Skills only<br><small>非跨工具標準</small></td></tr>
+      <tr><td>MCP Connectors</td><td><span class="yes">✓</span> Remote MCP（Pro / Max / Team / Enterprise）<br><small>Asana / GitHub / Linear / Stripe / Zapier 等</small></td><td><span class="yes">✓</span> stdio + Streamable HTTP<br><small>Bearer token + OAuth 支援</small></td><td class="no">✗ 截至 2026 中期完全不支援<br><small>最大缺口，工作流依賴外部整合時 Claude Code 仍首選</small></td></tr>
+      <tr><td>MCP Server 本機</td><td><span class="yes">✓</span> Claude Code：stdio 本機</td><td><span class="yes">✓</span> stdio + 可作為 MCP Server 被消費</td><td class="no">✗ 無</td></tr>
+      <tr><td>Plugin 系統</td><td><span class="yes">✓</span> Cowork Plugin（role / team / company）<br>Claude Code Plugin（skills + agents + hooks + MCP）</td><td><span class="yes">✓</span> Codex Plugin（skills + MCP + app integration）<br>Marketplace JSON catalog</td><td><span class="yes">✓</span> Antigravity Plugin（skills + rules + MCP + hooks）<br>Bundles（Firebase / Android / Web）</td></tr>
+      <tr><td>Hooks / 治理</td><td><span class="yes">✓</span> Claude Code hooks.json<br>組織 Owner 統一管理</td><td><span class="yes">✓</span> Codex hooks + approval settings</td><td><span class="yes">✓</span> Antigravity hooks + subagent 沙箱</td></tr>
+      <tr><td>Subagent / Parallel</td><td class="partial">△ Claude Code：sequential<br>Cowork：Sub-agents 支援</td><td><span class="yes">✓</span> Subagent 角色隔離<br>Test / Security / Research / Release Agent</td><td><span class="yes">✓</span> Agent Teams：多 subagent 平行運行於獨立 sandbox<br>最佳並行執行能力</td></tr>
+      <tr><td>Claude 模型</td><td><span class="yes">✓</span> 原生</td><td class="no">✗ 使用 GPT-5 系列</td><td><span class="yes">✓</span> model selector：Claude Sonnet / Opus 4.6<br>費用透過 Google 計費</td></tr>
+      <tr><td>MCP Apps UI</td><td><span class="yes">✓</span> SEP-1865：sandboxed iframe 互動 UI</td><td class="no">✗</td><td class="no">✗</td></tr>
+      <tr><td>Prompt Caching</td><td><span class="yes">✓</span> Skill System Prompt 前置快取<br>cache_control 標記</td><td><span class="yes">✓</span> 自動快取（≥1024 tokens）</td><td class="partial">△ Antigravity 動態快取布局優化<br>Skill 靜態 Prompt 置頂</td></tr>
+      <tr><td>跨工具 Skill 標準</td><td><span class="yes">✓</span> SKILL.md 開放標準（Claude / Codex / Antigravity / Cursor / GitHub Copilot）</td><td><span class="yes">✓</span> 同上</td><td class="partial">△ 部分相容 SKILL.md 標準</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="rule">
+
+<!-- §07 CLAUDE PLATFORM -->
+<div class="section" id="claude-platform">
+  <div class="section-number">// 07</div>
+  <h2>Claude（Desktop / Cowork / Code）深解</h2>
+
+  <div class="mode-section">
+    <div class="mode-header p-claude"><span style="font-size:20px">🖥</span><h3>Claude 三入口定位</h3><span class="mode-tag">DESKTOP · COWORK · CODE</span></div>
+    <div class="mode-body">
+      <table class="gen-table">
+        <tr><th>入口</th><th>主要用途</th><th>擴充機制</th></tr>
+        <tr><td>Claude Desktop / App</td><td>一般對話、文件、技術諮詢</td><td>Skills（Pro+）+ Connectors（Remote MCP）</td></tr>
+        <tr><td>Claude Cowork</td><td>企業協作、角色型工作流、長流程任務</td><td>Plugin（role / team / company）+ Sub-agents + Connectors</td></tr>
+        <tr><td>Claude Code</td><td>程式碼代理、repo 操作、CI/CD 整合</td><td>Plugin（skills + agents + hooks + MCP）+ 本機 MCP</td></tr>
+      </table>
+
+      <div style="margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">Claude Code 目錄結構建議（GPT 報告 §9.3）</div>
+<div class="code-block"><span class="ca">repo/</span>
+  <span class="cs">CLAUDE.md</span>              <span class="cm">← project-wide 規則</span>
+  <span class="ca">.claude/</span>
+    <span class="ca">skills/</span>
+      <span class="cs">review/SKILL.md</span>
+      <span class="cs">test/SKILL.md</span>
+    <span class="ca">agents/</span>
+      <span class="cs">security.md</span>
+      <span class="cs">test-runner.md</span>
+    <span class="ca">hooks/</span>
+      <span class="cs">hooks.json</span>         <span class="cm">← 阻擋危險操作</span>
+    <span class="cs">settings.json</span>          <span class="cm">← permissions allow/deny</span>
+  <span class="cs">.mcp.json</span>              <span class="cm">← MCP server 設定</span></div>
+
+      <div class="tip-box"><span class="tip-icon">💡</span><p><strong>Claude Code 官方建議：</strong>個人或單 repo 快速實驗用 <code>.claude/</code> standalone configuration；需要跨團隊共享、版本化或 marketplace 分發時才轉成 Plugin。Skills 安裝後自動發現，Claude 可依任務 context 自動呼叫。</p></div>
+
+      <div style="margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">Claude Cowork Plugin — 企業角色包範例（GPT 報告 §9.2）</div>
+      <table class="gen-table">
+        <tr><th>Plugin</th><th>Skills</th><th>Connectors</th></tr>
+        <tr><td>Product Ops</td><td>PRD review、roadmap synthesis</td><td>Google Drive、Slack、Linear</td></tr>
+        <tr><td>Engineering Lead</td><td>sprint review、incident analysis</td><td>GitHub、Sentry、Jira</td></tr>
+        <tr><td>Sales Ops</td><td>account brief、proposal drafting</td><td>Salesforce、Gmail、Docs</td></tr>
+        <tr><td>Legal Ops</td><td>contract review checklist</td><td>DocuSign、Drive</td></tr>
+        <tr><td>Data Analyst</td><td>metric investigation</td><td>Sheets、warehouse connector</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- §08 CODEX PLATFORM -->
+<div class="section" id="codex-platform">
+  <div class="section-number">// 08</div>
+  <h2>OpenAI Codex 深解</h2>
+
+  <div class="mode-section">
+    <div class="mode-header p-codex"><span style="font-size:20px">💻</span><h3>Codex Extension 模型</h3><span class="mode-tag">AGENTS.MD · SKILL · PLUGIN · MCP</span></div>
+    <div class="mode-body">
+      <div class="fact-grid">
+        <div class="fact-label">架構層次</div>
+        <div class="fact-value">AGENTS.md → Skill → Plugin → MCP → Subagent → Automation（由基礎到高階）</div>
+        <div class="fact-label">MCP 支援</div>
+        <div class="fact-value">STDIO servers + Streamable HTTP servers；支援 Bearer token + OAuth；設定放 <code>~/.codex/config.toml</code>（全域）或 <code>.codex/config.toml</code>（trusted project）</div>
+        <div class="fact-label">進階特性</div>
+        <div class="fact-value">Codex 可作為 MCP Server（<code>codex --mcp-server</code>）被其他 Agent（如 Claude）消費——Multi-agent 協作的關鍵設計；支援 Parallel tool calls</div>
+        <div class="fact-label">Skill 依賴宣告</div>
+        <div class="fact-value">若 Skill 依賴 MCP，在 <code>agents/openai.yaml</code> 中宣告依賴，讓 Codex 自動安裝與 wiring（不要只在 SKILL.md 自然語言中說明）</div>
+      </div>
+
+<div class="code-block"><span class="cm"># ~/.codex/config.toml — MCP Server 設定</span>
+[<span class="ck">mcpServers.github</span>]
+<span class="ck">command</span> = <span class="cs">"npx"</span>
+<span class="ck">args</span> = [<span class="cs">"-y"</span>, <span class="cs">"@modelcontextprotocol/server-github"</span>]
+[<span class="ck">mcpServers.github.env</span>]
+<span class="ck">GITHUB_TOKEN</span> = <span class="cs">"${GITHUB_TOKEN}"</span>
+
+[<span class="ck">mcpServers.internal-db</span>]
+<span class="ck">url</span> = <span class="cs">"https://internal.corp/mcp"</span>  <span class="cm"># Streamable HTTP</span>
+[<span class="ck">mcpServers.internal-db.env</span>]
+<span class="ck">AUTH_TOKEN</span> = <span class="cs">"${DB_TOKEN}"</span>
+
+<span class="cm"># Codex 作為 MCP Server（被 Claude 消費）</span>
+<span class="ca">codex --mcp-server</span></div>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- §09 ANTIGRAVITY PLATFORM -->
+<div class="section" id="ag-platform">
+  <div class="section-number">// 09</div>
+  <h2>Google Antigravity 2.0 深解</h2>
+
+  <div class="mode-section">
+    <div class="mode-header p-ag"><span style="font-size:20px">⚡</span><h3>Antigravity Extension 生態</h3><span class="mode-tag">AGENT TEAMS · BUNDLES · MCP GAP</span></div>
+    <div class="mode-body">
+      <div class="fact-grid">
+        <div class="fact-label">核心特性</div>
+        <div class="fact-value">Agent Teams：多個專職 subagent 平行運行於各自 sandbox，是目前三平台中並行能力最強的選項</div>
+        <div class="fact-label">Extension 元件</div>
+        <div class="fact-value">Skills / MCP servers（但 MCP 有缺口）/ Plugins / Rules / Workflows / Hooks / Subagents 七大元件</div>
+        <div class="fact-label">MCP 缺口</div>
+        <div class="fact-value"><strong>最大缺口：</strong>截至 2026 年中期完全不支援 MCP。若工作流依賴外部整合（Figma / Linear / 資料庫），Claude Code 仍是首選</div>
+        <div class="fact-label">Claude 整合</div>
+        <div class="fact-value">Model selector 可選 Claude Sonnet 4.6 / Opus 4.6；費用透過 Google 計費（對已訂 Google AI Pro 的開發者有成本優勢）</div>
+        <div class="fact-label">動態 Skill 路由</div>
+        <div class="fact-value">Skill Registry + Semantic Search：執行期環境先語意比對最相符 Skill，再動態注入 Context Window 頂部，最大化節省 token 消耗（Gemini 報告 §2.2）</div>
+      </div>
+
+      <div style="margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">Antigravity 目錄結構建議（GPT 報告 §9.1）</div>
+<div class="code-block"><span class="ca">repo/</span>
+  <span class="ca">.agents/</span>
+    <span class="ca">rules/</span>
+      <span class="cs">engineering.md</span>
+      <span class="cs">security.md</span>
+    <span class="ca">workflows/</span>
+      <span class="cs">release.md</span>      <span class="cm">← Markdown 定義可重複流程</span>
+      <span class="cs">incident.md</span>
+    <span class="ca">skills/</span>
+      <span class="ca">pr-review/</span>
+        <span class="cs">SKILL.md</span>
+      <span class="ca">test-repair/</span>
+        <span class="cs">SKILL.md</span>
+    <span class="ca">plugins/</span>
+      <span class="ca">engineering-toolkit/</span>
+        <span class="cs">plugin.json</span>
+        <span class="ca">skills/</span>
+        <span class="ca">hooks/</span></div>
+
+      <div class="tip-box"><span class="tip-icon">💡</span><p><strong>Antigravity 最適場景：</strong>Google 技術棧（Firebase / Android / Web / Science）+ 多 Agent 並行（主 Agent 計畫，Subagents 分別負責測試、文件、研究）+ 瀏覽器 / 研究自動化。MCP 缺口補法：在需要外部整合時，透過 model selector 切換到 Claude Code 處理。</p></div>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- §10 PATTERNS -->
+<div class="section" id="patterns">
+  <div class="section-number">// 10</div>
+  <h2>進階設計模式</h2>
+
+  <div class="mode-section">
+    <div class="mode-header t2-h"><span style="font-size:20px">🔄</span><h3>最小可行架構：Skill + MCP</h3><span class="mode-tag">MVA · WORKFLOW SKILL + MCP TOOLS</span></div>
+    <div class="mode-body">
+      <div class="pipeline">
+        <div class="pipe-box t1">User Request</div><div class="pipe-arrow">→</div>
+        <div class="pipe-box t5">Agent</div><div class="pipe-arrow">→</div>
+        <div class="pipe-box t1">Skill 判斷流程 / 規則</div><div class="pipe-arrow">→</div>
+        <div class="pipe-box t2">MCP 提供資料 / 工具</div><div class="pipe-arrow">→</div>
+        <div class="pipe-box t3">依 Skill 規則整合</div><div class="pipe-arrow">→</div>
+        <div class="pipe-box t5">Final Answer / Action</div>
+      </div>
+
+      <div style="margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">PR Review Agent 範例設計</div>
+      <table class="gen-table">
+        <tr><th>元件</th><th>設計</th><th>說明</th></tr>
+        <tr><td>Skill</td><td><code>code-review/SKILL.md</code></td><td>審查順序、缺陷分級（P0/P1/P2）、輸出格式</td></tr>
+        <tr><td>MCP (read)</td><td>GitHub MCP</td><td>讀 PR diff / comments / CI status</td></tr>
+        <tr><td>MCP (read)</td><td>Linear / Jira MCP</td><td>讀需求與 ticket 驗收條件</td></tr>
+        <tr><td>MCP (read)</td><td>Sentry / Datadog MCP</td><td>查線上錯誤與指標</td></tr>
+        <tr><td>Hook</td><td>block-secret-read</td><td>阻擋讀取 .env / 金鑰</td></tr>
+        <tr><td>Plugin</td><td>engineering-review</td><td>打包為團隊可安裝套件</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="mode-section">
+    <div class="mode-header t2-h"><span style="font-size:20px">📊</span><h3>Read-only vs Write 分離設計</h3><span class="mode-tag">LEAST PRIVILEGE · RISK ISOLATION</span></div>
+    <div class="mode-body">
+      <div class="tip-box"><span class="tip-icon">🎯</span><p><strong>原則：</strong>讀取與寫入分成不同 MCP server 或不同 permission profile。優點：降低誤操作風險，方便以環境、角色、審批級別分權。</p></div>
+<div class="code-block"><span class="cm"># 分離設計範例</span>
+<span class="ca">jira-read MCP</span>
+  → search_issues
+  → read_issue_details
+
+<span class="ca">jira-write MCP</span>     <span class="cm">← 需要額外 approval</span>
+  → create_issue
+  → update_status
+  → assign_owner</div>
+    </div>
+  </div>
+
+  <div class="mode-section">
+    <div class="mode-header t5-h"><span style="font-size:20px">🤖</span><h3>Subagent 角色隔離模式</h3><span class="mode-tag">PARALLEL EXECUTION · ROLE ISOLATION</span></div>
+    <div class="mode-body">
+      <table class="gen-table">
+        <tr><th>Subagent</th><th>工具</th><th>用途</th></tr>
+        <tr><td>Test Agent</td><td>Shell + CI MCP</td><td>執行測試、修復失敗案例</td></tr>
+        <tr><td>Security Agent</td><td>SAST + Dependency MCP</td><td>資安掃描與風險分級</td></tr>
+        <tr><td>Research Agent</td><td>Web / Docs MCP</td><td>查官方文件與規格</td></tr>
+        <tr><td>Release Agent</td><td>GitHub + CI/CD + Slack MCP</td><td>發布檢查與通知</td></tr>
+        <tr><td>Data Agent</td><td>SQL read-only MCP</td><td>查詢資料與生成洞察</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="mode-section">
+    <div class="mode-header t3-h"><span style="font-size:20px">🏢</span><h3>企業級 Plugin 化治理架構</h3><span class="mode-tag">ORGANIZATION · MARKETPLACE · VERSION</span></div>
+    <div class="mode-body">
+      <div class="steps">
+        <div class="step t3-step"><div class="step-num">1</div><div class="step-content"><h4>Organization Marketplace</h4><p>Owner 佈建 Approved Plugin 給組織；支援 private GitHub repo 同步或 ZIP 上傳</p></div></div>
+        <div class="step t3-step"><div class="step-num">2</div><div class="step-content"><h4>Plugin = Skills + MCP + Connectors + Subagents + Hooks + Permissions</h4><p>版本化 + Namespace + Changelog；Codex 支援 repo-scoped 或 personal marketplace</p></div></div>
+        <div class="step t3-step"><div class="step-num">3</div><div class="step-content"><h4>User / Team Installs</h4><p>安裝後仍受 approval settings 約束；外部服務受各自認證、隱私政策約束</p></div></div>
+        <div class="step t3-step"><div class="step-num">4</div><div class="step-content"><h4>Audit / Review / Version Update</h4><p>Tool call + User approval + Server response 完整記錄；Plugin 版本更新走 review 流程</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mode-section">
+    <div class="mode-header t4-h"><span style="font-size:20px">💾</span><h3>Prompt Caching 最佳布局</h3><span class="mode-tag">CACHE HIT RATE · COST OPTIMIZATION</span></div>
+    <div class="mode-body">
+      <div class="fact-grid">
+        <div class="fact-label">布局原則</div>
+        <div class="fact-value">Skill 靜態 System Prompt + 封裝的 MCP Tools Schema <strong>固定置頂</strong>；動態變更的 tool_result 與 User Message <strong>強制置底</strong></div>
+        <div class="fact-label">目標指標</div>
+        <div class="fact-value">高頻對話時 Cache Hit Rate 目標 80% 以上（Gemini 報告）；Anthropic 快取讀取 ×0.10（節省 90%）</div>
+        <div class="fact-label">Anthropic 設定</div>
+        <div class="fact-value">需手動標記 <code>cache_control</code> 指定快取範圍</div>
+        <div class="fact-label">OpenAI 設定</div>
+        <div class="fact-value">自動快取（≥1024 tokens），讀取 ×0.50；Codex 推論時自動利用</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- §11 SECURITY -->
+<div class="section" id="security">
+  <div class="section-number">// 11</div>
+  <h2>安全與治理</h2>
+
+  <div class="mode-section">
+    <div class="mode-header t4-h"><span style="font-size:20px">🔒</span><h3>必要風險控管矩陣</h3><span class="mode-tag">PROMPT INJECTION · DATA EXFIL · SUPPLY CHAIN</span></div>
+    <div class="mode-body">
+      <table class="gen-table">
+        <tr><th>風險</th><th>控制措施</th></tr>
+        <tr><td>Prompt Injection</td><td>MCP 回傳內容視為不可信；Skill 中明確要求驗證來源；Host 不應盲信 tool annotation</td></tr>
+        <tr><td>Tool Misuse</td><td>高風險工具加 approval / preview / dry-run；寫入動作支援 rollback / idempotency</td></tr>
+        <tr><td>Data Exfiltration</td><td>Connector / MCP server 限定資料範圍；資料分類（PII / 機密 / 公開）</td></tr>
+        <tr><td>Secret Leakage</td><td>禁止 Skill / Plugin / MCP config 內嵌 secrets；設定 permissions deny（.env / secrets/**）</td></tr>
+        <tr><td>Supply-chain Risk</td><td>Plugin marketplace 審核；版本 pinning；只允許 curated source；稽核腳本與外部依賴</td></tr>
+        <tr><td>Over-permission</td><td>read-only 與 write 分離；MCP server 採最小 OS 權限 + 目錄限制（尤其 local system server）</td></tr>
+        <tr><td>Tool Overlap</td><td>避免同一 Agent 掛載過多功能相近的 MCP Tools；工具描述維持唯一語意邊界</td></tr>
+        <tr><td>Audit Gap</td><td>記錄 tool call / user approval / server response / timestamp；Context Pollution 用 on-demand Skill 防範</td></tr>
+      </table>
+
+      <div style="margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">組織治理建議</div>
+      <table class="gen-table">
+        <tr><th>層級</th><th>建議</th></tr>
+        <tr><td>個人</td><td>可安裝 personal skill，但不得含 secrets 與公司敏感資料</td></tr>
+        <tr><td>Team</td><td>共用 team plugin，經 code review；Skill 版本化</td></tr>
+        <tr><td>Organization</td><td>Owner 佈建 approved skills / plugins；關閉 org-wide sharing 若需審查流程</td></tr>
+        <tr><td>Marketplace</td><td>只允許 curated source；版本 pinning + changelog</td></tr>
+        <tr><td>MCP</td><td>每個 server 有 owner / 資料分類 / 權限模型 / audit log</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- §12 ANTI-PATTERNS -->
+<div class="section" id="antipatterns">
+  <div class="section-number">// 12</div>
+  <h2>常見反模式與校正</h2>
+
+  <table class="anti-table">
+    <thead><tr><th>反模式</th><th>問題</th><th>正確修正</th></tr></thead>
+    <tbody>
+      <tr><td>把所有規則塞進超長 Prompt</td><td>Context 污染、難維護、每次全量載入</td><td>拆成 Skill / Rules / Workflow，按需載入</td></tr>
+      <tr><td>MCP server 同時有讀寫高權限</td><td>誤操作風險高，審批粒度粗</td><td>read / write 分成不同 server 或 permission profile</td></tr>
+      <tr><td>Skill description 太泛</td><td>觸發不穩或誤觸發；影響 Progressive Disclosure 效率</td><td>明確寫觸發時機與不觸發時機；建立 golden tasks 測試</td></tr>
+      <tr><td>Plugin 未版本化</td><td>團隊結果不一致；無法回滾</td><td>semantic version + changelog；Marketplace 版本 pinning</td></tr>
+      <tr><td>Skill 依賴 MCP 只靠自然語言說明</td><td>安裝 / wiring 錯誤；依賴不透明</td><td>在 plugin 或 config 層明確宣告 MCP 依賴</td></tr>
+      <tr><td>Connector 不做資料分類</td><td>敏感資料外洩風險</td><td>設定資料範圍限制 + PII 分類 + audit log</td></tr>
+      <tr><td>Tool result 直接信任</td><td>Prompt Injection 攻擊入口</td><td>對外部 MCP 回傳內容做不可信處理；驗證來源</td></tr>
+      <tr><td>Local MCP 無沙箱限制</td><td>Shell 工具可能被 Prompt Injection 觸發 rm -rf</td><td>Docker 容器化 + 目錄限制 + 最小 OS 權限</td></tr>
+      <tr><td>沒有評測（golden tasks）</td><td>不知道 Skill 是否真的改善工作效率</td><td>5–10 個 golden tasks + 任務成功率指標</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="rule">
+
+<!-- §13 DECISION TREE -->
+<div class="section" id="decision">
+  <div class="section-number">// 13</div>
+  <h2>決策樹：我該用哪一層？</h2>
+</div>
+<div class="decision">
+  <h3>🌿 根據需求情境選擇正確的擴充層</h3>
+  <div class="decision-item"><div class="decision-q">重複使用同一段工作流程 / 審查規則</div><div class="decision-arrow">→</div><div class="decision-a a-t1">建立 Skill（SKILL.md）</div></div>
+  <div class="decision-item"><div class="decision-q">需要讀外部系統資料（GitHub / Jira / 文件庫）</div><div class="decision-arrow">→</div><div class="decision-a a-t2">接 read-only MCP server</div></div>
+  <div class="decision-item"><div class="decision-q">需要執行外部系統操作（建立 PR / 發 Slack）</div><div class="decision-arrow">→</div><div class="decision-a a-t2">接 action MCP，加 approval + dry-run</div></div>
+  <div class="decision-item"><div class="decision-q">要讓 Skill 和 GitHub MCP 一起分享給團隊</div><div class="decision-arrow">→</div><div class="decision-a a-t3">打包成 Plugin（版本化 + manifest）</div></div>
+  <div class="decision-item"><div class="decision-q">要讓 Claude Cowork 連 Gmail / Slack / Drive</div><div class="decision-arrow">→</div><div class="decision-a a-t3">使用 Connector（預建 Remote MCP）</div></div>
+  <div class="decision-item"><div class="decision-q">要阻擋危險操作（rm -rf / 讀 .env）</div><div class="decision-arrow">→</div><div class="decision-a a-t4">設定 Hook + permissions deny list</div></div>
+  <div class="decision-item"><div class="decision-q">要讓測試、資安、文件並行執行</div><div class="decision-arrow">→</div><div class="decision-a a-t5">Subagent + 各自 Skill + 對應 MCP</div></div>
+  <div class="decision-item"><div class="decision-q">需要外部整合 + 最強並行能力</div><div class="decision-arrow">→</div><div class="decision-a a-t2">Claude Code（MCP 最完整）+ Agent Teams（Antigravity，但無 MCP）</div></div>
+  <div class="decision-item"><div class="decision-q">工作流依賴 Figma / Linear / 資料庫</div><div class="decision-arrow">→</div><div class="decision-a a-t2">Claude Code（Antigravity 截至 2026 中期無 MCP）</div></div>
+  <div class="decision-item"><div class="decision-q">想讓 Codex 被 Claude 消費（multi-agent）</div><div class="decision-arrow">→</div><div class="decision-a a-t5">codex --mcp-server（Codex 作為 MCP Server）</div></div>
+  <div class="decision-item"><div class="decision-q">System Prompt 重複傳入成本高</div><div class="decision-arrow">→</div><div class="decision-a a-t4">Prompt Caching：靜態 Skill Prompt 置頂 + cache_control</div></div>
+</div>
+
+<!-- §14 ROADMAP -->
+<div class="section" id="roadmap">
+  <div class="section-number">// 14</div>
+  <h2>導入路線：0–12 週行動計畫</h2>
+  <p class="intro">最小可行導入策略：<strong>一個 PR Review Skill + 一個 GitHub read-only MCP + 一個安全 Hook + 五個 golden tasks</strong>。比一次導入大型 agent 平台更可控，也更容易量測成效。</p>
+
+  <div class="roadmap">
+    <div class="road-card">
+      <div class="road-head t1">// 0–2 週：建立最小標準</div>
+      <div class="road-body"><ul>
+        <li>定義 repo AI 規範：AGENTS.md / CLAUDE.md</li>
+        <li>建立 1 個核心 Skill（pr-review/SKILL.md）</li>
+        <li>接 1 個 read-only MCP（GitHub / docs / Linear）</li>
+        <li>設定 permissions deny（.env / secrets / rm）</li>
+        <li>建立 5–10 個 golden tasks 作為評測基準</li>
+      </ul></div>
+    </div>
+    <div class="road-card">
+      <div class="road-head t2">// 3–6 週：擴充成工作流</div>
+      <div class="road-body"><ul>
+        <li>加入 release / incident / test-repair Skills</li>
+        <li>將 MCP 分成 read / write 分離設計</li>
+        <li>加入 hooks（阻擋危險操作）</li>
+        <li>加入 subagents（測試 / 資安 / 文件並行）</li>
+        <li>打包初版 Plugin（團隊可安裝）</li>
+      </ul></div>
+    </div>
+    <div class="road-card">
+      <div class="road-head t3">// 7–12 週：組織化治理</div>
+      <div class="road-body"><ul>
+        <li>Plugin marketplace（team curated catalog）</li>
+        <li>建立 Plugin / Skill review checklist</li>
+        <li>完整 audit log（tool call + approval + response）</li>
+        <li>評測量化：任務成功率 / 工具誤用率 / 節省時間</li>
+        <li>版本化 + rollout + 團隊訓練</li>
+      </ul></div>
+    </div>
+  </div>
+
+  <div class="tip-box"><span class="tip-icon">🎯</span><p><strong>GPT 報告最終建議：</strong>先建立 AGENTS.md / CLAUDE.md 定義基本規則 → 將重複流程抽成 Skill → 只在需要外部系統時接 MCP 且先採 read-only → Skill 依賴 MCP 寫進 plugin / config 不只靠自然語言 → 團隊共用包成 Plugin 並納入版本 / 審查 / 權限 / audit → 高風險場景用 hooks + approval + read/write 分離 + human-in-the-loop。</p></div>
+
+  <div class="source-row" style="margin-top:20px;">
+    <span class="src-badge src-anthropic">Anthropic Claude Code Docs · Claude Help Center · Skills Beta</span>
+    <span class="src-badge src-openai">OpenAI Codex Skills / Plugins / MCP · AGENTS.md</span>
+    <span class="src-badge src-google">Google Antigravity 2.0 Docs · Agent Teams</span>
+    <span class="src-badge src-mcp">MCP Specification 2025-11-25 · Agentic AI Foundation</span>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <span>AI Agent 擴充機制指南 v1.0 · 2026-05-27 · Claude × Gemini × GPT 三模型整合</span>
+  <a href="https://modelcontextprotocol.io/specification/2025-11-25" target="_blank">modelcontextprotocol.io →</a>
+</div>
+
+</div><!-- /container -->
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+<script>
+(function(){
+  var btn=document.getElementById('backToTop');
+  window.addEventListener('scroll',function(){btn.classList.toggle('visible',window.scrollY>400);},{passive:true});
+  btn.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 時代軟體開發流程設計指南 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;900&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#0f0e0d; --paper:#f5f0e8; --warm-mid:#e8e0d0; --border:#c8bfa8; --muted:#7a7060;
+  --t1-color:#1a3d70; --t1-bg:#e8eff9;   /* Navy  — SOLID / 架構 */
+  --t2-color:#1a7a6e; --t2-bg:#e8f5f3;   /* Teal  — SDLC 流程 */
+  --t3-color:#6b3db8; --t3-bg:#f0eaf9;   /* Purple — 角色分工 */
+  --t4-color:#8c3d1a; --t4-bg:#faf0e8;   /* Amber — Agentic / AI */
+  --t5-color:#1a6b4a; --t5-bg:#e8f5ee;   /* Forest — 品質 / 安全 */
+  --hero-accent:#1a7a6e;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans TC',sans-serif;font-size:15px;line-height:1.75;color:var(--ink);background:var(--paper);}
+
+/* HERO */
+.hero{background:var(--ink);color:var(--paper);padding:56px 48px 48px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-60px;right:-60px;width:300px;height:300px;border:1px solid rgba(245,240,232,.10);border-radius:50%;}
+.hero::after{content:'';position:absolute;bottom:-80px;left:20%;width:220px;height:220px;border:1px solid rgba(245,240,232,.07);border-radius:50%;}
+.hero-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--hero-accent);margin-bottom:16px;}
+.hero h1{font-family:'Noto Serif TC',serif;font-weight:900;font-size:2.4rem;line-height:1.25;margin-bottom:16px;max-width:680px;}
+.hero-sub{font-size:14px;color:rgba(245,240,232,.65);max-width:620px;font-weight:300;line-height:1.7;}
+.hero-badges{display:flex;gap:8px;margin-top:28px;flex-wrap:wrap;}
+.badge{padding:5px 14px;border-radius:2px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.05em;color:#fff;}
+.badge-t1{background:var(--t1-color);} .badge-t2{background:var(--t2-color);}
+.badge-t3{background:var(--t3-color);} .badge-t4{background:var(--t4-color);}
+.badge-t5{background:var(--t5-color);}
+
+/* LAYOUT */
+.container{max-width:820px;margin:0 auto;padding:0 32px;}
+hr.rule{border:none;border-top:1px solid var(--border);margin:40px 0;}
+.section{padding:48px 0 0;}
+.section-number{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.15em;color:var(--muted);margin-bottom:6px;}
+.section h2{font-family:'Noto Serif TC',serif;font-weight:900;font-size:1.7rem;margin-bottom:18px;line-height:1.3;}
+.section > p.intro{font-size:14px;color:var(--muted);margin-bottom:8px;max-width:720px;}
+
+/* TOC */
+.toc{background:var(--warm-mid);border-left:3px solid var(--hero-accent);padding:24px 28px;margin:40px 0 0;}
+.toc-title{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.toc ol{padding-left:20px;font-size:13px;color:var(--muted);line-height:2.2;}
+.toc a{color:inherit;text-decoration:none;} .toc a:hover{color:var(--hero-accent);}
+
+/* OVERVIEW */
+.mode-overview{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--border);overflow:hidden;margin:32px 0;}
+.mode-card{padding:20px 16px;border-right:1px solid var(--border);}
+.mode-card:last-child{border-right:none;}
+.mode-card.t1{background:var(--t1-bg);} .mode-card.t2{background:var(--t2-bg);}
+.mode-card.t3{background:var(--t3-bg);} .mode-card.t4{background:var(--t4-bg);}
+.mode-card.t5{background:var(--t5-bg);}
+.mode-icon{width:34px;height:34px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:10px;}
+.icon-t1{background:var(--t1-color);} .icon-t2{background:var(--t2-color);}
+.icon-t3{background:var(--t3-color);} .icon-t4{background:var(--t4-color);}
+.icon-t5{background:var(--t5-color);}
+.mode-card h3{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;margin-bottom:6px;line-height:1.4;}
+.mode-card.t1 h3{color:var(--t1-color);} .mode-card.t2 h3{color:var(--t2-color);}
+.mode-card.t3 h3{color:var(--t3-color);} .mode-card.t4 h3{color:var(--t4-color);}
+.mode-card.t5 h3{color:var(--t5-color);}
+.mode-card p{font-size:11.5px;color:var(--muted);line-height:1.5;margin:0;}
+
+/* MODULE SECTION */
+.mode-section{border:1px solid var(--border);margin:24px 0;overflow:hidden;}
+.mode-header{padding:16px 22px;display:flex;align-items:center;gap:14px;}
+.mode-header.t1-h{background:var(--t1-color);} .mode-header.t2-h{background:var(--t2-color);}
+.mode-header.t3-h{background:var(--t3-color);} .mode-header.t4-h{background:var(--t4-color);}
+.mode-header.t5-h{background:var(--t5-color);}
+.mode-header h3{font-family:'Noto Serif TC',serif;font-size:1.1rem;font-weight:900;color:#fff;flex:1;}
+.mode-header .mode-tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.15em;color:rgba(255,255,255,.55);margin-left:auto;white-space:nowrap;}
+.mode-body{padding:20px 22px;background:var(--paper);}
+
+/* FACT GRID */
+.fact-grid{display:grid;grid-template-columns:100px 1fr;border:1px solid var(--border);font-size:13px;overflow:hidden;margin:16px 0;}
+.fact-label{background:var(--warm-mid);padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.1em;display:flex;align-items:flex-start;border-bottom:1px solid var(--border);}
+.fact-value{padding:12px 16px;border-bottom:1px solid var(--border);line-height:1.65;}
+.fact-label:last-of-type{border-bottom:none;}
+.fact-value:last-child{border-bottom:none;}
+.fact-grid > div:last-child,.fact-grid > div:nth-last-child(2){border-bottom:none;}
+
+/* STEPS */
+.steps{margin:14px 0;}
+.step{display:flex;gap:14px;margin-bottom:8px;padding:12px 14px;background:var(--warm-mid);border-left:3px solid transparent;}
+.step.t1-step{border-left-color:var(--t1-color);} .step.t2-step{border-left-color:var(--t2-color);}
+.step.t3-step{border-left-color:var(--t3-color);} .step.t4-step{border-left-color:var(--t4-color);}
+.step.t5-step{border-left-color:var(--t5-color);}
+.step-num{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;min-width:24px;line-height:1.5;}
+.step.t1-step .step-num{color:var(--t1-color);} .step.t2-step .step-num{color:var(--t2-color);}
+.step.t3-step .step-num{color:var(--t3-color);} .step.t4-step .step-num{color:var(--t4-color);}
+.step.t5-step .step-num{color:var(--t5-color);}
+.step-content h4{font-size:13px;font-weight:700;margin-bottom:3px;}
+.step-content p{font-size:12.5px;color:var(--muted);margin:0;line-height:1.55;}
+
+/* TIP BOX */
+.tip-box{border:1px solid var(--border);padding:13px 16px;margin:14px 0;display:flex;gap:12px;background:rgba(245,240,232,.6);}
+.tip-icon{font-size:16px;flex-shrink:0;margin-top:2px;}
+.tip-box p{font-size:13px;margin:0;line-height:1.65;}
+
+/* GENERAL TABLE */
+.gen-table{width:100%;border-collapse:collapse;font-size:12.5px;margin:14px 0;}
+.gen-table th{background:var(--warm-mid);padding:8px 12px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;border:1px solid var(--border);}
+.gen-table td{padding:8px 12px;border:1px solid var(--border);vertical-align:top;line-height:1.6;}
+.gen-table td:first-child{font-weight:600;color:var(--muted);white-space:nowrap;}
+
+/* RACI TABLE */
+.raci-table{width:100%;border-collapse:collapse;font-size:12px;margin:14px 0;}
+.raci-table th{background:var(--ink);color:var(--paper);padding:8px 10px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--border);}
+.raci-table th:first-child{text-align:left;}
+.raci-table td{padding:7px 10px;border:1px solid var(--border);vertical-align:top;line-height:1.5;font-size:12px;}
+.raci-table td:first-child{font-size:11.5px;font-weight:600;color:var(--muted);}
+.raci-table td:not(:first-child){text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;}
+.raci-table tr:nth-child(even){background:rgba(232,224,208,.3);}
+.ar{color:var(--t2-color);} .c{color:var(--t3-color);} .i{color:var(--muted);}
+.r{color:var(--t1-color);}
+
+/* SOLID CARDS */
+.solid-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:16px 0;}
+.solid-card{border:1px solid var(--border);overflow:hidden;}
+.solid-head{padding:10px 12px;text-align:center;}
+.solid-head .solid-letter{font-family:'Noto Serif TC',serif;font-size:2rem;font-weight:900;line-height:1;margin-bottom:4px;}
+.solid-head p{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;margin:0;letter-spacing:.05em;}
+.solid-body{padding:10px 12px;background:var(--paper);}
+.solid-body p{font-size:11.5px;color:var(--muted);line-height:1.55;margin:0 0 6px;}
+.solid-body .solid-warn{font-size:11px;font-style:italic;color:var(--t4-color);}
+.s-s .solid-head{background:var(--t1-bg);} .s-s .solid-letter{color:var(--t1-color);}
+.s-o .solid-head{background:var(--t2-bg);} .s-o .solid-letter{color:var(--t2-color);}
+.s-l .solid-head{background:var(--t3-bg);} .s-l .solid-letter{color:var(--t3-color);}
+.s-i .solid-head{background:var(--t4-bg);} .s-i .solid-letter{color:var(--t4-color);}
+.s-d .solid-head{background:var(--t5-bg);} .s-d .solid-letter{color:var(--t5-color);}
+
+/* PHASE FLOW */
+.phase-flow{display:flex;flex-direction:column;gap:0;margin:16px 0;}
+.phase-row{display:flex;gap:0;border:1px solid var(--border);border-bottom:none;}
+.phase-row:last-child{border-bottom:1px solid var(--border);}
+.phase-num{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;padding:12px 14px;min-width:42px;display:flex;align-items:center;justify-content:center;border-right:1px solid var(--border);flex-shrink:0;}
+.phase-row.p1 .phase-num{background:var(--t2-bg);color:var(--t2-color);}
+.phase-row.p2 .phase-num{background:var(--t1-bg);color:var(--t1-color);}
+.phase-row.p3 .phase-num{background:var(--t3-bg);color:var(--t3-color);}
+.phase-row.p4 .phase-num{background:var(--t4-bg);color:var(--t4-color);}
+.phase-row.p5 .phase-num{background:var(--t5-bg);color:var(--t5-color);}
+.phase-main{padding:12px 16px;flex:1;border-right:1px solid var(--border);}
+.phase-main h4{font-size:13px;font-weight:700;margin-bottom:4px;}
+.phase-main p{font-size:12px;color:var(--muted);margin:0;line-height:1.5;}
+.phase-owner{padding:12px 14px;min-width:140px;display:flex;flex-direction:column;gap:4px;justify-content:center;}
+.phase-owner span{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;padding:2px 7px;border-radius:2px;text-align:center;}
+.owner-pd{background:var(--t3-bg);color:var(--t3-color);}
+.owner-rd{background:var(--t1-bg);color:var(--t1-color);}
+.owner-qa{background:var(--t5-bg);color:var(--t5-color);}
+.owner-sre{background:var(--t2-bg);color:var(--t2-color);}
+.owner-sec{background:var(--t4-bg);color:var(--t4-color);}
+
+/* TWO COL */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0;}
+.mini-card{border:1px solid var(--border);padding:14px 16px;}
+.mini-card h4{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+.mini-card ul{list-style:none;padding:0;}
+.mini-card ul li{font-size:12.5px;color:var(--muted);padding:3px 0 3px 14px;position:relative;line-height:1.5;}
+.mini-card ul li::before{content:'→';position:absolute;left:0;}
+
+/* ANTI-PATTERN TABLE */
+.anti-table{width:100%;border-collapse:collapse;font-size:12.5px;margin:14px 0;}
+.anti-table th{background:var(--t4-color);color:#fff;padding:8px 12px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;border:1px solid var(--t4-color);}
+.anti-table td{padding:8px 12px;border:1px solid var(--border);vertical-align:top;line-height:1.6;}
+.anti-table td:first-child{font-weight:600;color:var(--t4-color);white-space:nowrap;}
+.anti-table td:nth-child(2){font-size:12px;color:var(--muted);}
+
+/* ROADMAP */
+.roadmap{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0;}
+.road-card{border:1px solid var(--border);overflow:hidden;}
+.road-head{padding:12px 16px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.08em;}
+.road-head.t1{background:var(--t1-bg);color:var(--t1-color);}
+.road-head.t2{background:var(--t2-bg);color:var(--t2-color);}
+.road-head.t3{background:var(--t3-bg);color:var(--t3-color);}
+.road-body{padding:12px 16px;}
+.road-body ul{list-style:none;padding:0;}
+.road-body ul li{font-size:12px;color:var(--muted);padding:3px 0 3px 14px;position:relative;line-height:1.5;}
+.road-body ul li::before{content:'·';position:absolute;left:0;font-size:16px;line-height:1.2;}
+
+/* PIPELINE */
+.pipeline{display:flex;align-items:center;gap:6px;margin:14px 0;flex-wrap:wrap;}
+.pipe-box{padding:7px 12px;border:1px solid var(--border);border-radius:2px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;background:var(--warm-mid);white-space:nowrap;}
+.pipe-arrow{color:var(--muted);font-size:14px;}
+.pipe-box.t1{background:var(--t1-bg);border-color:var(--t1-color);color:var(--t1-color);}
+.pipe-box.t2{background:var(--t2-bg);border-color:var(--t2-color);color:var(--t2-color);}
+.pipe-box.t3{background:var(--t3-bg);border-color:var(--t3-color);color:var(--t3-color);}
+.pipe-box.t4{background:var(--t4-bg);border-color:var(--t4-color);color:var(--t4-color);}
+.pipe-box.t5{background:var(--t5-bg);border-color:var(--t5-color);color:var(--t5-color);}
+
+/* COMPARE TABLE */
+.compare-table{width:100%;border-collapse:collapse;font-size:12.5px;margin:18px 0;}
+.compare-table th{padding:9px 12px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.15em;font-weight:600;text-transform:uppercase;border-bottom:2px solid var(--ink);}
+.compare-table th:nth-child(1){background:var(--warm-mid);color:var(--muted);}
+.compare-table th:nth-child(2){background:var(--t3-bg);color:var(--t3-color);}
+.compare-table th:nth-child(3){background:var(--t1-bg);color:var(--t1-color);}
+.compare-table th:nth-child(4){background:var(--t5-bg);color:var(--t5-color);}
+.compare-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top;font-size:12.5px;line-height:1.6;}
+.compare-table td:first-child{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);background:var(--warm-mid);white-space:nowrap;}
+.compare-table tr:last-child td{border-bottom:none;}
+
+/* DECISION */
+.decision{background:var(--ink);color:var(--paper);padding:26px 30px;margin:24px 0;}
+.decision h3{font-family:'Noto Serif TC',serif;font-size:1.05rem;margin-bottom:18px;}
+.decision-item{display:flex;gap:12px;margin-bottom:9px;align-items:flex-start;}
+.decision-q{font-size:13px;color:rgba(245,240,232,.72);min-width:250px;padding-top:2px;line-height:1.5;}
+.decision-arrow{color:var(--hero-accent);font-size:14px;padding-top:2px;flex-shrink:0;}
+.decision-a{font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:600;line-height:1.5;}
+.a-t1{color:#7baee8;} .a-t2{color:#6aad8e;} .a-t3{color:#c0a8e8;} .a-t4{color:#e8904a;} .a-t5{color:#6abf8e;}
+
+/* SOURCE ROW */
+.source-row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
+.src-badge{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;padding:3px 10px;border-radius:2px;border:1px solid var(--border);color:var(--muted);}
+.src-iso{border-color:var(--t1-color);color:var(--t1-color);background:var(--t1-bg);}
+.src-google{border-color:var(--t2-color);color:var(--t2-color);background:var(--t2-bg);}
+.src-openai{border-color:var(--t3-color);color:var(--t3-color);background:var(--t3-bg);}
+.src-nist{border-color:var(--t4-color);color:var(--t4-color);background:var(--t4-bg);}
+.src-istqb{border-color:var(--t5-color);color:var(--t5-color);background:var(--t5-bg);}
+
+/* BACK-TO-TOP */
+.back-to-top{position:fixed;bottom:32px;right:32px;width:40px;height:40px;background:var(--ink);color:var(--paper);border:1px solid var(--border);border-radius:2px;font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;line-height:1;cursor:pointer;opacity:0;transform:translateY(8px);transition:opacity .2s ease,transform .2s ease,background .15s ease;z-index:100;}
+.back-to-top.visible{opacity:1;transform:translateY(0);}
+.back-to-top:hover{background:var(--hero-accent);border-color:var(--hero-accent);}
+
+/* FOOTER */
+.footer{margin:56px 0 0;padding:24px 0 32px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+.footer a{color:inherit;text-decoration:none;} .footer a:hover{color:var(--hero-accent);}
+
+/* RESPONSIVE */
+@media(max-width:640px){
+  .hero{padding:36px 20px 32px;} .hero h1{font-size:1.7rem;} .container{padding:0 16px;}
+  .mode-overview{grid-template-columns:repeat(2,1fr);}
+  .mode-card{border-right:none;border-bottom:1px solid var(--border);}
+  .solid-grid{grid-template-columns:repeat(2,1fr);}
+  .two-col,.roadmap{grid-template-columns:1fr;}
+  .raci-table{font-size:10px;} .raci-table td,.raci-table th{padding:5px 6px;}
+  .compare-table{font-size:11px;} .compare-table td,.compare-table th{padding:7px 8px;}
+  .decision-item{flex-direction:column;gap:4px;} .decision-q{min-width:unset;}
+  .phase-owner{display:none;}
+  .back-to-top{bottom:20px;right:20px;}
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-label">// SDLC · SOLID · Role Design · Agentic Dev · 2026-05-27</div>
+  <h1>AI 時代軟體開發<br>流程設計完全指南</h1>
+  <p class="hero-sub">SOLID 架構原則 × PD / RD / QA 角色分工 × Agentic SDLC——系統化建立可量測、可追溯、可改善的工業級開發生命週期。整合 Claude × Gemini × GPT 三模型分析，以 ISO / Google / OpenAI / NIST 官方文件為基準。</p>
+  <div class="hero-badges">
+    <span class="badge badge-t1">SOLID 原則</span>
+    <span class="badge badge-t2">SDLC 7 階段</span>
+    <span class="badge badge-t3">PD / RD / QA 分工</span>
+    <span class="badge badge-t4">Agentic / AI 工具</span>
+    <span class="badge badge-t5">品質 / 安全 / 量測</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- TOC -->
+<div class="toc">
+  <div class="toc-title">// 目錄</div>
+  <ol>
+    <li><a href="#overview">五大主題一眼看懂</a></li>
+    <li><a href="#solid">SOLID 五大原則深解</a></li>
+    <li><a href="#sdlc">現代 SDLC 七階段流程</a></li>
+    <li><a href="#roles">PD / RD / QA 角色分工與 RACI</a></li>
+    <li><a href="#quality">品質工程：Code Review、測試分層、Definition of Done</a></li>
+    <li><a href="#security">安全內嵌 SDLC</a></li>
+    <li><a href="#agentic">Agentic SDLC：AI 重塑開發流程</a></li>
+    <li><a href="#metrics">交付量測：DORA + SLO + 品質指標</a></li>
+    <li><a href="#antipatterns">常見反模式與校正</a></li>
+    <li><a href="#decision">決策樹：你的團隊現在缺什麼？</a></li>
+    <li><a href="#roadmap">導入路線：0–90 天行動計畫</a></li>
+  </ol>
+</div>
+
+<!-- §01 OVERVIEW -->
+<div class="section" id="overview">
+  <div class="section-number">// 01</div>
+  <h2>五大主題一眼看懂</h2>
+  <p class="intro">業界成熟的軟體開發流程不應只用「需求 → 開發 → 測試 → 上線」描述，而應設計成一個可量測、可追溯、可改善的生命週期系統。</p>
+  <div class="mode-overview">
+    <div class="mode-card t1"><div class="mode-icon icon-t1">🏗</div><h3>SOLID<br>架構原則</h3><p>可維護、可擴展程式碼的設計基礎</p></div>
+    <div class="mode-card t2"><div class="mode-icon icon-t2">🔄</div><h3>SDLC<br>7 階段流程</h3><p>從探索到維護的完整生命週期</p></div>
+    <div class="mode-card t3"><div class="mode-icon icon-t3">👥</div><h3>PD / RD / QA<br>角色分工</h3><p>RACI 邊界與跨職能協作</p></div>
+    <div class="mode-card t4"><div class="mode-icon icon-t4">🤖</div><h3>Agentic<br>SDLC</h3><p>AI Agent 融入開發全流程</p></div>
+    <div class="mode-card t5"><div class="mode-icon icon-t5">✅</div><h3>品質 / 安全<br>量測</h3><p>DoD、DORA、SLO、安全門檻</p></div>
+  </div>
+  <div class="source-row">
+    <span class="src-badge src-iso">ISO/IEC/IEEE 12207:2026</span>
+    <span class="src-badge src-google">Google Engineering Practices</span>
+    <span class="src-badge src-openai">OpenAI Codex / AGENTS.md</span>
+    <span class="src-badge src-nist">NIST SSDF SP 800-218</span>
+    <span class="src-badge src-istqb">ISTQB CTFL v4.0</span>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- §02 SOLID -->
+<div class="section" id="solid">
+  <div class="section-number">// 02</div>
+  <h2>SOLID 五大原則深解</h2>
+  <p class="intro">Robert C. Martin（Uncle Bob）提出的五項物件導向設計原則，目標是防止程式碼產生 rigid（難以修改）、fragile（一動就壞）、non-reusable（無法複用）三大症狀。</p>
+
+  <div class="solid-grid">
+    <div class="solid-card s-s">
+      <div class="solid-head"><div class="solid-letter">S</div><p>Single Responsibility</p></div>
+      <div class="solid-body">
+        <p><strong>一個 class / module 只有一個改變理由。</strong>禁止建立承載過多業務邏輯的「God Class」。</p>
+        <p>訂單處理應將「價格計算」「資料庫持久化」「發送通知」拆分為各自獨立的類別。</p>
+        <p class="solid-warn">違反症狀：修改 A 功能導致 B 壞掉</p>
+      </div>
+    </div>
+    <div class="solid-card s-o">
+      <div class="solid-head"><div class="solid-letter">O</div><p>Open / Closed</p></div>
+      <div class="solid-body">
+        <p><strong>對擴充開放，對修改關閉。</strong>新增功能透過增加新程式碼，而非修改已通過測試的既有邏輯。</p>
+        <p>依賴多型（Polymorphism）與介面（Interface）架構設計達成。</p>
+        <p class="solid-warn">違反症狀：新需求必須改動既有邏輯</p>
+      </div>
+    </div>
+    <div class="solid-card s-l">
+      <div class="solid-head"><div class="solid-letter">L</div><p>Liskov Substitution</p></div>
+      <div class="solid-body">
+        <p><strong>子類別可完全替換父類別。</strong>禁止修改父類別既有的不變行為或拋出未預期 Exceptions。</p>
+        <p>確保繼承體系在語意上完全相容。</p>
+        <p class="solid-warn">違反症狀：繼承後行為不可預測</p>
+      </div>
+    </div>
+    <div class="solid-card s-i">
+      <div class="solid-head"><div class="solid-letter">I</div><p>Interface Segregation</p></div>
+      <div class="solid-body">
+        <p><strong>客戶端不應依賴不需要的方法。</strong>將臃腫的通用介面拆分為多個職責單一的微型介面。</p>
+        <p>將 <code>MultiFunctionPrinter</code> 拆為 <code>Printer</code>、<code>Scanner</code>、<code>Fax</code>。</p>
+        <p class="solid-warn">違反症狀：Fat interface，大量空實作</p>
+      </div>
+    </div>
+    <div class="solid-card s-d">
+      <div class="solid-head"><div class="solid-letter">D</div><p>Dependency Inversion</p></div>
+      <div class="solid-body">
+        <p><strong>依賴抽象，不依賴具體實作。</strong>高層模組不應直接 new 低層具體實現，透過抽象介面 + IoC / DI 管理依賴。</p>
+        <p>落地方式：優先使用 Dependency Injection 容器。</p>
+        <p class="solid-warn">違反症狀：難以替換 DB / third-party</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="mode-section">
+    <div class="mode-header t1-h"><span style="font-size:20px">🔍</span><h3>SOLID 在 Code Review 的落地方式</h3><span class="mode-tag">PR CHECKLIST · REFACTOR</span></div>
+    <div class="mode-body">
+      <table class="gen-table">
+        <tr><th>原則</th><th>Code Review 檢查問題</th><th>重構觸發條件</th></tr>
+        <tr><td>SRP</td><td>這個 class / module 是否只有一個改變理由？</td><td>修改一處邏輯連帶影響多個不相關功能</td></tr>
+        <tr><td>OCP</td><td>新增行為時能否透過擴充而非修改核心邏輯？</td><td>每次新增功能都需修改多處現有程式碼</td></tr>
+        <tr><td>LSP</td><td>子類型是否能安全替代父類型而不破壞行為？</td><td>繼承後出現 <code>if instanceof</code> 判斷</td></tr>
+        <tr><td>ISP</td><td>呼叫方是否被迫依賴不需要的方法？</td><td>介面中出現大量空實作（throw not implemented）</td></tr>
+        <tr><td>DIP</td><td>高層政策是否依賴抽象，而非直接依賴低層實作？</td><td>高層模組直接 new 具體資料庫 / 服務</td></tr>
+      </table>
+      <div class="tip-box"><span class="tip-icon">⚠️</span><p><strong>避免過度抽象（Premature Abstraction）：</strong>先解決業務問題，再 refactor 對齊 SOLID 原則。不要為了套 SOLID 而過度抽象；以可讀性、測試性、變更頻率為判斷依據。SOLID 是目標，不是教條。</p></div>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- §03 SDLC -->
+<div class="section" id="sdlc">
+  <div class="section-number">// 03</div>
+  <h2>現代 SDLC 七階段流程</h2>
+  <p class="intro">ISO/IEC/IEEE 12207:2026 將軟體生命週期涵蓋 conception → development → operations → support → retirement，並明確可套用於 Agile，但不強制指定單一開發模型。每個階段需定義責任人、輸入、輸出、品質門檻。</p>
+
+  <div class="phase-flow">
+    <div class="phase-row p1">
+      <div class="phase-num">01</div>
+      <div class="phase-main"><h4>需求探索與策略對齊（Discovery & Strategic Alignment）</h4><p>分析市場與用戶痛點，界定核心商務目標，定義 MVP 範疇。輸出：Problem Statement、Target User、Success Metrics、Scope/Non-scope、Prototype / Flow。可用 Google Design Sprint + HEART Framework</p></div>
+      <div class="phase-owner"><span class="owner-pd">PD / PM 主導</span><span class="owner-rd">RD 諮詢</span><span class="owner-qa">QA 諮詢</span></div>
+    </div>
+    <div class="phase-row p2">
+      <div class="phase-num">02</div>
+      <div class="phase-main"><h4>架構設計與安全建模（Architecture & Design）</h4><p>技術選型、Schema Design、Threat Modeling（Secure by Design）。輸出：ADR、API Contract、Data Model、Sequence Diagram、Threat Model、Test Strategy</p></div>
+      <div class="phase-owner"><span class="owner-rd">RD 主導</span><span class="owner-sec">Security 參與</span><span class="owner-qa">QA 諮詢</span></div>
+    </div>
+    <div class="phase-row p3">
+      <div class="phase-num">03</div>
+      <div class="phase-main"><h4>產品與衝刺規劃（Product & Sprint Planning）</h4><p>將需求拆解為 User Stories 與 Backlog，排定迭代時程。共同定義 Definition of Ready 與 Definition of Done。ISO/IEC/IEEE 29148:2018 規範需求工程流程</p></div>
+      <div class="phase-owner"><span class="owner-pd">PD / PM 主導</span><span class="owner-rd">RD 協作</span><span class="owner-qa">QA 協作</span></div>
+    </div>
+    <div class="phase-row p4">
+      <div class="phase-num">04</div>
+      <div class="phase-main"><h4>開發與實現（Development & Implementation）</h4><p>功能實作、API 定義、單元測試、Code Review。2026 普遍引入 AI Pair Programming。PR 必須通過 lint / type-check / unit test 才可 merge</p></div>
+      <div class="phase-owner"><span class="owner-rd">RD 主導</span><span class="owner-qa">QA 協同</span></div>
+    </div>
+    <div class="phase-row p5">
+      <div class="phase-num">05</div>
+      <div class="phase-main"><h4>持續測試與合規審查（Testing & Compliance）</h4><p>多層級自動化測試、Regression 防護、資料隱私合規掃描。ISTQB CTFL v4.0：測試活動可迭代並行，不應簡化為「最後測一下」</p></div>
+      <div class="phase-owner"><span class="owner-qa">QA 主導</span><span class="owner-rd">RD 協同</span><span class="owner-sec">Security</span></div>
+    </div>
+    <div class="phase-row p1">
+      <div class="phase-num">06</div>
+      <div class="phase-main"><h4>部署與可觀測性（Deployment & Observability）</h4><p>CI/CD Pipeline 自動化上線，部署生產環境 Telemetry 監控（log / metric / trace / alert）。SRE / DevOps 準備 rollback plan、feature flag、SLO 告警</p></div>
+      <div class="phase-owner"><span class="owner-sre">SRE / DevOps 主導</span><span class="owner-rd">RD 協同</span></div>
+    </div>
+    <div class="phase-row p2">
+      <div class="phase-num">07</div>
+      <div class="phase-main"><h4>長期維護與優化（Maintenance & Optimization）</h4><p>基於生產數據效能調優、Refactoring、弱點修補。Post-release review → 指標回饋 → 下輪探索。Incident Response + Postmortem</p></div>
+      <div class="phase-owner"><span class="owner-sre">SRE 主導</span><span class="owner-rd">RD</span><span class="owner-pd">PD 知會</span></div>
+    </div>
+  </div>
+
+  <div class="tip-box"><span class="tip-icon">💡</span><p><strong>每個 Feature 的標準流程（GPT 報告 §11）：</strong>PD 定義問題 → PD+RD+QA 釐清需求 → RD 技術設計 → QA 設計測試策略 → RD 實作 + PR → Code Review 通過 → QA 驗收 → SRE 準備發布 → Feature flag 小流量 → 觀察指標 + Post-release review</p></div>
+</div>
+
+<hr class="rule">
+
+<!-- §04 ROLES -->
+<div class="section" id="roles">
+  <div class="section-number">// 04</div>
+  <h2>PD / RD / QA 角色分工與 RACI</h2>
+  <p class="intro">專業分工（Segregation of Duties）與共享責任（Shared Responsibility）的動態平衡是成功關鍵。每個角色有核心職責，也有「不應承擔的錯誤責任」。</p>
+
+  <div class="mode-section">
+    <div class="mode-header t3-h"><span style="font-size:20px">👥</span><h3>核心職責與交付物矩陣</h3><span class="mode-tag">PD · RD · QA · SRE · SECURITY</span></div>
+    <div class="mode-body">
+      <table class="gen-table">
+        <tr><th>角色</th><th>核心職責</th><th>核心交付物</th><th>不應承擔</th></tr>
+        <tr><td>PD / PM / PO</td><td>定義問題、使用者價值、目標指標、需求優先級、驗收條件</td><td>PRD、User Story Map、Wireframe、Success Metrics</td><td>指定低階技術實作細節</td></tr>
+        <tr><td>UX / Design</td><td>使用者流程、互動設計、可用性驗證、設計規格</td><td>Prototype、Flow Chart、Design Spec</td><td>只在開發後補 UI</td></tr>
+        <tr><td>RD</td><td>架構設計、技術拆解、實作、單元測試、可維護性、效能與可觀測性</td><td>Source Code、ADR、API Spec、Unit Tests</td><td>需求不清時盲目開發；繞過 QA gate</td></tr>
+        <tr><td>QA</td><td>測試策略、風險分析、測試設計、自動化測試、驗收把關、缺陷分析</td><td>Test Plan、Automation Scripts、Bug Report、Quality Dashboard</td><td>只做開發後手動點擊測試；替 RD debug</td></tr>
+        <tr><td>SRE / DevOps</td><td>CI/CD、部署、監控、SLO、Incident Response</td><td>Pipeline、Runbook、SLO Dashboard</td><td>成為所有線上問題的唯一責任人</td></tr>
+        <tr><td>Security</td><td>威脅建模、資安需求、供應鏈安全、弱點管理</td><td>Threat Model、Security Test Cases、SBOM</td><td>只在上線前掃描一次</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="mode-section">
+    <div class="mode-header t3-h"><span style="font-size:20px">📊</span><h3>RACI 分工矩陣</h3><span class="mode-tag">R=執行 · A=最終負責 · C=諮詢 · I=知會</span></div>
+    <div class="mode-body">
+      <table class="raci-table">
+        <thead><tr><th>工作項目</th><th>PD / PM</th><th>RD</th><th>QA</th><th>SRE</th><th>Security</th></tr></thead>
+        <tbody>
+          <tr><td>產品目標與成功指標</td><td class="ar">A/R</td><td class="c">C</td><td class="c">C</td><td class="i">I</td><td class="i">I</td></tr>
+          <tr><td>使用者研究與需求探索</td><td class="ar">A/R</td><td class="c">C</td><td class="c">C</td><td class="i">I</td><td class="i">I</td></tr>
+          <tr><td>PRD / User Story</td><td class="ar">A/R</td><td class="c">C</td><td class="c">C</td><td class="i">I</td><td class="c">C</td></tr>
+          <tr><td>驗收條件</td><td class="ar">A/R</td><td class="c">C</td><td class="ar">C/R</td><td class="i">I</td><td class="c">C</td></tr>
+          <tr><td>技術架構</td><td class="c">C</td><td class="ar">A/R</td><td class="c">C</td><td class="c">C</td><td class="c">C</td></tr>
+          <tr><td>測試策略</td><td class="c">C</td><td class="c">C</td><td class="ar">A/R</td><td class="c">C</td><td class="c">C</td></tr>
+          <tr><td>實作與單元測試</td><td class="i">I</td><td class="ar">A/R</td><td class="c">C</td><td class="i">I</td><td class="c">C</td></tr>
+          <tr><td>Code Review</td><td class="i">I</td><td class="ar">A/R</td><td class="c">C</td><td class="i">I</td><td class="c">C</td></tr>
+          <tr><td>CI/CD Pipeline</td><td class="i">I</td><td class="c">C</td><td class="c">C</td><td class="ar">A/R</td><td class="c">C</td></tr>
+          <tr><td>Release Go/No-Go</td><td class="ar">A</td><td class="r">R</td><td class="r">R</td><td class="r">R</td><td class="c">C</td></tr>
+          <tr><td>Incident 事故處理</td><td class="i">I</td><td class="r">R</td><td class="c">C</td><td class="ar">A/R</td><td class="c">C</td></tr>
+          <tr><td>Postmortem 事後檢討</td><td class="c">C</td><td class="r">R</td><td class="c">C</td><td class="ar">A/R</td><td class="c">C</td></tr>
+        </tbody>
+      </table>
+      <div class="tip-box"><span class="tip-icon">🎯</span><p><strong>Shift-Left Testing（左移測試）：</strong>QA 需在 PD 釋出 PRD 初稿階段即介入審查，從測試視角找出邏輯漏洞。採用 Shift-Left 的團隊非計劃性工作減少 22%，可將 49% 時間用於新功能開發（vs 傳統團隊 38%）。</p></div>
+    </div>
+  </div>
+
+  <div class="mode-section">
+    <div class="mode-header t3-h"><span style="font-size:20px">📋</span><h3>Scrum 角色映射 × 需求品質門檻</h3><span class="mode-tag">DEFINITION OF READY · DONE</span></div>
+    <div class="mode-body">
+      <div class="two-col">
+        <div class="mini-card">
+          <h4>Definition of Ready（可開始的條件）</h4>
+          <ul>
+            <li>問題已定義（清楚說明為何要做）</li>
+            <li>使用者與情境明確（服務誰、哪個場景）</li>
+            <li>驗收條件明確（QA 可設計測試）</li>
+            <li>依賴已識別（API / 設計 / 法務 / 安全）</li>
+            <li>風險已標註（技術 / 品質 / 安全 / 時程）</li>
+            <li>可在一個迭代完成或可拆分</li>
+          </ul>
+        </div>
+        <div class="mini-card">
+          <h4>Definition of Done（完成的標準）</h4>
+          <ul>
+            <li>功能符合驗收條件（PD / QA 可驗收）</li>
+            <li>自動化測試通過（unit / integration / e2e）</li>
+            <li>Code Review 通過（設計 / 複雜度 / 測試 / 文件）</li>
+            <li>文件更新（API / Runbook / ADR）</li>
+            <li>安全檢查通過（secrets / dependency / 權限）</li>
+            <li>可觀測性完成（log / metric / trace / alert）</li>
+            <li>可 rollback（回滾策略或 feature flag）</li>
+          </ul>
+        </div>
+      </div>
+      <div style="margin-top:12px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">需求格式（ISO/IEC/IEEE 29148 × ISTQB）</div>
+      <table class="gen-table">
+        <tr><th>需求品質</th><th>合格標準</th></tr>
+        <tr><td>明確性</td><td>RD 與 QA 能用同一理解拆任務與測試</td></tr>
+        <tr><td>可驗收</td><td>有可觀察結果（Given / When / Then 格式）</td></tr>
+        <tr><td>可測試</td><td>QA 能設計測試條件與邊界案例</td></tr>
+        <tr><td>可追溯</td><td>可回連產品目標、設計稿、測試案例、發布紀錄</td></tr>
+        <tr><td>有邊界</td><td>明確列出 non-scope 與例外情境</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- §05 QUALITY -->
+<div class="section" id="quality">
+  <div class="section-number">// 05</div>
+  <h2>品質工程：Code Review、測試分層、DoD</h2>
+  <p class="intro">Google Engineering Practices 定義 Code Review 目的是維持程式碼與產品品質；ISTQB 強調測試流程可依情境調整，且應前移到需求與設計階段。</p>
+
+  <div class="mode-section">
+    <div class="mode-header t5-h"><span style="font-size:20px">🔬</span><h3>測試分層策略</h3><span class="mode-tag">TESTING PYRAMID · SHIFT-LEFT</span></div>
+    <div class="mode-body">
+      <table class="gen-table">
+        <tr><th>層級</th><th>責任主體</th><th>目的</th><th>工具示例</th></tr>
+        <tr><td>Unit Test 單元測試</td><td>RD 主導</td><td>驗證函式、class、module 行為</td><td>Jest / pytest / JUnit</td></tr>
+        <tr><td>Integration Test 整合測試</td><td>RD + QA</td><td>驗證服務、DB、外部 API 整合</td><td>Testcontainers / Supertest</td></tr>
+        <tr><td>Contract Test 契約測試</td><td>RD</td><td>驗證服務間介面相容性</td><td>Pact / Spring Cloud Contract</td></tr>
+        <tr><td>E2E Test 端對端測試</td><td>QA + RD</td><td>驗證核心使用者流程</td><td>Playwright / Cypress</td></tr>
+        <tr><td>Exploratory Test 探索式測試</td><td>QA</td><td>找出規格外風險與體驗問題</td><td>手動 + Session-Based</td></tr>
+        <tr><td>Performance Test 效能測試</td><td>QA + SRE</td><td>驗證延遲、吞吐、資源使用</td><td>k6 / Locust / JMeter</td></tr>
+        <tr><td>Security Test 安全測試</td><td>Security + RD</td><td>驗證弱點、權限、資料保護</td><td>OWASP ZAP / Burp Suite</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="mode-section">
+    <div class="mode-header t5-h"><span style="font-size:20px">🚪</span><h3>PR 品質門檻 × Code Review 準則</h3><span class="mode-tag">QUALITY GATES · GOOGLE ENG PRACTICES</span></div>
+    <div class="mode-body">
+      <table class="gen-table">
+        <tr><th>Gate</th><th>必要條件</th></tr>
+        <tr><td>PR 前</td><td>需求明確、任務可驗收、影響範圍清楚；有 Definition of Ready 確認</td></tr>
+        <tr><td>PR 內容</td><td>小批量（單一目的）、附測試、附說明；AI 生成程式碼與人寫同等對待</td></tr>
+        <tr><td>Code Review</td><td>至少一位熟悉模組的人審查；檢查 design / functionality / complexity / tests / naming（Google 準則）</td></tr>
+        <tr><td>自動檢查</td><td>lint / type-check / unit test / security scan 通過；Coverage 達標；未通過自動封鎖 merge</td></tr>
+        <tr><td>QA 驗收</td><td>關鍵路徑與風險場景通過；探索式測試執行</td></tr>
+        <tr><td>發布前</td><td>rollback plan / feature flag / 監控指標 / 告警設定完成；SBOM + 簽章</td></tr>
+      </table>
+      <div class="tip-box"><span class="tip-icon">💡</span><p><strong>品質指標不只是覆蓋率：</strong>測試覆蓋率被當作唯一指標會被遊戲化。應搭配 Escaped Defects（逃逸缺陷率）、Defect Reopen Rate（缺陷重開率）、Flaky Test Rate（不穩定測試率）綜合評估品質。</p></div>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- §06 SECURITY -->
+<div class="section" id="security">
+  <div class="section-number">// 06</div>
+  <h2>安全內嵌 SDLC（Security by Design）</h2>
+  <p class="intro">NIST SSDF SP 800-218 建議將安全軟體開發實務整合進任何 SDLC；OWASP SAMM 提供安全成熟度模型。安全不是上線前補掃描，而是每個階段都有控制點。</p>
+
+  <div class="mode-section">
+    <div class="mode-header t4-h"><span style="font-size:20px">🔒</span><h3>每階段最低安全門檻</h3><span class="mode-tag">NIST SSDF · OWASP SAMM · SECURE BY DESIGN</span></div>
+    <div class="mode-body">
+      <table class="gen-table">
+        <tr><th>SDLC 階段</th><th>安全控制</th></tr>
+        <tr><td>需求</td><td>資料分類（PII / 機密 / 公開）、權限模型設計、合規需求確認（GDPR / 個資法）</td></tr>
+        <tr><td>設計</td><td>Threat Modeling（威脅建模）：識別攻擊面、攻擊者、威脅行為；設計防禦措施</td></tr>
+        <tr><td>開發</td><td>Secret scanning（禁止硬編碼 API key）、SAST 靜態分析、dependency scanning（供應鏈安全）</td></tr>
+        <tr><td>測試</td><td>AuthZ / AuthN 驗證測試、輸入驗證測試、OWASP Top 10 測試案例</td></tr>
+        <tr><td>發布</td><td>SBOM（軟體物料清單）、Artifact 簽章、部署審批、Artifact Registry 存取控制</td></tr>
+        <tr><td>營運</td><td>弱點修補 SLA（高危 &lt;7 天）、Incident Response 計畫、Audit Log、定期滲透測試</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- §07 AGENTIC -->
+<div class="section" id="agentic">
+  <div class="section-number">// 07</div>
+  <h2>Agentic SDLC：AI 重塑開發流程</h2>
+  <p class="intro">2025–2026 年關鍵轉變：從工具導向的 Copilot 轉向工作流整合的 Agent。Spec-Driven Development（SDD）將規格書作為 SDLC 的一等公民（first-class citizen）。</p>
+
+  <div class="mode-section">
+    <div class="mode-header t4-h"><span style="font-size:20px">🤖</span><h3>AI 增強的 SDLC 各階段</h3><span class="mode-tag">SPEC-DRIVEN · MULTI-AGENT · HUMAN REVIEW</span></div>
+    <div class="mode-body">
+      <div class="fact-grid">
+        <div class="fact-label">需求 / 設計</div>
+        <div class="fact-value">AI 輔助 PRD 生成、User Story 拆解、需求一致性審查；Spec Kit（GitHub 2025）以 specification 為中心驅動實作與 checklist</div>
+        <div class="fact-label">開發</div>
+        <div class="fact-value">AI Pair Programming 加速常規程式碼生成；Codex CLI / Claude Code 讀檔、執行命令、修改程式；AI 生成程式碼必須通過同等 Code Review 門檻</div>
+        <div class="fact-label">Code Review</div>
+        <div class="fact-value">AI 輔助 Code Review 品質提升率從 55% 提高到 81%（Qodo 2025）；Atlassian RovoDev 2026：38.7% 的 AI agent 評論導致實質 code 修正</div>
+        <div class="fact-label">測試</div>
+        <div class="fact-value">AI 生成測試案例、自動化測試腳本；批次 agent 執行安全掃描、提升測試覆蓋率；QA agent 擔任虛擬 QA 角色</div>
+        <div class="fact-label">部署 / 維護</div>
+        <div class="fact-value">Release Manager agent 自動化發布流程；監控 agent 分析異常並觸發告警；AI 分析 postmortem 提出改善建議</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mode-section">
+    <div class="mode-header t4-h"><span style="font-size:20px">📝</span><h3>AI 工具納入流程的規則（必要控制）</h3><span class="mode-tag">AGENTS.md · CLAUDE.md · GOVERNANCE</span></div>
+    <div class="mode-body">
+      <table class="gen-table">
+        <tr><th>規則</th><th>說明</th></tr>
+        <tr><td>AI 產出不得繞過 Code Review</td><td>AI-generated code 與人寫程式碼同等審查；不因「AI 寫的」而降低標準</td></tr>
+        <tr><td>Repo 必須有 AI instructions</td><td><code>AGENTS.md</code>（Codex）/ <code>CLAUDE.md</code>（Claude Code）或等效文件；定義工作協議、禁止操作、測試指令</td></tr>
+        <tr><td>必須明確列測試指令</td><td>讓 coding agent 知道如何驗證變更（Build / Test / Lint 指令）</td></tr>
+        <tr><td>禁止讀取敏感資料</td><td><code>.env</code>、金鑰、客戶資料需 permissions allow/deny 控管；不靠自然語言「提醒」</td></tr>
+        <tr><td>AI 修改需小批量</td><td>降低 review 與 rollback 成本；避免 AI 一次大範圍改動難以審查</td></tr>
+        <tr><td>AI 只能輔助決策</td><td>架構選型、風險判斷、Release Go/No-Go 仍由人負責；critical script 建議三模型 audit</td></tr>
+      </table>
+      <div class="tip-box"><span class="tip-icon">⚠️</span><p><strong>過度依賴 AI 的風險：</strong>RD 直接接受 AI 建議而不理解底層邏輯，處理複雜新問題的能力會下降。研究顯示在需要創新解法的場景中，過度依賴 AI 會抑制創造力。AI 是增強工具，不是替代思考的機器。</p></div>
+    </div>
+  </div>
+
+  <div class="mode-section">
+    <div class="mode-header t4-h"><span style="font-size:20px">🏗</span><h3>三層設計模型（Claude 報告）</h3><span class="mode-tag">PRINCIPLE · PROCESS · AGENTIC</span></div>
+    <div class="mode-body">
+      <div class="steps">
+        <div class="step t1-step"><div class="step-num">L1</div><div class="step-content"><h4>原則層 — SOLID + DRY + YAGNI</h4><p>程式碼設計哲學，驅動架構決策。這一層決定程式碼的長期可維護性。</p></div></div>
+        <div class="step t2-step"><div class="step-num">L2</div><div class="step-content"><h4>流程層 — PD 定義 → PM 排序 → RD 實作 → QA 驗收</h4><p>Agile Sprint 迭代 + CI/CD 自動化。這一層決定交付速度與品質的可預測性。</p></div></div>
+        <div class="step t4-step"><div class="step-num">L3</div><div class="step-content"><h4>Agentic 層 — Spec-Driven Dev → Multi-Agent 協作 → Human Review</h4><p>AI 生成 + 人類 audit；不單模型 ship critical work。這一層決定 AI 時代的生產力槓桿。</p></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- §08 METRICS -->
+<div class="section" id="metrics">
+  <div class="section-number">// 08</div>
+  <h2>交付量測：DORA + SLO + 品質指標</h2>
+  <p class="intro">DORA（DevOps Research and Assessment）歸納五個核心軟體交付績效指標；Google SRE 以 Error Budget 平衡可靠性與創新速度。指標應用於服務層級的持續改善，不應跨不同上下文硬比較。</p>
+
+  <div class="mode-section">
+    <div class="mode-header t5-h"><span style="font-size:20px">📈</span><h3>指標體系總覽</h3><span class="mode-tag">DORA · SLO · PRODUCT · QUALITY</span></div>
+    <div class="mode-body">
+      <table class="gen-table">
+        <tr><th>類別</th><th>指標</th><th>目的</th></tr>
+        <tr><td>DORA 交付</td><td>Change Lead Time（變更前置時間）/ Deployment Frequency / Failed Deployment Recovery Time / Change Fail Rate / Deployment Rework Rate</td><td>衡量軟體交付效能，識別瓶頸</td></tr>
+        <tr><td>產品</td><td>Adoption / Retention / Task Success / 轉換率（Google HEART Framework）</td><td>衡量產品對用戶的實際價值</td></tr>
+        <tr><td>穩定</td><td>SLO 達成率 / Error Budget 消耗速率 / MTTR（平均恢復時間）</td><td>平衡可靠性與功能交付速度</td></tr>
+        <tr><td>品質</td><td>Escaped Defects / Defect Reopen Rate / Flaky Test Rate / Code Coverage（輔助）</td><td>評估品質工程成效</td></tr>
+        <tr><td>安全</td><td>高風險弱點修補時間 / 依賴風險數 / Secret Leakage 次數</td><td>追蹤安全改善進度</td></tr>
+        <tr><td>團隊</td><td>Review Time / WIP / Blocked Time / Retro Action 完成率</td><td>識別協作與流程瓶頸</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- §09 ANTI-PATTERNS -->
+<div class="section" id="antipatterns">
+  <div class="section-number">// 09</div>
+  <h2>常見反模式與校正</h2>
+  <p class="intro">整合三模型報告中共同指出的高頻反模式，是教學重點也是流程防雷點。</p>
+
+  <table class="anti-table">
+    <thead><tr><th>反模式</th><th>後果</th><th>正確修正</th></tr></thead>
+    <tbody>
+      <tr><td>PD 丟一句需求給 RD</td><td>反覆返工，需求失真</td><td>需求需有驗收條件（Given/When/Then）、成功指標、non-scope</td></tr>
+      <tr><td>QA 最後才加入</td><td>缺陷晚期爆發，修復成本 10x</td><td>QA 參與需求與設計（PRD 初稿階段即介入）</td></tr>
+      <tr><td>RD 只追求實作完成</td><td>可維護性下降，技術債累積</td><td>Code Review 加入設計（SOLID 檢查）與測試檢查</td></tr>
+      <tr><td>每次改動過大</td><td>Review 困難、回歸風險高</td><td>小批量 PR；AI 任務也要小範圍、可驗證</td></tr>
+      <tr><td>覆蓋率被當唯一品質指標</td><td>指標被遊戲化，品質假象</td><td>搭配 Escaped Defects、Defect Reopen Rate、Flaky Test Rate</td></tr>
+      <tr><td>沒有 SLO 與 rollback</td><td>上線不可控，風險不透明</td><td>發布前定義 SLO、feature flag、監控告警、回滾策略</td></tr>
+      <tr><td>AI 工具直接改大範圍程式</td><td>難審查、難追責、難 rollback</td><td>AI 任務必須小範圍、可驗證；與人寫程式碼同等 Code Review</td></tr>
+      <tr><td>安全只在上線前掃描</td><td>修復成本高，系統性漏洞難修</td><td>Threat Modeling 在設計階段；SAST + secret scan 在開發階段</td></tr>
+      <tr><td>Context 越長越好（AI）</td><td>效能下降、成本高、中段資訊遺忘</td><td>良好上下文管理；用 AGENTS.md 定義工作協議</td></tr>
+      <tr><td>過度套用 SOLID</td><td>過度抽象，可讀性反而下降</td><td>先解決業務問題，以可讀性 / 測試性 / 變更頻率為判斷依據</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="rule">
+
+<!-- §10 DECISION -->
+<div class="section" id="decision">
+  <div class="section-number">// 10</div>
+  <h2>決策樹：你的團隊現在缺什麼？</h2>
+</div>
+<div class="decision">
+  <h3>🌿 根據現況情境診斷優先行動</h3>
+  <div class="decision-item"><div class="decision-q">需求不清楚、反覆返工、PD 與 RD 理解不同</div><div class="decision-arrow">→</div><div class="decision-a a-t3">建立需求格式（Given/When/Then）+ Definition of Ready</div></div>
+  <div class="decision-item"><div class="decision-q">測試都在最後、發現缺陷太晚</div><div class="decision-arrow">→</div><div class="decision-a a-t5">Shift-Left：QA 介入 PRD 初稿 + 建立測試分層策略</div></div>
+  <div class="decision-item"><div class="decision-q">程式碼修改一處就壞很多地方</div><div class="decision-arrow">→</div><div class="decision-a a-t1">Code Review 加入 SRP / DIP 檢查 + 重構規劃</div></div>
+  <div class="decision-item"><div class="decision-q">每次 PR 改動太大、Review 困難</div><div class="decision-arrow">→</div><div class="decision-a a-t1">建立小批量 PR 規範 + PR template</div></div>
+  <div class="decision-item"><div class="decision-q">上線後才發現問題、沒有 rollback</div><div class="decision-arrow">→</div><div class="decision-a a-t5">定義 SLO + Feature Flag + Rollback Plan</div></div>
+  <div class="decision-item"><div class="decision-q">AI coding agent 用了但品質不穩</div><div class="decision-arrow">→</div><div class="decision-a a-t4">建立 AGENTS.md / CLAUDE.md + 同等 Code Review 門檻</div></div>
+  <div class="decision-item"><div class="decision-q">安全問題總是最後才發現</div><div class="decision-arrow">→</div><div class="decision-a a-t4">設計階段加入 Threat Modeling + 開發加入 SAST / Secret Scan</div></div>
+  <div class="decision-item"><div class="decision-q">不知道團隊交付速度是快是慢</div><div class="decision-arrow">→</div><div class="decision-a a-t5">導入 DORA 五指標 + 服務層級 SLO</div></div>
+  <div class="decision-item"><div class="decision-q">角色責任邊界不清、互相推責</div><div class="decision-arrow">→</div><div class="decision-a a-t3">建立 RACI 矩陣 + Definition of Done 共識</div></div>
+  <div class="decision-item"><div class="decision-q">新需求必須改很多既有程式碼</div><div class="decision-arrow">→</div><div class="decision-a a-t1">OCP / SRP 重構：用擴充取代修改，模組化設計</div></div>
+</div>
+
+<!-- §11 ROADMAP -->
+<div class="section" id="roadmap">
+  <div class="section-number">// 11</div>
+  <h2>導入路線：0–90 天行動計畫</h2>
+  <p class="intro">最小可行制度：<strong>清楚需求、明確分工、小批量開發、強制 Code Review、自動化測試、可觀測發布、持續量測改善。</strong>（GPT 報告核心原則）</p>
+
+  <div class="roadmap">
+    <div class="road-card">
+      <div class="road-head t1">// 0–30 天：建立基本秩序</div>
+      <div class="road-body"><ul>
+        <li>定義 PD / RD / QA RACI 矩陣</li>
+        <li>建立 PR template + Definition of Ready / Done</li>
+        <li>每個 repo 加入測試指令、開發規範、AGENTS.md / CLAUDE.md</li>
+        <li>建立最小 CI：lint + type-check + unit test</li>
+        <li>設計階段加入 Threat Modeling（輕量版）</li>
+      </ul></div>
+    </div>
+    <div class="road-card">
+      <div class="road-head t2">// 31–60 天：建立品質工程</div>
+      <div class="road-body"><ul>
+        <li>QA 前移到需求與設計階段</li>
+        <li>建立測試分層策略（Unit / Integration / E2E）</li>
+        <li>導入 Code Review 準則（SOLID + Google Practices）</li>
+        <li>加入 security scanning + dependency scanning</li>
+        <li>建立 release checklist + rollback 策略</li>
+      </ul></div>
+    </div>
+    <div class="road-card">
+      <div class="road-head t3">// 61–90 天：建立可量測系統</div>
+      <div class="road-body"><ul>
+        <li>導入 DORA 五指標追蹤</li>
+        <li>定義核心服務 SLO + Error Budget</li>
+        <li>建立 Incident Response + Postmortem 流程</li>
+        <li>建立 ADR（架構決策紀錄）習慣</li>
+        <li>每月檢視品質與交付瓶頸</li>
+      </ul></div>
+    </div>
+  </div>
+
+  <div class="tip-box"><span class="tip-icon">🎯</span><p><strong>最終原則（GPT 報告 §14）：</strong>PD 對價值負責 / RD 對技術解法與可維護性負責 / QA 對品質策略與風險揭露負責 / SRE 對發布與可靠性負責 / Security 必須內嵌 SDLC / AI coding agent 必須納入同一品質門檻。</p></div>
+
+  <div class="source-row" style="margin-top:20px;">
+    <span class="src-badge src-iso">ISO/IEC/IEEE 12207:2026 · 29148:2018 · 29119-1:2022</span>
+    <span class="src-badge src-google">Google Design Sprint · HEART · Eng Practices · SRE</span>
+    <span class="src-badge src-openai">OpenAI Codex AGENTS.md · Claude Code Best Practices</span>
+    <span class="src-badge src-nist">NIST SSDF SP 800-218 · OWASP SAMM · DORA Metrics</span>
+    <span class="src-badge src-istqb">ISTQB CTFL v4.0 · Agile Manifesto · Scrum Guide</span>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <span>AI 時代 SDLC 指南 v1.0 · 2026-05-27 · Claude × Gemini × GPT 三模型整合</span>
+  <a href="https://dora.dev/guides/dora-metrics/" target="_blank">dora.dev →</a>
+</div>
+
+</div><!-- /container -->
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+<script>
+(function(){
+  var btn=document.getElementById('backToTop');
+  window.addEventListener('scroll',function(){btn.classList.toggle('visible',window.scrollY>400);},{passive:true});
+  btn.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+})();
+</script>
+</body>
+</html>
