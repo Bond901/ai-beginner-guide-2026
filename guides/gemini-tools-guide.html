@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Google Gemini 生態系工具入門指南 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;900&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0d1117;
+    --paper: #f4f6f0;
+    --warm-mid: #e4e8dc;
+    --border: #c4cbb8;
+    --muted: #6a7560;
+
+    --ag-color: #1a6b4a;
+    --ag-bg: #e8f5ee;
+    --ag-accent: #0f4d34;
+
+    --nlm-color: #2d5fa8;
+    --nlm-bg: #e8eff9;
+    --nlm-accent: #1a3d70;
+
+    --ais-color: #8c1a1a;
+    --ais-bg: #f9eaea;
+    --ais-accent: #5c0f0f;
+
+    --gem-color: #6b3db8;
+    --gem-bg: #f0eaf9;
+    --gem-accent: #4a2080;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.75;
+    font-size: 15px;
+  }
+
+  /* HERO */
+  .hero {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 56px 48px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 280px; height: 280px;
+    border: 1px solid rgba(244,246,240,0.10);
+    border-radius: 50%;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: 22%;
+    width: 200px; height: 200px;
+    border: 1px solid rgba(244,246,240,0.07);
+    border-radius: 50%;
+  }
+  .hero-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #4db87a;
+    margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    font-size: 2.4rem;
+    line-height: 1.25;
+    margin-bottom: 16px;
+    max-width: 600px;
+  }
+  .hero-sub {
+    font-size: 14px;
+    color: rgba(244,246,240,0.62);
+    max-width: 520px;
+    font-weight: 300;
+  }
+  .hero-badges {
+    display: flex;
+    gap: 8px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+  .badge {
+    padding: 5px 14px;
+    border-radius: 2px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: #fff;
+  }
+  .badge-ag   { background: var(--ag-color); }
+  .badge-nlm  { background: var(--nlm-color); }
+  .badge-ais  { background: var(--ais-color); }
+  .badge-gem  { background: var(--gem-color); }
+
+  /* LAYOUT */
+  .container {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  /* TOC */
+  .toc {
+    background: var(--warm-mid);
+    border-left: 3px solid #4db87a;
+    padding: 24px 28px;
+    margin: 40px 0 0;
+  }
+  .toc-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .toc ol {
+    padding-left: 20px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 2;
+  }
+  .toc a { color: inherit; text-decoration: none; }
+  .toc a:hover { color: var(--ag-color); }
+
+  /* SECTIONS */
+  .section { padding: 48px 0 0; }
+  .section-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .section h2 {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    font-size: 1.7rem;
+    margin-bottom: 18px;
+    line-height: 1.3;
+  }
+  .section p { color: #2e3528; margin-bottom: 14px; max-width: 680px; }
+
+  /* OVERVIEW CARDS */
+  .mode-overview {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    margin: 32px 0;
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .mode-card {
+    padding: 22px 18px;
+    border-right: 1px solid var(--border);
+  }
+  .mode-card:last-child { border-right: none; }
+  .mode-card.ag  { background: var(--ag-bg); }
+  .mode-card.nlm { background: var(--nlm-bg); }
+  .mode-card.ais { background: var(--ais-bg); }
+  .mode-card.gem { background: var(--gem-bg); }
+  .mode-icon {
+    width: 34px; height: 34px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px;
+    margin-bottom: 10px;
+  }
+  .icon-ag  { background: var(--ag-color); }
+  .icon-nlm { background: var(--nlm-color); }
+  .icon-ais { background: var(--ais-color); }
+  .icon-gem { background: var(--gem-color); }
+  .mode-card h3 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .mode-card.ag h3  { color: var(--ag-color); }
+  .mode-card.nlm h3 { color: var(--nlm-color); }
+  .mode-card.ais h3 { color: var(--ais-color); }
+  .mode-card.gem h3 { color: var(--gem-color); }
+  .mode-card p { font-size: 11.5px; color: var(--muted); line-height: 1.6; margin: 0; }
+
+  /* TOOL DEEP-DIVE */
+  .mode-section {
+    border: 1px solid var(--border);
+    margin: 28px 0;
+    overflow: hidden;
+  }
+  .mode-header {
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .mode-header.ag-h  { background: var(--ag-color); }
+  .mode-header.nlm-h { background: var(--nlm-color); }
+  .mode-header.ais-h { background: var(--ais-color); }
+  .mode-header.gem-h { background: var(--gem-color); }
+  .mode-header h3 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: #fff;
+  }
+  .mode-header .mode-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: rgba(255,255,255,0.55);
+    margin-left: auto;
+  }
+  .mode-body { padding: 24px; background: var(--paper); }
+  .mode-body p { font-size: 14px; color: #2e3528; margin-bottom: 12px; }
+
+  /* FACT GRID */
+  .fact-grid {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 0;
+    margin: 16px 0;
+    border: 1px solid var(--border);
+    font-size: 13px;
+    overflow: hidden;
+  }
+  .fact-label {
+    background: var(--warm-mid);
+    padding: 12px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    display: flex;
+    align-items: flex-start;
+    border-bottom: 1px solid var(--border);
+  }
+  .fact-label:last-of-type { border-bottom: none; }
+  .fact-value {
+    padding: 12px 16px;
+    color: #1e2518;
+    border-bottom: 1px solid var(--border);
+    line-height: 1.65;
+  }
+  .fact-value:last-child { border-bottom: none; }
+
+  /* STEPS */
+  .steps { margin: 20px 0; }
+  .step {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 14px;
+    padding: 16px;
+    background: var(--warm-mid);
+    border-left: 3px solid transparent;
+  }
+  .step.ag-step  { border-left-color: var(--ag-color); }
+  .step.nlm-step { border-left-color: var(--nlm-color); }
+  .step.ais-step { border-left-color: var(--ais-color); }
+  .step.gem-step { border-left-color: var(--gem-color); }
+  .step-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    font-weight: 600;
+    min-width: 28px;
+    line-height: 1.4;
+  }
+  .step.ag-step .step-num  { color: var(--ag-color); }
+  .step.nlm-step .step-num { color: var(--nlm-color); }
+  .step.ais-step .step-num { color: var(--ais-color); }
+  .step.gem-step .step-num { color: var(--gem-color); }
+  .step-content h4 { font-size: 13px; font-weight: 700; margin-bottom: 4px; color: var(--ink); }
+  .step-content p  { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.55; }
+
+  /* CODE BLOCK */
+  .code-block {
+    background: #111a10;
+    border-radius: 4px;
+    padding: 14px 18px;
+    margin: 12px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: #c8d8b8;
+    overflow-x: auto;
+    line-height: 1.6;
+  }
+  .code-block .comment { color: #607050; }
+  .code-block .cmd { color: #4db87a; }
+  .code-block .str { color: #a8d88a; }
+  .code-block .kw  { color: #88b8e8; }
+
+  /* COMPARE TABLE */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 24px 0;
+  }
+  .compare-table th {
+    padding: 10px 14px;
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    font-weight: 600;
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--ink);
+  }
+  .compare-table th:nth-child(2) { background: var(--ag-bg);  color: var(--ag-color); }
+  .compare-table th:nth-child(3) { background: var(--nlm-bg); color: var(--nlm-color); }
+  .compare-table th:nth-child(4) { background: var(--ais-bg); color: var(--ais-color); }
+  .compare-table th:nth-child(5) { background: var(--gem-bg); color: var(--gem-color); }
+  .compare-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  .compare-table td:first-child {
+    font-weight: 500;
+    color: var(--muted);
+    white-space: nowrap;
+    background: var(--warm-mid);
+  }
+  .compare-table tr:hover td { background: rgba(196,203,184,0.18); }
+  .compare-table tr:hover td:first-child { background: var(--warm-mid); }
+  .yes     { color: var(--ag-color); font-weight: 700; }
+  .no      { color: #b03030; }
+  .partial { color: #a06020; }
+
+  /* TIP BOX */
+  .tip-box {
+    border: 1px solid var(--border);
+    padding: 16px 20px;
+    margin: 16px 0;
+    display: flex;
+    gap: 12px;
+    background: #f8faf4;
+  }
+  .tip-icon { font-size: 18px; flex-shrink: 0; }
+  .tip-box p { font-size: 13px; color: #2e3528; margin: 0; line-height: 1.65; }
+  .tip-box strong { color: var(--ink); }
+
+  /* DECISION BOX */
+  .decision {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 28px 32px;
+    margin: 28px 0;
+  }
+  .decision h3 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+  }
+  .decision-item {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+    align-items: flex-start;
+  }
+  .decision-q {
+    font-size: 13px;
+    color: rgba(244,246,240,0.68);
+    min-width: 240px;
+    padding-top: 2px;
+  }
+  .decision-arrow { color: #4db87a; font-size: 14px; padding-top: 1px; }
+  .decision-a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .a-ag  { color: #4db87a; }
+  .a-nlm { color: #88b8e8; }
+  .a-ais { color: #e88888; }
+  .a-gem { color: #c0a8e8; }
+
+  /* PLAN TABLE */
+  .plan-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+    margin: 20px 0;
+  }
+  .plan-table th {
+    background: var(--warm-mid);
+    padding: 8px 12px;
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 700;
+    border: 1px solid var(--border);
+  }
+  .plan-table td {
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+
+  /* DIVIDER */
+  hr.rule { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+  /* FOOTER */
+  .footer {
+    margin: 56px 0 0;
+    padding: 24px 0 32px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .footer a { color: var(--muted); }
+
+  /* ── BACK-TO-TOP ── */
+.back-to-top {
+  position:fixed; bottom:32px; right:32px;
+  width:40px; height:40px;
+  background:var(--ink); color:var(--paper);
+  border:1px solid var(--border); border-radius:2px;
+  font-family:'JetBrains Mono',monospace; font-size:16px; font-weight:600; line-height:1;
+  cursor:pointer; opacity:0; transform:translateY(8px);
+  transition:opacity .2s ease, transform .2s ease, background .15s ease;
+  z-index:100;
+}
+.back-to-top.visible { opacity:1; transform:translateY(0); }
+.back-to-top:hover { background:var(--hero-accent); border-color:var(--hero-accent); }
+
+@media (max-width: 640px) {
+    .hero { padding: 36px 20px 32px; }
+    .hero h1 { font-size: 1.7rem; }
+    .container { padding: 0 16px; }
+    .mode-overview { grid-template-columns: repeat(2, 1fr); }
+    .mode-card { border-right: none; border-bottom: 1px solid var(--border); }
+    .compare-table { font-size: 11px; }
+    .compare-table td, .compare-table th { padding: 7px 8px; }
+    .decision-item { flex-direction: column; gap: 4px; }
+    .decision-q { min-width: unset; }
+    .back-to-top { bottom:20px; right:20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-label">// Beginner's Guide · 2026</div>
+  <h1>Google Gemini<br>生態系工具入門指南</h1>
+  <p class="hero-sub">Antigravity、NotebookLM、AI Studio、Gem 各有何不同？我該用哪一個？從零開始的完整教學。</p>
+  <div class="hero-badges">
+    <span class="badge badge-ag">Antigravity</span>
+    <span class="badge badge-nlm">NotebookLM</span>
+    <span class="badge badge-ais">AI Studio</span>
+    <span class="badge badge-gem">Gem</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- TOC -->
+  <div class="toc">
+    <div class="toc-title">// 目錄</div>
+    <ol>
+      <li><a href="#overview">一眼看懂四大工具</a></li>
+      <li><a href="#antigravity">Antigravity 詳解</a></li>
+      <li><a href="#notebooklm">NotebookLM 詳解</a></li>
+      <li><a href="#aistudio">Google AI Studio 詳解</a></li>
+      <li><a href="#gem">Gem 詳解</a></li>
+      <li><a href="#compare">四者完整比較</a></li>
+      <li><a href="#choose">我該選哪一個？</a></li>
+      <li><a href="#start">立刻開始：上手路徑</a></li>
+    </ol>
+  </div>
+
+  <!-- SECTION 0: OVERVIEW -->
+  <div class="section" id="overview">
+    <div class="section-number">// 01</div>
+    <h2>一眼看懂四大工具</h2>
+    <p>Google Gemini 生態系不只是一個聊天機器人，而是四個定位截然不同的工作平台。選錯工具等於事倍功半，以下是最快的心智模型。</p>
+
+    <div class="mode-overview">
+      <div class="mode-card ag">
+        <div class="mode-icon icon-ag">🤖</div>
+        <h3>ANTIGRAVITY</h3>
+        <p>自主型 Agent 平台。從零開始自動完成整個軟體專案，支援多代理人平行協作。給工程師。</p>
+      </div>
+      <div class="mode-card nlm">
+        <div class="mode-icon icon-nlm">📚</div>
+        <h3>NOTEBOOKLM</h3>
+        <p>閉環文件研究知識庫。AI 只在你上傳的資料範圍內作答，附精確來源引述，零幻覺風險。</p>
+      </div>
+      <div class="mode-card ais">
+        <div class="mode-icon icon-ais">🧪</div>
+        <h3>AI STUDIO</h3>
+        <p>API 原型開發沙盒。測試各種 Gemini 模型、調校提示詞、取得 API Key、一鍵生成程式碼。</p>
+      </div>
+      <div class="mode-card gem">
+        <div class="mode-icon icon-gem">💎</div>
+        <h3>GEM</h3>
+        <p>輕量客製 AI 分身。幫自己或團隊建立固定角色的專屬助手，無需程式知識，點擊即用。</p>
+      </div>
+    </div>
+
+    <div class="tip-box">
+      <span class="tip-icon">💡</span>
+      <p><strong>一句話記憶法：</strong>Antigravity 是<em>自動做軟體</em>、NotebookLM 是<em>研讀文件</em>、AI Studio 是<em>測試 API</em>、Gem 是<em>建立個人助手</em>。</p>
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <!-- SECTION 1: ANTIGRAVITY -->
+  <div class="section" id="antigravity">
+    <div class="section-number">// 02</div>
+    <h2>Antigravity</h2>
+    <p>Antigravity 是 Google 推出的自主型 Agent 開發平台，核心概念是「你給目標，它自己想辦法完成」。不只是程式碼建議，而是能跨多個 repo、在隔離沙盒中獨立執行整個開發流程的代理人系統。</p>
+
+    <div class="mode-section">
+      <div class="mode-header ag-h">
+        <span style="font-size:20px">🤖</span>
+        <h3>Antigravity — 自主型 Agent 開發與協調平台</h3>
+        <span class="mode-tag">AUTONOMOUS AGENT MODE</span>
+      </div>
+      <div class="mode-body">
+        <div class="fact-grid">
+          <div class="fact-label">核心能力</div>
+          <div class="fact-value">隔離 Linux 雲端沙盒執行 Bash / Python / Node.js；動態派生平行子代理人（Multi-Agent）；自動生成實作計畫、任務清單與瀏覽器錄影作為可驗證產出物</div>
+          <div class="fact-label">驅動模型</div>
+          <div class="fact-value">Gemini 3.5 Flash（自主多輪推理）</div>
+          <div class="fact-label">使用介面</div>
+          <div class="fact-value">獨立桌面應用程式（Windows / macOS / Linux），不依附 IDE 外掛</div>
+          <div class="fact-label">適合誰</div>
+          <div class="fact-value">軟體工程師、DevOps 人員、系統架構師——需要自動化大規模開發或跨 repo 重構的技術人員</div>
+          <div class="fact-label">資料安全</div>
+          <div class="fact-value">支援 GCP 企業條款，資料不外流至公有模型訓練</div>
+        </div>
+
+        <h4 style="margin:18px 0 10px; font-size:13px; font-weight:700; color:var(--ag-color);">📖 實際使用情境</h4>
+        <ul style="padding-left:18px; font-size:13px; color:#2e3528; line-height:2;">
+          <li>「從零開始，建立一個帶有 JWT 認證的 REST API，含測試與 Docker 配置」</li>
+          <li>「跨三個 repo 將所有 Python 2 程式碼遷移至 Python 3，保留測試通過率」</li>
+          <li>「設定每晚凌晨 2 點自動執行的資料庫備份與清理排程工作流」</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="font-size:1rem; font-weight:700; margin:24px 0 12px;">Step-by-step：Antigravity 第一次使用</h3>
+    <div class="steps">
+      <div class="step ag-step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <h4>下載桌面用戶端</h4>
+          <p>前往 Antigravity 官方頁面，下載對應平台（Windows / macOS / Linux）的安裝包，以 Google Cloud 憑證登入。</p>
+        </div>
+      </div>
+      <div class="step ag-step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <h4>建立專案並設定目錄</h4>
+          <p>點選「New Project」，指定本地工作目錄，設定 Agent 的存取權限範圍（可限制在特定資料夾內）。</p>
+        </div>
+      </div>
+      <div class="step ag-step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <h4>選擇執行模式後下達任務</h4>
+          <p>兩個核心斜線指令：<code>/goal</code>（直接自主執行至完工）或 <code>/grill-me</code>（Agent 先提問釐清需求再動手）。複雜任務建議先用 <code>/grill-me</code>。</p>
+        </div>
+      </div>
+      <div class="step ag-step">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <h4>在 Manager View 監控進度</h4>
+          <p>Agent 執行時，Manager View 實時顯示沙盒狀態、子代理人分工、已完成步驟清單與產出的 Artifacts。</p>
+        </div>
+      </div>
+      <div class="step ag-step">
+        <div class="step-num">05</div>
+        <div class="step-content">
+          <h4>核對 Artifacts 後確認部署</h4>
+          <p>檢查自動生成的程式碼、測試結果與錄影記錄，確認符合預期後點擊「Deploy」完成交付。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block"><span class="comment"># 下達任務的指令範例（Antigravity 終端機）</span>
+<span class="cmd">/goal</span> <span class="str">"建立一個 FastAPI 專案，含 /users CRUD endpoints、PostgreSQL ORM 與 Pytest 測試，最終輸出 Docker Compose 配置"</span>
+
+<span class="comment"># 需要 Agent 先提問再動手</span>
+<span class="cmd">/grill-me</span> <span class="str">"重構 ./src 底下所有模組，改善可測試性"</span></div>
+  </div>
+
+  <hr class="rule">
+
+  <!-- SECTION 2: NOTEBOOKLM -->
+  <div class="section" id="notebooklm">
+    <div class="section-number">// 03</div>
+    <h2>NotebookLM</h2>
+    <p>NotebookLM 是「閉環式 AI 研究助手」——它的所有回答都嚴格限制在你上傳的文件範圍內，不會去猜測或引用外部知識，這讓它成為處理機密文件或需要精確來源的場景中最安全的 AI 工具。</p>
+
+    <div class="mode-section">
+      <div class="mode-header nlm-h">
+        <span style="font-size:20px">📚</span>
+        <h3>NotebookLM — 智慧研究與寫作知識庫</h3>
+        <span class="mode-tag">CLOSED-LOOP RESEARCH MODE</span>
+      </div>
+      <div class="mode-body">
+        <div class="fact-grid">
+          <div class="fact-label">核心能力</div>
+          <div class="fact-value">單一筆記本支援高達 600 個來源文件；所有回答附精確頁碼引述；一鍵生成雙人對話式音訊總覽（Audio Overviews）</div>
+          <div class="fact-label">支援格式</div>
+          <div class="fact-value">PDF、Google 文件、Google 試算表、Markdown、音訊逐字稿等多元格式</div>
+          <div class="fact-label">使用介面</div>
+          <div class="fact-value">網頁版（notebooklm.google.com），無需安裝</div>
+          <div class="fact-label">適合誰</div>
+          <div class="fact-value">研究員、學生、法務、市場分析師——任何需要從大量文件中快速提煉知識的人</div>
+          <div class="fact-label">資料安全</div>
+          <div class="fact-value">嚴格限定在上傳文件範圍內，不使用使用者資料進行模型訓練</div>
+        </div>
+
+        <h4 style="margin:18px 0 10px; font-size:13px; font-weight:700; color:var(--nlm-color);">📖 實際使用情境</h4>
+        <ul style="padding-left:18px; font-size:13px; color:#2e3528; line-height:2;">
+          <li>「上傳 30 篇學術論文，問：這些研究對 X 理論的共識和分歧各是什麼？」</li>
+          <li>「上傳公司內部的所有 SOP 文件，建立一個新人問答知識庫」</li>
+          <li>「將這學期的所有筆記上傳，自動生成考試複習指南與模擬測驗題」</li>
+        </ul>
+
+        <div class="tip-box" style="margin-top:16px">
+          <span class="tip-icon">🎧</span>
+          <p><strong>Audio Overviews 是隱藏的殺手功能：</strong>一鍵將數百頁文件轉化為兩位主持人的深度對話音訊，通勤途中也能「聽懂」複雜報告。</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-size:1rem; font-weight:700; margin:24px 0 12px;">Step-by-step：NotebookLM 第一次使用</h3>
+    <div class="steps">
+      <div class="step nlm-step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <h4>建立筆記本</h4>
+          <p>前往 notebooklm.google.com，以 Google 帳號登入，點選「New Notebook」建立一個研究主題專屬的筆記本。</p>
+        </div>
+      </div>
+      <div class="step nlm-step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <h4>匯入來源文件</h4>
+          <p>在左側「Sources」面板點擊「＋」，上傳本地 PDF 或連結 Google 雲端硬碟的文件。可一次匯入多個來源（上限 600 個）。</p>
+        </div>
+      </div>
+      <div class="step nlm-step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <h4>開始提問（含引述溯源）</h4>
+          <p>在中央對話框輸入研究問題，回答會自動附上 [來源文件名稱，第 X 頁] 的引述標籤，點擊可直接跳轉到原文位置。</p>
+        </div>
+      </div>
+      <div class="step nlm-step">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <h4>生成音訊總覽</h4>
+          <p>點擊右側「Audio Overviews」，系統自動生成約 10–20 分鐘的雙人對話音訊，整合所有上傳文件的核心洞見。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <!-- SECTION 3: AI STUDIO -->
+  <div class="section" id="aistudio">
+    <div class="section-number">// 04</div>
+    <h2>Google AI Studio</h2>
+    <p>AI Studio 是開發者和技術人員的「Gemini 實驗場」——你可以在這裡測試各種模型、調整參數、設計提示詞，然後一鍵取得可直接用於生產環境的程式碼。</p>
+
+    <div class="mode-section">
+      <div class="mode-header ais-h">
+        <span style="font-size:20px">🧪</span>
+        <h3>Google AI Studio — API 原型快速開發環境</h3>
+        <span class="mode-tag">DEVELOPER SANDBOX MODE</span>
+      </div>
+      <div class="mode-body">
+        <div class="fact-grid">
+          <div class="fact-label">核心能力</div>
+          <div class="fact-value">百萬級 Token 上下文視窗沙盒；內建提示詞藝廊與系統指令設定；支援 Temperature 等參數調校；一鍵生成 Python / Go / JavaScript SDK 程式碼；可匯出至 Antigravity 繼續開發</div>
+          <div class="fact-label">支援模型</div>
+          <div class="fact-value">Gemini 3.5 Flash、Gemini 3.1 Pro、Gemini Flash Live（實時影音互動）等全系列模型</div>
+          <div class="fact-label">使用介面</div>
+          <div class="fact-value">網頁版（aistudio.google.com），需 Google 開發者帳戶，可連結 Google Play Console 直接發布 Android App</div>
+          <div class="fact-label">適合誰</div>
+          <div class="fact-value">獨立開發者、AI 產品經理、資料科學家——需要快速驗證 AI 功能、取得 API Key、建立原型的技術人員</div>
+        </div>
+
+        <h4 style="margin:18px 0 10px; font-size:13px; font-weight:700; color:var(--ais-color);">📖 實際使用情境</h4>
+        <ul style="padding-left:18px; font-size:13px; color:#2e3528; line-height:2;">
+          <li>「測試不同 Temperature 值對文章創作多樣性的影響，找到最佳參數」</li>
+          <li>「設計一個客服 Chatbot 的 System Instruction，測試各種邊界情境」</li>
+          <li>「取得 API Key，下載 Python 範例程式碼，整合進自己的後端服務」</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="font-size:1rem; font-weight:700; margin:24px 0 12px;">Step-by-step：AI Studio 第一次使用</h3>
+    <div class="steps">
+      <div class="step ais-step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <h4>進入操練場並取得 API Key</h4>
+          <p>前往 aistudio.google.com，登入開發者帳戶。點選左側「Get API Key」→「Create API Key」，複製備用。</p>
+        </div>
+      </div>
+      <div class="step ais-step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <h4>選擇模型並設定系統指令</h4>
+          <p>右側面板選擇目標模型（一般任務用 Flash，複雜推理用 Pro）。在「System Instructions」欄位填入 AI 的全域行為規則（如角色設定、回答格式）。</p>
+        </div>
+      </div>
+      <div class="step ais-step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <h4>調校提示詞與參數</h4>
+          <p>在中央輸入測試資料（文字 / 圖片 / 程式碼），調整 Temperature（0 = 確定性高，1 = 創意性高）觀察輸出差異，找到最佳配置。</p>
+        </div>
+      </div>
+      <div class="step ais-step">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <h4>匯出程式碼或轉移至 Antigravity</h4>
+          <p>測試滿意後，點「Get Code」複製生產環境程式碼；或點「Export to Antigravity」將所有上下文帶入本地 Agent 流程繼續開發。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block"><span class="comment"># AI Studio 匯出的 Python 程式碼範例</span>
+<span class="kw">import</span> google.generativeai <span class="kw">as</span> genai
+
+genai.<span class="cmd">configure</span>(api_key=<span class="str">"YOUR_API_KEY"</span>)
+model = genai.<span class="cmd">GenerativeModel</span>(<span class="str">"gemini-3.5-flash"</span>)
+response = model.<span class="cmd">generate_content</span>(<span class="str">"你的提示詞"</span>)
+<span class="cmd">print</span>(response.text)</div>
+  </div>
+
+  <hr class="rule">
+
+  <!-- SECTION 4: GEM -->
+  <div class="section" id="gem">
+    <div class="section-number">// 05</div>
+    <h2>Gem</h2>
+    <p>Gem 是最平易近人的入口——不需要任何技術背景，在 Gemini 的網頁介面就能建立一個擁有特定角色、知識庫和回答格式的專屬 AI 助手，儲存後一鍵啟用。</p>
+
+    <div class="mode-section">
+      <div class="mode-header gem-h">
+        <span style="font-size:20px">💎</span>
+        <h3>Gem — 客製化 Gemini 智慧體</h3>
+        <span class="mode-tag">PERSONA CUSTOMIZATION MODE</span>
+      </div>
+      <div class="mode-body">
+        <div class="fact-grid">
+          <div class="fact-label">核心能力</div>
+          <div class="fact-value">透過「角色 / 任務 / 背景 / 格式」四維指令結構客製 AI 行為；附加專屬知識文件或連結 Google 雲端硬碟；內建 AI 輔助指令優化（自動將口語化需求轉為結構嚴謹的提示詞）</div>
+          <div class="fact-label">使用介面</div>
+          <div class="fact-value">gemini.google.com 消費端網頁 或 Google Workspace 商業端，無需安裝</div>
+          <div class="fact-label">適合誰</div>
+          <div class="fact-value">一般辦公人員、內容創作者、行政管理人員——任何有高頻重複性任務、希望固定化 AI 回答風格的人</div>
+          <div class="fact-label">資料安全</div>
+          <div class="fact-value">依據 Google 帳戶條款（個人帳戶或 Workspace 企業帳戶）保護</div>
+        </div>
+
+        <h4 style="margin:18px 0 10px; font-size:13px; font-weight:700; color:var(--gem-color);">📖 實際使用情境</h4>
+        <ul style="padding-left:18px; font-size:13px; color:#2e3528; line-height:2;">
+          <li>建立「週報生成器」Gem：每週五貼入重點，自動輸出固定格式的週報</li>
+          <li>建立「Code Review 專家」Gem：上傳公司 coding style guide，讓它以特定標準審查程式碼</li>
+          <li>建立「英文對話導師」Gem：設定為只用英文回應、每次糾正語法錯誤</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="font-size:1rem; font-weight:700; margin:24px 0 12px;">Step-by-step：Gem 第一次建立</h3>
+    <div class="steps">
+      <div class="step gem-step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <h4>進入 Gem 建立流程</h4>
+          <p>登入 gemini.google.com，點選左側欄「探索 Gem（Explore Gems）」，然後選擇「新增 Gem（New Gem）」。</p>
+        </div>
+      </div>
+      <div class="step gem-step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <h4>命名並撰寫指令</h4>
+          <p>為 Gem 命名，在指令方塊填入四要素：<strong>角色</strong>（你是什麼專家）、<strong>任務</strong>（主要做什麼）、<strong>背景</strong>（有哪些限制或假設）、<strong>格式</strong>（輸出要長什麼樣）。</p>
+        </div>
+      </div>
+      <div class="step gem-step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <h4>用 AI 優化指令（選用）</h4>
+          <p>如果不確定怎麼寫，點擊魔杖圖示「使用 Gemini 重寫指令」，用口語描述你的需求，AI 自動轉化為結構化提示詞。</p>
+        </div>
+      </div>
+      <div class="step gem-step">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <h4>掛載專屬知識庫（選用）</h4>
+          <p>點擊「Knowledge」欄位的「新增檔案」，上傳這個 Gem 需要參考的文件（如公司規範、產品手冊），或連結 Google Drive 資料夾。</p>
+        </div>
+      </div>
+      <div class="step gem-step">
+        <div class="step-num">05</div>
+        <div class="step-content">
+          <h4>測試後儲存</h4>
+          <p>在右側 Preview 視窗進行多輪測試對話，確認輸出格式和語氣符合預期後，點擊「儲存（Save）」，Gem 即常駐於左側工具欄，隨時一鍵啟用。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <!-- SECTION 5: COMPARE -->
+  <div class="section" id="compare">
+    <div class="section-number">// 06</div>
+    <h2>四者完整比較</h2>
+
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>比較項目</th>
+          <th>🤖 Antigravity</th>
+          <th>📚 NotebookLM</th>
+          <th>🧪 AI Studio</th>
+          <th>💎 Gem</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>主要定位</td>
+          <td>自主型 Agent 平台</td>
+          <td>閉環文件研究庫</td>
+          <td>API 原型沙盒</td>
+          <td>客製 AI 分身</td>
+        </tr>
+        <tr>
+          <td>操作介面</td>
+          <td>桌面 App</td>
+          <td>網頁</td>
+          <td>網頁</td>
+          <td>網頁</td>
+        </tr>
+        <tr>
+          <td>需要技術背景</td>
+          <td class="yes">✓ 建議有</td>
+          <td class="no">✗ 不需要</td>
+          <td class="partial">△ 基礎即可</td>
+          <td class="no">✗ 不需要</td>
+        </tr>
+        <tr>
+          <td>讀寫本機檔案</td>
+          <td class="yes">✓（沙盒隔離）</td>
+          <td class="no">✗</td>
+          <td class="no">✗</td>
+          <td class="no">✗</td>
+        </tr>
+        <tr>
+          <td>知識限縮在自有文件</td>
+          <td class="no">✗</td>
+          <td class="yes">✓（核心特色）</td>
+          <td class="no">✗</td>
+          <td class="partial">△（可附加文件）</td>
+        </tr>
+        <tr>
+          <td>來源引述 / 溯源</td>
+          <td class="no">✗</td>
+          <td class="yes">✓（精確頁碼）</td>
+          <td class="no">✗</td>
+          <td class="no">✗</td>
+        </tr>
+        <tr>
+          <td>多代理人協作</td>
+          <td class="yes">✓</td>
+          <td class="no">✗</td>
+          <td class="no">✗</td>
+          <td class="no">✗</td>
+        </tr>
+        <tr>
+          <td>生成 API 程式碼</td>
+          <td class="partial">△</td>
+          <td class="no">✗</td>
+          <td class="yes">✓（核心功能）</td>
+          <td class="no">✗</td>
+        </tr>
+        <tr>
+          <td>固定角色 / 人格</td>
+          <td class="no">✗</td>
+          <td class="no">✗</td>
+          <td class="partial">△（System Prompt）</td>
+          <td class="yes">✓（核心功能）</td>
+        </tr>
+        <tr>
+          <td>支援 Linux</td>
+          <td class="yes">✓</td>
+          <td class="yes">✓（網頁）</td>
+          <td class="yes">✓（網頁）</td>
+          <td class="yes">✓（網頁）</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr class="rule">
+
+  <!-- SECTION 6: CHOOSE -->
+  <div class="section" id="choose">
+    <div class="section-number">// 07</div>
+    <h2>我該選哪一個？</h2>
+
+    <div class="decision">
+      <h3>🌿 決策樹：根據情境選擇工具</h3>
+      <div class="decision-item">
+        <div class="decision-q">我想自動化整個軟體開發流程</div>
+        <div class="decision-arrow">→</div>
+        <div class="decision-a a-ag">Antigravity</div>
+      </div>
+      <div class="decision-item">
+        <div class="decision-q">我要跨多個 repo 做大規模重構</div>
+        <div class="decision-arrow">→</div>
+        <div class="decision-a a-ag">Antigravity</div>
+      </div>
+      <div class="decision-item">
+        <div class="decision-q">我有大量文件要研究，需要精確引述</div>
+        <div class="decision-arrow">→</div>
+        <div class="decision-a a-nlm">NotebookLM</div>
+      </div>
+      <div class="decision-item">
+        <div class="decision-q">我要建立公司內部知識庫，AI 只能回答文件範圍內的問題</div>
+        <div class="decision-arrow">→</div>
+        <div class="decision-a a-nlm">NotebookLM</div>
+      </div>
+      <div class="decision-item">
+        <div class="decision-q">我要測試 Gemini API、取得 API Key、建立原型</div>
+        <div class="decision-arrow">→</div>
+        <div class="decision-a a-ais">AI Studio</div>
+      </div>
+      <div class="decision-item">
+        <div class="decision-q">我想設計一個固定格式的日常 AI 助手（週報、程式審查等）</div>
+        <div class="decision-arrow">→</div>
+        <div class="decision-a a-gem">Gem</div>
+      </div>
+      <div class="decision-item">
+        <div class="decision-q">我沒有技術背景，想快速體驗 AI 工具</div>
+        <div class="decision-arrow">→</div>
+        <div class="decision-a a-gem">Gem 或 NotebookLM</div>
+      </div>
+    </div>
+
+    <div class="tip-box">
+      <span class="tip-icon">🔗</span>
+      <p><strong>工具可串聯使用：</strong>常見工作流是 NotebookLM 整理研究 → AI Studio 設計 API 原型 → Antigravity 自動實作。Gem 則是日常輔助，與其他工具並行。</p>
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <!-- SECTION 7: START -->
+  <div class="section" id="start">
+    <div class="section-number">// 08</div>
+    <h2>立刻開始：上手路徑</h2>
+    <p>根據你的身份與目標，選擇最直接的入門路徑：</p>
+
+    <div style="display:grid; gap:16px; margin:20px 0;">
+
+      <div style="border:1px solid var(--border); padding:20px 24px; background:var(--gem-bg);">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--gem-color); font-weight:700; letter-spacing:0.1em; margin-bottom:10px;">PATH A — 完全新手 / 辦公室使用者</div>
+        <ol style="padding-left:18px; font-size:13px; color:#2e3528; line-height:2.1;">
+          <li>前往 <strong>gemini.google.com</strong>，用 Google 帳號登入</li>
+          <li>先體驗基本對話，熟悉 Gemini 的回應方式</li>
+          <li>建立第一個 <strong>Gem</strong>：選擇一個你每週都會重複做的任務（如寫週報），把固定格式寫入指令</li>
+          <li>需要研究文件時，改用 <strong>NotebookLM</strong> 上傳 PDF 提問</li>
+        </ol>
+      </div>
+
+      <div style="border:1px solid var(--border); padding:20px 24px; background:var(--nlm-bg);">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--nlm-color); font-weight:700; letter-spacing:0.1em; margin-bottom:10px;">PATH B — 研究員 / 分析師 / 學生</div>
+        <ol style="padding-left:18px; font-size:13px; color:#2e3528; line-height:2.1;">
+          <li>前往 <strong>notebooklm.google.com</strong>，建立一個新筆記本</li>
+          <li>上傳你的研究文件（PDF / Google Doc 均可）</li>
+          <li>先問「這些文件的主要論點是什麼？」測試引述功能</li>
+          <li>點擊「Audio Overviews」，體驗一鍵生成音訊摘要</li>
+          <li>熟悉後，試著建立「來源比對」查詢：「文件 A 和文件 B 對 X 的看法有何差異？」</li>
+        </ol>
+      </div>
+
+      <div style="border:1px solid var(--border); padding:20px 24px; background:var(--ais-bg);">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--ais-color); font-weight:700; letter-spacing:0.1em; margin-bottom:10px;">PATH C — 開發者 / 產品經理</div>
+        <ol style="padding-left:18px; font-size:13px; color:#2e3528; line-height:2.1;">
+          <li>前往 <strong>aistudio.google.com</strong>，取得你的 API Key</li>
+          <li>在 Prompt Gallery 找一個接近你需求的範例，在沙盒中直接修改測試</li>
+          <li>調整 Temperature 值，觀察不同參數對輸出的影響</li>
+          <li>點「Get Code」取得 Python 範例，整合進你的專案</li>
+          <li>需要完整實作時，點「Export to Antigravity」移交 Agent 繼續</li>
+        </ol>
+      </div>
+
+      <div style="border:1px solid var(--border); padding:20px 24px; background:var(--ag-bg);">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--ag-color); font-weight:700; letter-spacing:0.1em; margin-bottom:10px;">PATH D — 軟體工程師 / DevOps</div>
+        <ol style="padding-left:18px; font-size:13px; color:#2e3528; line-height:2.1;">
+          <li>下載 <strong>Antigravity 桌面 App</strong>，以 GCP 憑證登入</li>
+          <li>建立新專案，指向一個現有的小型 repo</li>
+          <li>第一個任務用 <code>/grill-me</code>：「幫我分析這個專案的架構弱點，先提問再行動」</li>
+          <li>觀察 Manager View 的執行過程，熟悉沙盒行為與 Artifacts 產出</li>
+          <li>確認可信賴後，再用 <code>/goal</code> 執行完整的功能開發任務</li>
+        </ol>
+      </div>
+
+    </div>
+
+    <div class="tip-box">
+      <span class="tip-icon">🎯</span>
+      <p><strong>給所有新手的通用建議：</strong>每個工具的第一個任務，選擇一個<em>你已知道答案</em>的工作——這樣你能快速判斷輸出是否正確，建立對工具的信任感，再逐步挑戰更複雜的任務。</p>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <span>Google Gemini Ecosystem Guide · 2026-05-25</span>
+    <a href="https://gemini.google.com" target="_blank">gemini.google.com →</a>
+  </div>
+
+</div>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+<script>
+(function(){
+  var btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', function(){
+    btn.classList.toggle('visible', window.scrollY > 400);
+  }, { passive: true });
+  btn.addEventListener('click', function(){
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+</script>
+</body>
+</html>

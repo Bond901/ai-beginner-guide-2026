@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLM Prompt Engineering 演進指南 2025 → 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;900&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:        #0f0e0d;
+  --paper:      #f5f0e8;
+  --warm-mid:   #e8e0d0;
+  --border:     #c8bfa8;
+  --muted:      #7a7060;
+
+  /* t1 = 2025 Static Paradigm — Amber/Brown */
+  --t1-color: #8c3d1a;
+  --t1-bg:    #faf0e8;
+
+  /* t2 = 2026 Agentic Paradigm — Indigo */
+  --t2-color: #2d3a8c;
+  --t2-bg:    #eef0fa;
+
+  /* component accent colors */
+  --c1-color: #1a7a6e;  --c1-bg: #e8f5f3;  /* teal: system_instruction */
+  --c2-color: #6b3db8;  --c2-bg: #f0eaf9;  /* purple: context */
+  --c3-color: #8c1a1a;  --c3-bg: #f9eaea;  /* red: few_shot / workflow */
+  --c4-color: #1a3d70;  --c4-bg: #e8eff9;  /* navy: task/output */
+  --c5-color: #3d4a6b;  --c5-bg: #eef0f9;  /* slate: anchor/execute */
+
+  --hero-accent: #d4541a;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--ink);
+  background: var(--paper);
+}
+
+/* ─── HERO ─── */
+.hero {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 56px 48px 48px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 300px; height: 300px;
+  border: 1px solid rgba(245,240,232,0.10);
+  border-radius: 50%;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -80px; left: 22%;
+  width: 220px; height: 220px;
+  border: 1px solid rgba(245,240,232,0.07);
+  border-radius: 50%;
+}
+.hero-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--hero-accent);
+  margin-bottom: 16px;
+}
+.hero h1 {
+  font-family: 'Noto Serif TC', serif;
+  font-weight: 900;
+  font-size: 2.4rem;
+  line-height: 1.25;
+  margin-bottom: 16px;
+  max-width: 640px;
+}
+.hero-sub {
+  font-size: 14px;
+  color: rgba(245,240,232,0.65);
+  max-width: 560px;
+  font-weight: 300;
+  line-height: 1.7;
+}
+.hero-badges { display: flex; gap: 8px; margin-top: 28px; flex-wrap: wrap; }
+.badge {
+  padding: 5px 14px;
+  border-radius: 2px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: #fff;
+}
+.badge-t1 { background: var(--t1-color); }
+.badge-t2 { background: var(--t2-color); }
+.badge-neutral { background: #3d4a6b; }
+
+/* ─── LAYOUT ─── */
+.container { max-width: 820px; margin: 0 auto; padding: 0 32px; }
+hr.rule { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+.section { padding: 48px 0 0; }
+.section-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.section h2 {
+  font-family: 'Noto Serif TC', serif;
+  font-weight: 900;
+  font-size: 1.7rem;
+  margin-bottom: 18px;
+  line-height: 1.3;
+}
+.section > p { font-size: 14px; color: var(--muted); margin-bottom: 8px; max-width: 680px; }
+
+/* ─── TOC ─── */
+.toc {
+  background: var(--warm-mid);
+  border-left: 3px solid var(--hero-accent);
+  padding: 24px 28px;
+  margin: 40px 0 0;
+}
+.toc-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.toc ol { padding-left: 20px; font-size: 13px; color: var(--muted); line-height: 2.1; }
+.toc a { color: inherit; text-decoration: none; }
+.toc a:hover { color: var(--hero-accent); }
+
+/* ─── OVERVIEW CARDS ─── */
+.mode-overview {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  margin: 32px 0;
+}
+.mode-card { padding: 28px 24px; border-right: 1px solid var(--border); }
+.mode-card:last-child { border-right: none; }
+.mode-card.t1 { background: var(--t1-bg); }
+.mode-card.t2 { background: var(--t2-bg); }
+.mode-icon {
+  width: 38px; height: 38px;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  margin-bottom: 14px;
+}
+.icon-t1 { background: var(--t1-color); }
+.icon-t2 { background: var(--t2-color); }
+.mode-card h3 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.mode-card.t1 h3 { color: var(--t1-color); }
+.mode-card.t2 h3 { color: var(--t2-color); }
+.mode-card p { font-size: 12.5px; color: var(--muted); line-height: 1.65; margin: 0 0 12px; }
+.mode-card ul { list-style: none; padding: 0; }
+.mode-card ul li {
+  font-size: 12px;
+  color: var(--muted);
+  padding: 3px 0;
+  padding-left: 14px;
+  position: relative;
+  line-height: 1.5;
+}
+.mode-card ul li::before { content: '›'; position: absolute; left: 0; }
+.mode-card.t1 ul li::before { color: var(--t1-color); }
+.mode-card.t2 ul li::before { color: var(--t2-color); }
+
+/* ─── MODE SECTION (deep-dive) ─── */
+.mode-section { border: 1px solid var(--border); margin: 28px 0; overflow: hidden; }
+.mode-header {
+  padding: 18px 24px;
+  display: flex; align-items: center; gap: 14px;
+}
+.mode-header.t1-h { background: var(--t1-color); }
+.mode-header.t2-h { background: var(--t2-color); }
+.mode-header.c1-h { background: var(--c1-color); }
+.mode-header.c2-h { background: var(--c2-color); }
+.mode-header.c3-h { background: var(--c3-color); }
+.mode-header.c4-h { background: var(--c4-color); }
+.mode-header.c5-h { background: var(--c5-color); }
+.mode-header h3 {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #fff;
+  flex: 1;
+}
+.mode-header .mode-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: rgba(255,255,255,0.55);
+  margin-left: auto;
+  white-space: nowrap;
+}
+.mode-body { padding: 22px 24px; background: var(--paper); }
+
+/* ─── FACT GRID ─── */
+.fact-grid {
+  display:grid; grid-template-columns:100px 1fr;
+  border:1px solid var(--border); font-size:13px;
+  overflow:hidden; margin:16px 0;
+}
+.fact-label {
+  background:var(--warm-mid); padding:12px 14px;
+  font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600;
+  color:var(--muted); letter-spacing:.1em;
+  display:flex; align-items:flex-start;
+  border-bottom:1px solid var(--border);
+}
+.fact-value {
+  padding:12px 16px; border-bottom:1px solid var(--border); line-height:1.65;
+}
+.fact-label:last-of-type { border-bottom:none; }
+.fact-value:last-child { border-bottom:none; }
+
+/* ─── USE CASES ─── */
+.use-cases { margin: 16px 0 0; }
+.use-cases h4 {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.use-cases ul { list-style: none; padding: 0; }
+.use-cases ul li {
+  font-size: 13px;
+  padding: 5px 0 5px 20px;
+  position: relative;
+  border-bottom: 1px solid var(--border);
+  line-height: 1.55;
+}
+.use-cases ul li:last-child { border-bottom: none; }
+.use-cases ul li::before { content: '→'; position: absolute; left: 0; color: var(--muted); }
+
+/* ─── TIP BOX ─── */
+.tip-box {
+  border: 1px solid var(--border);
+  padding: 14px 18px;
+  margin: 16px 0;
+  display: flex;
+  gap: 12px;
+  background: rgba(245,240,232,0.6);
+}
+.tip-icon { font-size: 17px; flex-shrink: 0; margin-top: 1px; }
+.tip-box p { font-size: 13px; margin: 0; line-height: 1.65; }
+
+/* ─── STEPS ─── */
+.steps { margin: 20px 0 0; }
+.steps h4 {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.step {
+  display: flex; gap: 16px;
+  margin-bottom: 10px; padding: 14px 16px;
+  background: var(--warm-mid);
+  border-left: 3px solid transparent;
+}
+.step.t1-step { border-left-color: var(--t1-color); }
+.step.t2-step { border-left-color: var(--t2-color); }
+.step-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 17px;
+  font-weight: 600;
+  min-width: 26px;
+  line-height: 1.45;
+}
+.step.t1-step .step-num { color: var(--t1-color); }
+.step.t2-step .step-num { color: var(--t2-color); }
+.step-content h4 { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+.step-content p  { font-size: 12.5px; color: var(--muted); margin: 0; line-height: 1.55; }
+
+/* ─── CODE BLOCK ─── */
+.code-block {
+  background: #1a1814;
+  border-radius: 4px;
+  padding: 14px 18px;
+  margin: 12px 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px;
+  color: #d4c9a8;
+  overflow-x: auto;
+  line-height: 1.7;
+  white-space: pre;
+}
+.code-block .comment { color: #7a7060; }
+.code-block .cmd     { color: #d4541a; }
+.code-block .str     { color: #6aad8e; }
+.code-block .kw      { color: #8baee0; }
+.code-block .tag     { color: #c0a8e8; }
+
+/* ─── COMPARE TABLE ─── */
+.compare-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 24px 0; }
+.compare-table th {
+  padding: 10px 14px;
+  text-align: left;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  font-weight: 600;
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--ink);
+}
+.compare-table th:nth-child(1) { background: var(--warm-mid); color: var(--muted); }
+.compare-table th:nth-child(2) { background: var(--t1-bg); color: var(--t1-color); }
+.compare-table th:nth-child(3) { background: var(--t2-bg); color: var(--t2-color); }
+.compare-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.compare-table td:first-child {
+  font-weight: 600;
+  color: var(--muted);
+  background: var(--warm-mid);
+  white-space: nowrap;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+}
+.compare-table tr:last-child td { border-bottom: none; }
+.yes     { color: #1a7a6e; font-weight: 700; }
+.no      { color: #c0555a; }
+.partial { color: #a06020; }
+
+/* ─── SHIFT CARDS (paradigm shift section) ─── */
+.shift-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin: 24px 0;
+}
+.shift-card {
+  border: 1px solid var(--border);
+  padding: 20px 22px;
+  background: var(--paper);
+}
+.shift-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: var(--hero-accent);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+.shift-card h4 {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 0.95rem;
+  font-weight: 900;
+  margin-bottom: 10px;
+  line-height: 1.35;
+}
+.shift-card p { font-size: 12.5px; color: var(--muted); line-height: 1.65; margin: 0; }
+.shift-arrow {
+  display: flex;
+  gap: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+.shift-from { background: var(--t1-bg); color: var(--t1-color); padding: 2px 8px; border-radius: 2px; font-weight: 600; }
+.shift-to   { background: var(--t2-bg); color: var(--t2-color); padding: 2px 8px; border-radius: 2px; font-weight: 600; }
+.shift-arr  { color: var(--hero-accent); }
+
+/* ─── DECISION TREE ─── */
+.decision {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 28px 32px;
+  margin: 28px 0;
+}
+.decision h3 {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+}
+.decision-item {
+  display: flex; gap: 12px;
+  margin-bottom: 10px;
+  align-items: flex-start;
+}
+.decision-q {
+  font-size: 13px;
+  color: rgba(245,240,232,0.72);
+  min-width: 280px;
+  padding-top: 2px;
+  line-height: 1.5;
+}
+.decision-arrow { color: var(--hero-accent); font-size: 14px; padding-top: 2px; flex-shrink: 0; }
+.decision-a {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.a-t1 { color: #e8904a; }
+.a-t2 { color: #8baee0; }
+.a-both { color: #c0a8e8; }
+
+/* ─── COMPONENT MAP ─── */
+.comp-map {
+  display: grid;
+  grid-template-columns: 1fr 48px 1fr;
+  gap: 0;
+  margin: 24px 0;
+  align-items: start;
+}
+.comp-col { display: flex; flex-direction: column; gap: 8px; }
+.comp-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 6px 0;
+  margin-bottom: 4px;
+}
+.comp-item {
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.comp-item.t1 { background: var(--t1-bg); border-color: var(--t1-color); }
+.comp-item.t2 { background: var(--t2-bg); border-color: var(--t2-color); }
+.comp-item strong {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  margin-bottom: 3px;
+}
+.comp-item.t1 strong { color: var(--t1-color); }
+.comp-item.t2 strong { color: var(--t2-color); }
+.comp-item span { color: var(--muted); font-size: 11.5px; }
+.comp-arrows {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding-top: 34px;
+}
+.comp-arr { color: var(--hero-accent); font-size: 13px; }
+.comp-del { color: var(--muted); font-size: 11px; font-family: 'JetBrains Mono', monospace; }
+
+/* ─── GETTING STARTED ─── */
+.path-grid { display: grid; gap: 16px; margin: 20px 0; }
+.path-card { border: 1px solid var(--border); padding: 20px 24px; }
+.path-card.t1 { background: var(--t1-bg); }
+.path-card.t2 { background: var(--t2-bg); }
+.path-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.path-card.t1 .path-label { color: var(--t1-color); }
+.path-card.t2 .path-label { color: var(--t2-color); }
+.path-card ol { padding-left: 18px; font-size: 13px; line-height: 2.1; }
+
+/* ─── FOOTER ─── */
+.footer {
+  margin: 56px 0 0;
+  padding: 24px 0 32px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+}
+.footer a { color: inherit; text-decoration: none; }
+.footer a:hover { color: var(--hero-accent); }
+
+/* ─── SOURCE BADGE ─── */
+.source-row { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+.src-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.src-claude { border-color: var(--t1-color); color: var(--t1-color); background: var(--t1-bg); }
+.src-gemini { border-color: var(--t2-color); color: var(--t2-color); background: var(--t2-bg); }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 640px) {
+  .hero { padding: 36px 20px 32px; }
+  .hero h1 { font-size: 1.7rem; }
+  .container { padding: 0 16px; }
+  .mode-overview { grid-template-columns: 1fr; }
+  .mode-card { border-right: none; border-bottom: 1px solid var(--border); }
+  .compare-table { font-size: 11px; }
+  .compare-table td, .compare-table th { padding: 7px 8px; }
+  .decision-item { flex-direction: column; gap: 4px; }
+  .decision-q { min-width: unset; }
+  .shift-grid { grid-template-columns: 1fr; }
+  .comp-map { grid-template-columns: 1fr; }
+  .comp-arrows { display: none; }
+}
+/* ── BACK-TO-TOP ── */
+.back-to-top {
+  position:fixed; bottom:32px; right:32px;
+  width:40px; height:40px;
+  background:var(--ink); color:var(--paper);
+  border:1px solid var(--border); border-radius:2px;
+  font-family:'JetBrains Mono',monospace; font-size:16px; font-weight:600; line-height:1;
+  cursor:pointer; opacity:0; transform:translateY(8px);
+  transition:opacity .2s ease, transform .2s ease, background .15s ease;
+  z-index:100;
+}
+.back-to-top.visible { opacity:1; transform:translateY(0); }
+.back-to-top:hover { background:var(--hero-accent); border-color:var(--hero-accent); }
+
+@media (max-width: 640px) {
+  .back-to-top { bottom:20px; right:20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     HERO
+══════════════════════════════════════════════ -->
+<div class="hero">
+  <div class="hero-label">// Prompt Engineering Evolution · 2025 → 2026</div>
+  <h1>LLM 提示詞工程<br>架構演進指南</h1>
+  <p class="hero-sub">從靜態指令堆疊到動態 Agentic 迴圈——全面解析兩代 Prompt 範本的設計哲學、元件對比與範式轉移。整合 Claude × Gemini 雙模型獨立分析結果。</p>
+  <div class="hero-badges">
+    <span class="badge badge-t1">2025 Static Paradigm</span>
+    <span class="badge badge-t2">2026 Agentic Paradigm</span>
+    <span class="badge badge-neutral">5 元件對比</span>
+    <span class="badge badge-neutral">4 範式轉移</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ══════════════════════════════════════════════
+     TOC
+══════════════════════════════════════════════ -->
+<div class="toc">
+  <div class="toc-title">// 目錄</div>
+  <ol>
+    <li><a href="#overview">兩代範式一眼看懂</a></li>
+    <li><a href="#arch-2025">2025 靜態架構深解</a></li>
+    <li><a href="#arch-2026">2026 Agentic 架構深解</a></li>
+    <li><a href="#component-map">元件對照圖</a></li>
+    <li><a href="#compare">完整元件比較矩陣</a></li>
+    <li><a href="#paradigm-shifts">四大範式轉移分析</a></li>
+    <li><a href="#choose">決策樹：我該用哪個範本？</a></li>
+    <li><a href="#start">立刻套用：Getting Started Paths</a></li>
+  </ol>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     §01 OVERVIEW
+══════════════════════════════════════════════ -->
+<div class="section" id="overview">
+  <div class="section-number">// 01</div>
+  <h2>兩代範式一眼看懂</h2>
+  <p>2025 範本對應通用模型時代；2026 範本對應 GPT-5.5 / Claude Opus 4.7 / Gemini 3.5 Flash 等新世代旗艦模型，兩者在設計哲學上有根本性差異。</p>
+
+  <div class="mode-overview">
+    <div class="mode-card t1">
+      <div class="mode-icon icon-t1">📋</div>
+      <h3>2025 Static Paradigm</h3>
+      <p>靜態指令堆疊架構。透過角色扮演、少樣本示範、線性 CoT 步驟逐步引導模型輸出。</p>
+      <ul>
+        <li>設計哲學：Stack（指令層層堆疊）</li>
+        <li>主要機制：CoT 手動引導推理</li>
+        <li>錯誤處理：無顯式機制</li>
+        <li>適用模型：通用 LLM（無版本假設）</li>
+        <li>元件數量：5 頂層元件</li>
+      </ul>
+    </div>
+    <div class="mode-card t2">
+      <div class="mode-icon icon-t2">⚙️</div>
+      <h3>2026 Agentic Paradigm</h3>
+      <p>動態執行迴圈架構。對標特定模型環境，透過自我驗證、工具整合、Token 預算控制達成高品質輸出。</p>
+      <ul>
+        <li>設計哲學：Execution Loop（動態迴圈）</li>
+        <li>主要機制：Self-Verification + Tool Integration</li>
+        <li>錯誤處理：強制缺失參數揭露</li>
+        <li>適用模型：GPT-5.5 / Claude Opus 4.7 / Gemini 3.5 Flash</li>
+        <li>元件數量：5 頂層元件（重新命名 + 升格）</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- ══════════════════════════════════════════════
+     §02 2025 深解
+══════════════════════════════════════════════ -->
+<div class="section" id="arch-2025">
+  <div class="section-number">// 02</div>
+  <h2>2025 靜態架構深解</h2>
+  <p>五個元件按順序堆疊，最後以 anchor_bridge 喚起注意力。設計上假設模型需要「手把手引導」思維鏈。</p>
+
+  <!-- system_instruction -->
+  <div class="mode-section">
+    <div class="mode-header c1-h">
+      <span style="font-size:20px">🎭</span>
+      <h3>&lt;system_instruction&gt; — 角色與全域限制</h3>
+      <span class="mode-tag">PERSONA · CONSTRAINT</span>
+    </div>
+    <div class="mode-body">
+      <div class="fact-grid">
+        <div class="fact-label">核心功能</div>
+        <div class="fact-value">靜態角色扮演設定（Role & Persona）+ 條列式全域行為限制</div>
+        <div class="fact-label">設計思路</div>
+        <div class="fact-value">透過「職稱 + 年資 + 知識背景」建立模型能力框架；限制項以 1/2/3 編號羅列</div>
+        <div class="fact-label">侷限</div>
+        <div class="fact-value">無環境宣告；不知道目標模型版本；推理行為依賴後續 CoT 指令引導</div>
+      </div>
+      <div class="code-block"><span class="tag">&lt;system_instruction&gt;</span>
+<span class="comment">## 角色與專業範疇</span>
+<span class="str">你是 [具體職稱/領域專家]，擁有 [特定年資/專業證照]。</span>
+
+<span class="comment">## 全域行為準則</span>
+<span class="kw">- 限制 1：</span><span class="str">僅基於提供的文本回答，禁止外推/幻覺</span>
+<span class="kw">- 限制 2：</span><span class="str">語氣保持中立客觀</span>
+<span class="tag">&lt;/system_instruction&gt;</span></div>
+    </div>
+  </div>
+
+  <!-- context_data -->
+  <div class="mode-section">
+    <div class="mode-header c2-h">
+      <span style="font-size:20px">📄</span>
+      <h3>&lt;context_data&gt; — 裸資料欄位</h3>
+      <span class="mode-tag">RAW CONTEXT · UNTYPED</span>
+    </div>
+    <div class="mode-body">
+      <div class="fact-grid">
+        <div class="fact-label">核心功能</div>
+        <div class="fact-value">承載大型參考文件、程式碼、數據庫或多模態輸入說明</div>
+        <div class="fact-label">資產管理</div>
+        <div class="fact-value">無 ID 索引；單純文本堆疊；無法跨步驟精確引用</div>
+        <div class="fact-label">侷限</div>
+        <div class="fact-value">長文本注意力衰減無對應機制；不支援多資產定址</div>
+      </div>
+      <div class="tip-box">
+        <span class="tip-icon">⚠️</span>
+        <p><strong>無型別資產的風險：</strong>當 context 超過 32K tokens，模型可能遺漏中段資訊。2025 範本對此無防禦設計。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- few_shot -->
+  <div class="mode-section">
+    <div class="mode-header c3-h">
+      <span style="font-size:20px">📚</span>
+      <h3>&lt;few_shot_examples&gt; — 示範學習元件</h3>
+      <span class="mode-tag">IN-CONTEXT LEARNING</span>
+    </div>
+    <div class="mode-body">
+      <div class="fact-grid">
+        <div class="fact-label">核心功能</div>
+        <div class="fact-value">標準 input/output 示範對，引導模型格式與邏輯模仿</div>
+        <div class="fact-label">設計思路</div>
+        <div class="fact-value">依賴範例規範生成品質；適合模型尚未內化任務格式的場景</div>
+        <div class="fact-label">侷限</div>
+        <div class="fact-value">佔用 Token；2026 新世代模型已高度格式遵循，此元件效益遞減</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- task_instructions -->
+  <div class="mode-section">
+    <div class="mode-header c4-h">
+      <span style="font-size:20px">📋</span>
+      <h3>&lt;task_instructions&gt; — 任務步驟 + 輸出規格</h3>
+      <span class="mode-tag">LINEAR CoT · FORMAT SPEC</span>
+    </div>
+    <div class="mode-body">
+      <div class="fact-grid">
+        <div class="fact-label">執行步驟</div>
+        <div class="fact-value">線性三段：① Analyze → ② Reason（CoT 內部推導）→ ③ Generate</div>
+        <div class="fact-label">輸出規格</div>
+        <div class="fact-value">內嵌子區塊：格式種類（Markdown/JSON）、結構要求、字數語系</div>
+        <div class="fact-label">侷限</div>
+        <div class="fact-value">輸出規格層級低（二級子欄位）；無 Token 預算控制；無工具調用掛載點</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- anchor_bridge -->
+  <div class="mode-section">
+    <div class="mode-header c5-h">
+      <span style="font-size:20px">⚓</span>
+      <h3>&lt;anchor_bridge&gt; — 注意力錨定</h3>
+      <span class="mode-tag">RECALL ANCHOR · ATTENTION</span>
+    </div>
+    <div class="mode-body">
+      <div class="fact-grid">
+        <div class="fact-label">核心功能</div>
+        <div class="fact-value">末端召回句，強迫模型在輸出前重新串聯 context + 限制 + 任務</div>
+        <div class="fact-label">設計思路</div>
+        <div class="fact-value">自然語言橋接：「請嚴格基於…並遵循…逐步執行…」語意繫結</div>
+        <div class="fact-label">原因</div>
+        <div class="fact-value">早期模型長文本注意力弱；末端提示可補強遺忘問題</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- ══════════════════════════════════════════════
+     §03 2026 深解
+══════════════════════════════════════════════ -->
+<div class="section" id="arch-2026">
+  <div class="section-number">// 03</div>
+  <h2>2026 Agentic 架構深解</h2>
+  <p>五個元件同樣五個，但設計邏輯從「引導」升級為「配置」——對模型的推理能力預設更高，轉而設定品質閘門與執行邊界。</p>
+
+  <!-- system_instruction 2026 -->
+  <div class="mode-section">
+    <div class="mode-header c1-h">
+      <span style="font-size:20px">🎯</span>
+      <h3>&lt;system_instruction&gt; — 環境對標 + 動態推理配置</h3>
+      <span class="mode-tag">ENV-TARGETED · DYNAMIC REASONING</span>
+    </div>
+    <div class="mode-body">
+      <div class="fact-grid">
+        <div class="fact-label">核心功能</div>
+        <div class="fact-value">顯式宣告目標模型運行環境 + 內嵌 Self-Verification 推理約束</div>
+        <div class="fact-label">升級點</div>
+        <div class="fact-value">① 模型版本宣告（GPT-5.5 / Claude Opus 4.7 / Gemini 3.5 Flash 優化）<br>② 禁止主觀推論；條件不足必須報錯<br>③ 強制格式去冗：移除客套話、Emoji</div>
+        <div class="fact-label">設計邏輯</div>
+        <div class="fact-value">新世代模型已高度具備專業知識，不需冗長角色扮演；改以環境宣告激活底層優化</div>
+      </div>
+      <div class="code-block"><span class="tag">&lt;system_instruction&gt;</span>
+<span class="comment">## 角色與核心能力</span>
+<span class="kw">職稱：</span><span class="str">[具體專家角色]</span>
+<span class="kw">運行環境：</span><span class="str">對標 [GPT-5.5 / Claude Opus 4.7 / Gemini 3.5 Flash] 優化環境</span>
+
+<span class="comment">## 動態推理配置</span>
+<span class="kw">- 思考配置：</span><span class="str">啟用內部自我驗證（Self-Verification）機制</span>
+<span class="kw">- 限制：</span><span class="str">若條件不足，必須直接指出缺失參數</span>
+<span class="kw">- 格式去冗：</span><span class="str">移除社交客套話、過度修飾詞與不必要的 Emoji</span>
+<span class="tag">&lt;/system_instruction&gt;</span></div>
+      <div class="tip-box">
+        <span class="tip-icon">🔑</span>
+        <p><strong>關鍵升級：</strong>「條件不足必須指出缺失參數」這條規則將模型從被動執行轉為主動品質守門者，大幅降低幻覺風險。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- context_assets -->
+  <div class="mode-section">
+    <div class="mode-header c2-h">
+      <span style="font-size:20px">🗂️</span>
+      <h3>&lt;context_assets&gt; — 資產化數據管理</h3>
+      <span class="mode-tag">DATA ID · TYPED ASSETS</span>
+    </div>
+    <div class="mode-body">
+      <div class="fact-grid">
+        <div class="fact-label">核心功能</div>
+        <div class="fact-value">帶唯一識別碼的資產管理，支援多模態與大規模上下文精確錨定</div>
+        <div class="fact-label">升級點</div>
+        <div class="fact-value"><code>[Data ID: 001]</code> 標記 → 跨步驟精確引用 → 防止長文本注意力衰減</div>
+        <div class="fact-label">適用場景</div>
+        <div class="fact-value">1M Token 超長 Context Window；多份文件並存需分別引用</div>
+      </div>
+      <div class="code-block"><span class="tag">&lt;context_assets&gt;</span>
+<span class="comment">## 參考文獻 / 數據資產</span>
+<span class="kw">[Data ID: 001]</span>
+<span class="str">[在此處輸入文字、程式碼或多模態媒體說明]</span>
+<span class="tag">&lt;/context_assets&gt;</span></div>
+    </div>
+  </div>
+
+  <!-- workflow_routing -->
+  <div class="mode-section">
+    <div class="mode-header c3-h">
+      <span style="font-size:20px">🔄</span>
+      <h3>&lt;workflow_routing&gt; — Agentic 執行迴圈</h3>
+      <span class="mode-tag">AGENTIC LOOP · TOOL INTEGRATION</span>
+    </div>
+    <div class="mode-body">
+      <div class="fact-grid">
+        <div class="fact-label">核心功能</div>
+        <div class="fact-value">代理人（Agentic）思維執行迴圈：Deconstruct → Self-Verify → Tool Integration</div>
+        <div class="fact-label">升級點</div>
+        <div class="fact-value">① Sub-task 自主拆解<br>② Self-Alignment 檢核閘（確認字面指令無遺漏）<br>③ 外部 API / Code Execution 掛載點</div>
+        <div class="fact-label">取代了什麼</div>
+        <div class="fact-value">取代 2025 的線性 CoT 步驟 + few_shot_examples 兩個元件的功能</div>
+      </div>
+      <div class="steps">
+        <h4>執行迴圈三步驟</h4>
+        <div class="step t2-step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>Deconstruct — 子任務拆解</h4>
+            <p>將主任務分解為獨立的次級子任務（Sub-tasks），每個子任務可獨立驗證</p>
+          </div>
+        </div>
+        <div class="step t2-step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>Self-Verify — 自我對齊檢核</h4>
+            <p>在最終輸出前執行 Self-Alignment，確認所有字面指令（Literal Instructions）無遺漏</p>
+          </div>
+        </div>
+        <div class="step t2-step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>Tool Integration — 工具調用</h4>
+            <p>若需呼叫外部 API、Code Execution 等，在此定義工具介面與調用邏輯</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- output_calibration -->
+  <div class="mode-section">
+    <div class="mode-header c4-h">
+      <span style="font-size:20px">📐</span>
+      <h3>&lt;output_calibration&gt; — Token 預算校準</h3>
+      <span class="mode-tag">TOKEN BUDGET · LENGTH DEFENSE</span>
+    </div>
+    <div class="mode-body">
+      <div class="fact-grid">
+        <div class="fact-label">核心功能</div>
+        <div class="fact-value">輸出長度範疇強制宣告 + JSON Schema / Markdown 層級硬規範</div>
+        <div class="fact-label">升級點</div>
+        <div class="fact-value">從二級子欄位升格為<strong>一級獨立元件</strong>；新增 Token 長度防禦（防模型自動縮減輸出）</div>
+        <div class="fact-label">解決問題</div>
+        <div class="fact-value">Claude Opus 4.7 等模型會依任務複雜度自動緊縮輸出；需顯式鎖定密度</div>
+      </div>
+      <div class="tip-box">
+        <span class="tip-icon">💡</span>
+        <p><strong>Token Budgeting 實作：</strong>明確指定如「輸出 800–1200 字」而非「適量」，強制鎖定資訊密度，確保長文本處理完整性。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- execute -->
+  <div class="mode-section">
+    <div class="mode-header c5-h">
+      <span style="font-size:20px">▶️</span>
+      <h3>&lt;execute&gt; — 原子化執行觸發器</h3>
+      <span class="mode-tag">PIPELINE DISPATCH · ATOMIC TRIGGER</span>
+    </div>
+    <div class="mode-body">
+      <div class="fact-grid">
+        <div class="fact-label">核心功能</div>
+        <div class="fact-value">三段管道式閉合：數據（context_assets）→ 約束（system_instruction）→ 輸出（output_calibration）</div>
+        <div class="fact-label">升級點</div>
+        <div class="fact-value">移除自然語言過渡詞；以高密度閉合標籤直接觸發；不重複前置規範</div>
+        <div class="fact-label">設計邏輯</div>
+        <div class="fact-value">2026 模型指令遵循率大幅提升，不再需要末端語意橋接；原子化觸發更高效</div>
+      </div>
+      <div class="code-block"><span class="tag">&lt;execute&gt;</span>
+<span class="str">請依據 &lt;workflow_routing&gt; 的步驟，</span>
+<span class="str">在 &lt;system_instruction&gt; 的約束下，</span>
+<span class="str">處理 &lt;context_assets&gt; 的數據，</span>
+<span class="str">最終由 &lt;output_calibration&gt; 輸出。</span>
+<span class="tag">&lt;/execute&gt;</span></div>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- ══════════════════════════════════════════════
+     §04 COMPONENT MAP
+══════════════════════════════════════════════ -->
+<div class="section" id="component-map">
+  <div class="section-number">// 04</div>
+  <h2>元件對照圖</h2>
+  <p>同功能角色在兩代範本的對應關係。注意 few_shot_examples 在 2026 消失，其功能由 workflow_routing 的 Self-Alignment 吸收。</p>
+
+  <div class="comp-map">
+    <div class="comp-col">
+      <div class="comp-label" style="color:var(--t1-color);">2025 Static</div>
+      <div class="comp-item t1">
+        <strong>&lt;system_instruction&gt;</strong>
+        <span>角色扮演 + 全域限制</span>
+      </div>
+      <div class="comp-item t1">
+        <strong>&lt;context_data&gt;</strong>
+        <span>裸資料欄位（無 ID）</span>
+      </div>
+      <div class="comp-item t1">
+        <strong>&lt;few_shot_examples&gt;</strong>
+        <span>input/output 示範對</span>
+      </div>
+      <div class="comp-item t1">
+        <strong>&lt;task_instructions&gt;</strong>
+        <span>線性 CoT + 輸出規格（內嵌）</span>
+      </div>
+      <div class="comp-item t1">
+        <strong>&lt;anchor_bridge&gt;</strong>
+        <span>召回式錨定句</span>
+      </div>
+    </div>
+
+    <div class="comp-arrows">
+      <div class="comp-arr">→</div>
+      <div class="comp-arr">→</div>
+      <div class="comp-del">↘ 消失</div>
+      <div class="comp-arr">→</div>
+      <div style="display:flex;flex-direction:column;gap:4px;align-items:center">
+        <div class="comp-arr">→</div>
+        <div class="comp-arr">→</div>
+      </div>
+    </div>
+
+    <div class="comp-col">
+      <div class="comp-label" style="color:var(--t2-color);">2026 Agentic</div>
+      <div class="comp-item t2">
+        <strong>&lt;system_instruction&gt;</strong>
+        <span>環境對標 + 動態推理配置</span>
+      </div>
+      <div class="comp-item t2">
+        <strong>&lt;context_assets&gt;</strong>
+        <span>Data ID 索引資產管理</span>
+      </div>
+      <div class="comp-item t2" style="opacity:0.4; border-style:dashed;">
+        <strong>（已移除）</strong>
+        <span>Self-Alignment 取代範例引導</span>
+      </div>
+      <div class="comp-item t2">
+        <strong>&lt;workflow_routing&gt;</strong>
+        <span>Agentic 迴圈 + 工具整合</span>
+      </div>
+      <div class="comp-item t2">
+        <strong>&lt;output_calibration&gt;</strong>
+        <span>獨立 Token Budget 元件</span>
+      </div>
+      <div class="comp-item t2">
+        <strong>&lt;execute&gt;</strong>
+        <span>原子化管道觸發</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="source-row">
+    <span class="src-badge src-claude">Claude 分析來源</span>
+    <span class="src-badge src-gemini">Gemini 分析來源</span>
+    <span class="src-badge">整合兩份報告</span>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- ══════════════════════════════════════════════
+     §05 COMPARE TABLE
+══════════════════════════════════════════════ -->
+<div class="section" id="compare">
+  <div class="section-number">// 05</div>
+  <h2>完整元件比較矩陣</h2>
+  <p>六個維度全面對比，結合 Claude 矩陣報告與 Gemini 深度分析的共識結論。</p>
+
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>比較維度</th>
+        <th>📋 2025 Static Paradigm</th>
+        <th>⚙️ 2026 Agentic Paradigm</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>設計哲學</td>
+        <td>靜態指令堆疊（Stack）<br>手動逐層組裝</td>
+        <td>動態執行迴圈（Execution Loop）<br>自主 Deconstruct → Verify → Execute</td>
+      </tr>
+      <tr>
+        <td>系統定義</td>
+        <td>靜態角色扮演（Role & Persona）<br>通用全域行為限制</td>
+        <td>環境對標宣告（Running Environment）<br>對標具體旗艦模型版本 + 動態推理配置</td>
+      </tr>
+      <tr>
+        <td>推理機制</td>
+        <td>手動 CoT 引導（task_instructions 內嵌）<br>提示詞工程師寫明思維鏈步驟</td>
+        <td>原生推理防禦閘門（Self-Verification）<br>配置邊界而非引導思考</td>
+      </tr>
+      <tr>
+        <td>資料管理</td>
+        <td>裸文本堆疊（context_data）<br>無索引、無定址能力</td>
+        <td>Data ID 資產索引（context_assets）<br>唯一識別碼防注意力衰減</td>
+      </tr>
+      <tr>
+        <td>示範學習</td>
+        <td><span class="yes">✓</span> few_shot_examples<br>顯式 input/output 範例對</td>
+        <td><span class="no">✗</span> 已移除<br>由 workflow_routing Self-Alignment 隱式取代</td>
+      </tr>
+      <tr>
+        <td>工具整合</td>
+        <td><span class="no">✗</span> 無掛載點<br>純文本推理封閉迴圈</td>
+        <td><span class="yes">✓</span> workflow_routing 第 3 步<br>定義外部 API / Code Execution 調用介面</td>
+      </tr>
+      <tr>
+        <td>輸出規格</td>
+        <td>二級子欄位（task_instructions 內嵌）<br>靜態格式：Markdown/JSON/Table</td>
+        <td>一級獨立元件（output_calibration）<br>Token Budget + 長度防禦 + JSON Schema 硬規範</td>
+      </tr>
+      <tr>
+        <td>錯誤處理</td>
+        <td><span class="no">✗</span> 無顯式機制<br>條件不足時模型自行補完（幻覺風險）</td>
+        <td><span class="yes">✓</span> 強制報錯機制<br>「條件不足必須直接指出缺失參數」</td>
+      </tr>
+      <tr>
+        <td>啟動指令</td>
+        <td>&lt;anchor_bridge&gt; 召回式<br>自然語言語意橋接末端錨定</td>
+        <td>&lt;execute&gt; 原子化觸發<br>高密度管道式閉合（data→constraint→output）</td>
+      </tr>
+      <tr>
+        <td>模型假設</td>
+        <td>通用模型適用<br>無版本耦合</td>
+        <td>對標特定旗艦模型版本<br>GPT-5.5 / Claude Opus 4.7 / Gemini 3.5 Flash</td>
+      </tr>
+      <tr>
+        <td>頂層元件數</td>
+        <td>5 個</td>
+        <td>5 個（重組後；輸出規格升格為 +1 獨立元件）</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="rule">
+
+<!-- ══════════════════════════════════════════════
+     §06 PARADIGM SHIFTS
+══════════════════════════════════════════════ -->
+<div class="section" id="paradigm-shifts">
+  <div class="section-number">// 06</div>
+  <h2>四大範式轉移分析</h2>
+  <p>Gemini 報告的深度解析與 Claude 報告的演進向量相互驗證，提煉出四個底層邏輯轉移。</p>
+
+  <div class="shift-grid">
+    <div class="shift-card">
+      <div class="shift-num">// Shift 01</div>
+      <div class="shift-arrow">
+        <span class="shift-from">擬人化角色</span>
+        <span class="shift-arr">→</span>
+        <span class="shift-to">環境感知代理</span>
+      </div>
+      <h4>靜態角色扮演 → 環境對標宣告</h4>
+      <p>2025 年需要冗長角色扮演隱式引導能力框架；2026 新世代模型已具備極高基礎能力，直接宣告執行環境即可激活底層優化（如 Gemini 3.5 Flash 的 Antigravity 代理架構）。Token 不應浪費在擬人化修飾。</p>
+    </div>
+
+    <div class="shift-card">
+      <div class="shift-num">// Shift 02</div>
+      <div class="shift-arrow">
+        <span class="shift-from">手動引導思維</span>
+        <span class="shift-arr">→</span>
+        <span class="shift-to">動態推理防禦</span>
+      </div>
+      <h4>CoT 手動設計 → Self-Verification 閘門</h4>
+      <p>2025 提示詞工程師必須手寫「Let's think step by step」等思維鏈防止邏輯跳躍；2026 模型已將 Adaptive Thinking 深植底層。提示詞工程的作用從「引導思考」轉為「設定品質安全閘門（Guardrail）」。</p>
+    </div>
+
+    <div class="shift-card">
+      <div class="shift-num">// Shift 03</div>
+      <div class="shift-arrow">
+        <span class="shift-from">線性單向工序</span>
+        <span class="shift-arr">→</span>
+        <span class="shift-to">自主工作流路由</span>
+      </div>
+      <h4>Analyze→Reason→Generate → 自主代理迴圈</h4>
+      <p>2025 範本採「輸入-分析-輸出」單向線性，無法處理複雜長週期任務（Long-Horizon Tasks）。2026 引入 Workflow Routing，模型自主拆解任務、調用工具，並在輸出前執行 Self-Alignment 對齊檢核。</p>
+    </div>
+
+    <div class="shift-card">
+      <div class="shift-num">// Shift 04</div>
+      <div class="shift-arrow">
+        <span class="shift-from">靜態格式規範</span>
+        <span class="shift-arr">→</span>
+        <span class="shift-to">Token 預算防禦</span>
+      </div>
+      <h4>Format Spec → Output Calibration + Length Defense</h4>
+      <p>2025 年只需關注 Markdown/JSON 格式；2026 年 1M Token 長 Context + 模型自動緊縮輸出特性，使提示詞必須走向 Token Budgeting 與防禦性長度校準，強制鎖定輸出資訊密度。</p>
+    </div>
+  </div>
+
+  <div class="tip-box">
+    <span class="tip-icon">🎯</span>
+    <p><strong>Claude × Gemini 雙模型共識：</strong>兩份獨立報告均指出「Self-Verification 取代 Few-Shot」和「輸出規格升格為一級元件」為 2026 最關鍵的結構性變化，一致性高。Gemini 另外強調了 1M Token 長 Context 防衰減設計；Claude 報告更細化了 anchor_bridge → execute 的語義遷移。</p>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- ══════════════════════════════════════════════
+     §07 DECISION TREE
+══════════════════════════════════════════════ -->
+<div class="section" id="choose">
+  <div class="section-number">// 07</div>
+  <h2>決策樹：我該用哪個範本？</h2>
+  <p>依據你的目標模型、任務類型、對幻覺容忍度選擇適合的範式。</p>
+</div>
+
+<div class="decision">
+  <h3>🌿 根據情境選擇 2025 或 2026 範本</h3>
+
+  <div class="decision-item">
+    <div class="decision-q">使用的是 GPT-4 / Claude 3 / 舊版模型</div>
+    <div class="decision-arrow">→</div>
+    <div class="decision-a a-t1">2025 Static Paradigm</div>
+  </div>
+  <div class="decision-item">
+    <div class="decision-q">使用 GPT-5.5 / Claude Opus 4.7 / Gemini 3.5 Flash</div>
+    <div class="decision-arrow">→</div>
+    <div class="decision-a a-t2">2026 Agentic Paradigm</div>
+  </div>
+  <div class="decision-item">
+    <div class="decision-q">任務需要外部工具 / API 調用 / Code Execution</div>
+    <div class="decision-arrow">→</div>
+    <div class="decision-a a-t2">2026 — workflow_routing Tool Integration</div>
+  </div>
+  <div class="decision-item">
+    <div class="decision-q">新手，需要範例示範來校準輸出格式</div>
+    <div class="decision-arrow">→</div>
+    <div class="decision-a a-t1">2025 — few_shot_examples 仍有效</div>
+  </div>
+  <div class="decision-item">
+    <div class="decision-q">Context 超過 64K tokens，有多份文件需分別引用</div>
+    <div class="decision-arrow">→</div>
+    <div class="decision-a a-t2">2026 — context_assets Data ID 索引</div>
+  </div>
+  <div class="decision-item">
+    <div class="decision-q">輸出長度必須精確控制（報告、合約等）</div>
+    <div class="decision-arrow">→</div>
+    <div class="decision-a a-t2">2026 — output_calibration Token Budget</div>
+  </div>
+  <div class="decision-item">
+    <div class="decision-q">任務邏輯簡單，單輪問答，無需複雜工作流</div>
+    <div class="decision-arrow">→</div>
+    <div class="decision-a a-t1">2025 — 架構更輕量適合</div>
+  </div>
+  <div class="decision-item">
+    <div class="decision-q">任務是長週期 Multi-step，需要自主子任務拆解</div>
+    <div class="decision-arrow">→</div>
+    <div class="decision-a a-t2">2026 — workflow_routing Deconstruct 迴圈</div>
+  </div>
+  <div class="decision-item">
+    <div class="decision-q">對幻覺零容忍，需要模型主動報錯</div>
+    <div class="decision-arrow">→</div>
+    <div class="decision-a a-t2">2026 — 強制缺失參數揭露機制</div>
+  </div>
+  <div class="decision-item">
+    <div class="decision-q">跨模型相容性需求（不確定最終跑哪個模型）</div>
+    <div class="decision-arrow">→</div>
+    <div class="decision-a a-both">2025 較安全（模型無關設計）</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     §08 GETTING STARTED
+══════════════════════════════════════════════ -->
+<div class="section" id="start">
+  <div class="section-number">// 08</div>
+  <h2>立刻套用：Getting Started Paths</h2>
+  <p>依你目前的使用場景選擇起點。</p>
+
+  <div class="path-grid">
+    <div class="path-card t1">
+      <div class="path-label">PATH A — 使用 2025 範本（通用 / 舊版模型）</div>
+      <ol>
+        <li>複製 2025 XML 模板骨架（5 元件）</li>
+        <li>填寫 <code>&lt;system_instruction&gt;</code>：具體職稱 + 3 條全域限制</li>
+        <li>貼入 <code>&lt;context_data&gt;</code>：參考文件或原始數據</li>
+        <li>補充 1–3 組 <code>&lt;few_shot_examples&gt;</code>：input/output 示範對</li>
+        <li>撰寫 <code>&lt;task_instructions&gt;</code>：Analyze→Reason→Generate + 輸出格式</li>
+        <li>保留 <code>&lt;anchor_bridge&gt;</code>，確認三段式召回句完整</li>
+      </ol>
+    </div>
+
+    <div class="path-card t2">
+      <div class="path-label">PATH B — 使用 2026 範本（旗艦模型 / Agentic 任務）</div>
+      <ol>
+        <li>複製 2026 XML 模板骨架（5 元件）</li>
+        <li>填寫 <code>&lt;system_instruction&gt;</code>：宣告目標模型版本 + 開啟 Self-Verification</li>
+        <li>為每份輸入資料設定 Data ID → 填入 <code>&lt;context_assets&gt;</code></li>
+        <li>定義 <code>&lt;workflow_routing&gt;</code> 三步驟，特別是 Tool Integration 掛載點</li>
+        <li>在 <code>&lt;output_calibration&gt;</code> 明確指定字數範圍 + JSON Schema 或 Markdown 層級</li>
+        <li>保留精簡的 <code>&lt;execute&gt;</code> 三段管道式觸發句</li>
+        <li>移除所有 few_shot_examples（此範本不需要）</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="tip-box">
+    <span class="tip-icon">💡</span>
+    <p><strong>升級路徑建議：</strong>從 2025 遷移到 2026 最關鍵的兩步：① 把 <code>&lt;task_instructions&gt;</code> 的輸出格式子區塊獨立抽出，變成 <code>&lt;output_calibration&gt;</code> 並加上 Token Budget；② 把末尾的 <code>&lt;anchor_bridge&gt;</code> 換成原子化的 <code>&lt;execute&gt;</code> 三段管道。其他元件基本是重命名 + 小幅升級。</p>
+  </div>
+</div>
+
+<!-- ──────────────── FOOTER ──────────────── -->
+<div class="footer">
+  <span>LLM Prompt Engineering Evolution Guide · 2026-05-27</span>
+  <a href="https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview" target="_blank">docs.anthropic.com/prompt-engineering →</a>
+</div>
+
+</div><!-- /container -->
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+<script>
+(function(){
+  var btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', function(){
+    btn.classList.toggle('visible', window.scrollY > 400);
+  }, { passive: true });
+  btn.addEventListener('click', function(){
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10 大 LLM 核心概念教學指南 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;900&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#0f0e0d; --paper:#f5f0e8; --warm-mid:#e8e0d0; --border:#c8bfa8; --muted:#7a7060;
+  --t1-color:#1a3d70; --t1-bg:#e8eff9;
+  --t2-color:#1a7a6e; --t2-bg:#e8f5f3;
+  --t3-color:#6b3db8; --t3-bg:#f0eaf9;
+  --t4-color:#8c3d1a; --t4-bg:#faf0e8;
+  --t5-color:#1a6b4a; --t5-bg:#e8f5ee;
+  --hero-accent:#1a7a6e;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans TC',sans-serif;font-size:15px;line-height:1.75;color:var(--ink);background:var(--paper);}
+
+/* HERO */
+.hero{background:var(--ink);color:var(--paper);padding:56px 48px 48px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-60px;right:-60px;width:300px;height:300px;border:1px solid rgba(245,240,232,.10);border-radius:50%;}
+.hero::after{content:'';position:absolute;bottom:-80px;left:20%;width:220px;height:220px;border:1px solid rgba(245,240,232,.07);border-radius:50%;}
+.hero-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--hero-accent);margin-bottom:16px;}
+.hero h1{font-family:'Noto Serif TC',serif;font-weight:900;font-size:2.4rem;line-height:1.25;margin-bottom:16px;max-width:660px;}
+.hero-sub{font-size:14px;color:rgba(245,240,232,.65);max-width:600px;font-weight:300;line-height:1.7;}
+.hero-badges{display:flex;gap:8px;margin-top:28px;flex-wrap:wrap;}
+.badge{padding:5px 14px;border-radius:2px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.05em;color:#fff;}
+.badge-t1{background:var(--t1-color);} .badge-t2{background:var(--t2-color);}
+.badge-t3{background:var(--t3-color);} .badge-t4{background:var(--t4-color);}
+.badge-t5{background:var(--t5-color);}
+
+/* LAYOUT */
+.container{max-width:820px;margin:0 auto;padding:0 32px;}
+hr.rule{border:none;border-top:1px solid var(--border);margin:40px 0;}
+.section{padding:48px 0 0;}
+.section-number{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.15em;color:var(--muted);margin-bottom:6px;}
+.section h2{font-family:'Noto Serif TC',serif;font-weight:900;font-size:1.7rem;margin-bottom:18px;line-height:1.3;}
+.section > p.intro{font-size:14px;color:var(--muted);margin-bottom:8px;max-width:700px;}
+
+/* TOC */
+.toc{background:var(--warm-mid);border-left:3px solid var(--hero-accent);padding:24px 28px;margin:40px 0 0;}
+.toc-title{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.toc ol{padding-left:20px;font-size:13px;color:var(--muted);line-height:2.2;}
+.toc a{color:inherit;text-decoration:none;} .toc a:hover{color:var(--hero-accent);}
+
+/* OVERVIEW */
+.mode-overview{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--border);overflow:hidden;margin:32px 0;}
+.mode-card{padding:20px 16px;border-right:1px solid var(--border);}
+.mode-card:last-child{border-right:none;}
+.mode-card.t1{background:var(--t1-bg);} .mode-card.t2{background:var(--t2-bg);}
+.mode-card.t3{background:var(--t3-bg);} .mode-card.t4{background:var(--t4-bg);}
+.mode-card.t5{background:var(--t5-bg);}
+.mode-icon{width:34px;height:34px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:10px;}
+.icon-t1{background:var(--t1-color);} .icon-t2{background:var(--t2-color);}
+.icon-t3{background:var(--t3-color);} .icon-t4{background:var(--t4-color);}
+.icon-t5{background:var(--t5-color);}
+.mode-card h3{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;margin-bottom:6px;line-height:1.4;}
+.mode-card.t1 h3{color:var(--t1-color);} .mode-card.t2 h3{color:var(--t2-color);}
+.mode-card.t3 h3{color:var(--t3-color);} .mode-card.t4 h3{color:var(--t4-color);}
+.mode-card.t5 h3{color:var(--t5-color);}
+.mode-card p{font-size:11.5px;color:var(--muted);line-height:1.5;margin:0;}
+
+/* MODULE SECTION */
+.mode-section{border:1px solid var(--border);margin:24px 0;overflow:hidden;}
+.mode-header{padding:16px 22px;display:flex;align-items:center;gap:14px;}
+.mode-header.t1-h{background:var(--t1-color);} .mode-header.t2-h{background:var(--t2-color);}
+.mode-header.t3-h{background:var(--t3-color);} .mode-header.t4-h{background:var(--t4-color);}
+.mode-header.t5-h{background:var(--t5-color);}
+.mode-header h3{font-family:'Noto Serif TC',serif;font-size:1.1rem;font-weight:900;color:#fff;flex:1;}
+.mode-header .mode-tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.15em;color:rgba(255,255,255,.55);margin-left:auto;white-space:nowrap;}
+.mode-body{padding:20px 22px;background:var(--paper);}
+
+/* FACT GRID */
+.fact-grid{display:grid;grid-template-columns:100px 1fr;border:1px solid var(--border);font-size:13px;overflow:hidden;margin:16px 0;}
+.fact-label{background:var(--warm-mid);padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.1em;display:flex;align-items:flex-start;border-bottom:1px solid var(--border);}
+.fact-value{padding:12px 16px;border-bottom:1px solid var(--border);line-height:1.65;}
+.fact-label:last-of-type{border-bottom:none;}
+.fact-value:last-child{border-bottom:none;}
+
+/* FLOW STEPS */
+.flow-steps{display:flex;gap:0;margin:14px 0;overflow-x:auto;}
+.flow-step{flex:1;min-width:110px;padding:12px 10px;text-align:center;border:1px solid var(--border);position:relative;background:var(--paper);}
+.flow-step+.flow-step{border-left:none;}
+.flow-step-num{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.1em;margin-bottom:5px;}
+.flow-step h4{font-size:12px;font-weight:700;margin-bottom:3px;}
+.flow-step p{font-size:11px;color:var(--muted);line-height:1.45;margin:0;}
+.flow-step.t1-s .flow-step-num{color:var(--t1-color);} .flow-step.t2-s .flow-step-num{color:var(--t2-color);}
+.flow-step.t3-s .flow-step-num{color:var(--t3-color);} .flow-step.t4-s .flow-step-num{color:var(--t4-color);}
+.flow-step.t5-s .flow-step-num{color:var(--t5-color);}
+
+/* STEPS */
+.steps{margin:14px 0;}
+.step{display:flex;gap:14px;margin-bottom:8px;padding:12px 14px;background:var(--warm-mid);border-left:3px solid transparent;}
+.step.t1-step{border-left-color:var(--t1-color);} .step.t2-step{border-left-color:var(--t2-color);}
+.step.t3-step{border-left-color:var(--t3-color);} .step.t4-step{border-left-color:var(--t4-color);}
+.step.t5-step{border-left-color:var(--t5-color);}
+.step-num{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;min-width:24px;line-height:1.5;}
+.step.t1-step .step-num{color:var(--t1-color);} .step.t2-step .step-num{color:var(--t2-color);}
+.step.t3-step .step-num{color:var(--t3-color);} .step.t4-step .step-num{color:var(--t4-color);}
+.step.t5-step .step-num{color:var(--t5-color);}
+.step-content h4{font-size:13px;font-weight:700;margin-bottom:3px;}
+.step-content p{font-size:12.5px;color:var(--muted);margin:0;line-height:1.55;}
+
+/* TIP BOX */
+.tip-box{border:1px solid var(--border);padding:13px 16px;margin:14px 0;display:flex;gap:12px;background:rgba(245,240,232,.6);}
+.tip-icon{font-size:16px;flex-shrink:0;margin-top:2px;}
+.tip-box p{font-size:13px;margin:0;line-height:1.65;}
+
+/* TWO-COL */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0;}
+.mini-card{border:1px solid var(--border);padding:14px 16px;}
+.mini-card h4{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+.mini-card ul{list-style:none;padding:0;}
+.mini-card ul li{font-size:12.5px;color:var(--muted);padding:3px 0 3px 14px;position:relative;line-height:1.5;}
+.mini-card ul li::before{content:'→';position:absolute;left:0;}
+
+/* PIPELINE */
+.pipeline{display:flex;align-items:center;gap:6px;margin:14px 0;flex-wrap:wrap;}
+.pipe-box{padding:7px 12px;border:1px solid var(--border);border-radius:2px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;background:var(--warm-mid);white-space:nowrap;}
+.pipe-arrow{color:var(--muted);font-size:14px;}
+.pipe-box.t1{background:var(--t1-bg);border-color:var(--t1-color);color:var(--t1-color);}
+.pipe-box.t2{background:var(--t2-bg);border-color:var(--t2-color);color:var(--t2-color);}
+.pipe-box.t3{background:var(--t3-bg);border-color:var(--t3-color);color:var(--t3-color);}
+.pipe-box.t4{background:var(--t4-bg);border-color:var(--t4-color);color:var(--t4-color);}
+.pipe-box.t5{background:var(--t5-bg);border-color:var(--t5-color);color:var(--t5-color);}
+
+/* COMPARE TABLE */
+.compare-table{width:100%;border-collapse:collapse;font-size:12.5px;margin:18px 0;}
+.compare-table th{padding:9px 12px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.15em;font-weight:600;text-transform:uppercase;border-bottom:2px solid var(--ink);}
+.compare-table th:nth-child(1){background:var(--warm-mid);color:var(--muted);}
+.compare-table th:nth-child(2){background:var(--t1-bg);color:var(--t1-color);}
+.compare-table th:nth-child(3){background:var(--t3-bg);color:var(--t3-color);}
+.compare-table th:nth-child(4){background:var(--t5-bg);color:var(--t5-color);}
+.compare-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top;font-size:12.5px;line-height:1.6;}
+.compare-table td:first-child{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);background:var(--warm-mid);white-space:nowrap;}
+.compare-table tr:last-child td{border-bottom:none;}
+.yes{color:#1a7a6e;font-weight:700;} .no{color:#c0555a;} .partial{color:#a06020;}
+
+/* GENERAL TABLE */
+.gen-table{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0;}
+.gen-table th{background:var(--warm-mid);padding:8px 12px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;border:1px solid var(--border);}
+.gen-table td{padding:8px 12px;border:1px solid var(--border);vertical-align:top;line-height:1.6;}
+.gen-table td:first-child{font-weight:600;color:var(--muted);background:var(--warm-mid);white-space:nowrap;}
+
+/* CACHE GRID */
+.cache-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0;}
+.cache-card{border:1px solid var(--border);overflow:hidden;}
+.cache-card-head{padding:9px 12px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;}
+.cache-card-head.t1{background:var(--t1-bg);color:var(--t1-color);}
+.cache-card-head.t3{background:var(--t3-bg);color:var(--t3-color);}
+.cache-card-head.t4{background:var(--t4-bg);color:var(--t4-color);}
+.cache-card-head.t5{background:var(--t5-bg);color:var(--t5-color);}
+.cache-card ul{list-style:none;padding:10px 12px;}
+.cache-card ul li{font-size:11.5px;color:var(--muted);padding:2px 0 2px 12px;position:relative;}
+.cache-card ul li::before{content:'·';position:absolute;left:0;font-size:16px;line-height:1.2;}
+
+/* DECISION TREE */
+.decision{background:var(--ink);color:var(--paper);padding:26px 30px;margin:24px 0;}
+.decision h3{font-family:'Noto Serif TC',serif;font-size:1.05rem;margin-bottom:18px;}
+.decision-item{display:flex;gap:12px;margin-bottom:9px;align-items:flex-start;}
+.decision-q{font-size:13px;color:rgba(245,240,232,.72);min-width:240px;padding-top:2px;line-height:1.5;}
+.decision-arrow{color:var(--hero-accent);font-size:14px;padding-top:2px;flex-shrink:0;}
+.decision-a{font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:600;line-height:1.5;}
+.a-t1{color:#7baee8;} .a-t2{color:#6aad8e;} .a-t3{color:#c0a8e8;} .a-t4{color:#e8904a;} .a-t5{color:#6abf8e;}
+
+/* GETTING STARTED */
+.path-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:18px 0;}
+.path-card{border:1px solid var(--border);padding:18px 18px;}
+.path-card.t1{background:var(--t1-bg);} .path-card.t2{background:var(--t2-bg);} .path-card.t3{background:var(--t3-bg);}
+.path-label{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;}
+.path-card.t1 .path-label{color:var(--t1-color);} .path-card.t2 .path-label{color:var(--t2-color);} .path-card.t3 .path-label{color:var(--t3-color);}
+.path-card ol{padding-left:16px;font-size:12.5px;line-height:2.0;}
+
+/* TASK TABLE */
+.task-table{width:100%;border-collapse:collapse;font-size:12.5px;margin:16px 0;}
+.task-table th{background:var(--ink);color:var(--paper);padding:8px 12px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;}
+.task-table td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6;}
+.task-table td:first-child{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);white-space:nowrap;}
+.task-table tr:last-child td{border-bottom:none;}
+
+/* QA TABLE */
+.qa-table{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0;}
+.qa-table th{background:var(--warm-mid);padding:8px 12px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;border:1px solid var(--border);}
+.qa-table td{padding:8px 12px;border:1px solid var(--border);vertical-align:top;line-height:1.6;}
+.qa-table td:first-child{font-weight:600;color:var(--muted);background:var(--warm-mid);white-space:nowrap;}
+
+/* REFERENCES */
+.ref-list{list-style:none;padding:0;margin:16px 0;}
+.ref-item{display:flex;gap:14px;padding:10px 0;border-bottom:1px solid var(--border);align-items:flex-start;}
+.ref-item:last-child{border-bottom:none;}
+.ref-num{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);min-width:28px;padding-top:2px;}
+.ref-body{font-size:13px;line-height:1.6;}
+.ref-body strong{display:block;font-weight:600;margin-bottom:2px;}
+.ref-body a{color:var(--hero-accent);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:11px;}
+.ref-body a:hover{text-decoration:underline;}
+.ref-tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;padding:2px 8px;border-radius:2px;margin-left:6px;vertical-align:middle;}
+.ref-tag.anthropic{background:var(--t4-bg);color:var(--t4-color);}
+.ref-tag.openai{background:var(--t1-bg);color:var(--t1-color);}
+.ref-tag.google{background:var(--t5-bg);color:var(--t5-color);}
+.ref-tag.mcp{background:var(--t3-bg);color:var(--t3-color);}
+.ref-tag.paper{background:var(--warm-mid);color:var(--muted);}
+
+/* SOURCE ROW */
+.source-row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
+.src-badge{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;padding:3px 10px;border-radius:2px;border:1px solid var(--border);color:var(--muted);}
+.src-anthropic{border-color:var(--t4-color);color:var(--t4-color);background:var(--t4-bg);}
+.src-openai{border-color:var(--t1-color);color:var(--t1-color);background:var(--t1-bg);}
+.src-google{border-color:var(--t5-color);color:var(--t5-color);background:var(--t5-bg);}
+.src-mcp{border-color:var(--t3-color);color:var(--t3-color);background:var(--t3-bg);}
+.src-paper{border-color:var(--muted);color:var(--muted);background:var(--warm-mid);}
+
+/* BACK-TO-TOP */
+.back-to-top{position:fixed;bottom:32px;right:32px;width:40px;height:40px;background:var(--ink);color:var(--paper);border:1px solid var(--border);border-radius:2px;font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;line-height:1;cursor:pointer;opacity:0;transform:translateY(8px);transition:opacity .2s ease,transform .2s ease,background .15s ease;z-index:100;}
+.back-to-top.visible{opacity:1;transform:translateY(0);}
+.back-to-top:hover{background:var(--hero-accent);border-color:var(--hero-accent);}
+
+/* FOOTER */
+.footer{margin:56px 0 0;padding:24px 0 32px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+.footer a{color:inherit;text-decoration:none;} .footer a:hover{color:var(--hero-accent);}
+
+/* RESPONSIVE */
+@media(max-width:640px){
+  .hero{padding:36px 20px 32px;} .hero h1{font-size:1.7rem;} .container{padding:0 16px;}
+  .mode-overview{grid-template-columns:repeat(2,1fr);}
+  .mode-card{border-right:none;border-bottom:1px solid var(--border);}
+  .flow-steps{flex-direction:column;}
+  .flow-step+.flow-step{border-left:1px solid var(--border);border-top:none;}
+  .two-col,.path-grid,.cache-grid{grid-template-columns:1fr;}
+  .compare-table{font-size:11px;} .compare-table td,.compare-table th{padding:7px 8px;}
+  .decision-item{flex-direction:column;gap:4px;} .decision-q{min-width:unset;}
+  .back-to-top{bottom:20px;right:20px;}
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-label">// LLM Core Concepts · 培訓教學指南 · 2026-05-27</div>
+  <h1>10 大 LLM<br>核心概念完全指南</h1>
+  <p class="hero-sub">從 Token 到 Agent、從 Prompt 到 RAG——系統化理解大型語言模型的基礎架構與應用技術。整合培訓簡報 × Claude × Gemini × GPT 三模型分析，以 Anthropic / OpenAI / Google 官方文件為基準，2026/05 版本。</p>
+  <div class="hero-badges">
+    <span class="badge badge-t1">LLM · Token</span>
+    <span class="badge badge-t2">Context · Prompt</span>
+    <span class="badge badge-t3">Tool · MCP</span>
+    <span class="badge badge-t4">Agent · Skill</span>
+    <span class="badge badge-t5">RAG · Cache</span>
+  </div>
+</div>
+
+<div class="container">
+<!-- TOC -->
+<div class="toc">
+  <div class="toc-title">// 目錄</div>
+  <ol>
+    <li><a href="#overview">10 大概念一眼看懂</a></li>
+    <li><a href="#llm-token">模組 1–2：LLM 與 Token</a></li>
+    <li><a href="#context-prompt">模組 3–4：Context Window 與 Prompt</a></li>
+    <li><a href="#tool-mcp">模組 5–6：Tool / Function Calling 與 MCP</a></li>
+    <li><a href="#agent-skill">模組 7–8：Agent 與 Skill</a></li>
+    <li><a href="#rag-cache">模組 9–10：RAG 與 Cache</a></li>
+    <li><a href="#compare">跨概念比較矩陣</a></li>
+    <li><a href="#misconceptions">常見誤解與校正</a></li>
+    <li><a href="#system-arch">端到端系統架構</a></li>
+    <li><a href="#decision">工程決策樹</a></li>
+    <li><a href="#start">動手實作路徑</a></li>
+    <li><a href="#qa">品管檢核表</a></li>
+    <li><a href="#references">參考資料</a></li>
+  </ol>
+</div>
+
+<!-- §01 OVERVIEW -->
+<div class="section" id="overview">
+  <div class="section-number">// 01</div>
+  <h2>10 大概念一眼看懂</h2>
+  <p class="intro">學習路徑由基礎到應用。先理解模型本質（LLM / Token），再掌握溝通介面（Context / Prompt），最後建構完整應用系統（Tool / MCP / Agent / Skill / RAG / Cache）。</p>
+  <div class="mode-overview">
+    <div class="mode-card t1"><div class="mode-icon icon-t1">🧠</div><h3>① LLM<br>② Token</h3><p>模型本質與最小計算單位</p></div>
+    <div class="mode-card t2"><div class="mode-icon icon-t2">💬</div><h3>③ Context<br>④ Prompt</h3><p>工作記憶與溝通介面</p></div>
+    <div class="mode-card t3"><div class="mode-icon icon-t3">🔧</div><h3>⑤ Tool<br>⑥ MCP</h3><p>能力擴充與標準化協定</p></div>
+    <div class="mode-card t4"><div class="mode-icon icon-t4">🤖</div><h3>⑦ Agent<br>⑧ Skill</h3><p>自主推理迴圈與可重用模組</p></div>
+    <div class="mode-card t5"><div class="mode-icon icon-t5">📚</div><h3>⑨ RAG<br>⑩ Cache</h3><p>外部知識接地與效能優化</p></div>
+  </div>
+  <div class="source-row">
+    <span class="src-badge src-anthropic">Anthropic Docs</span>
+    <span class="src-badge src-openai">OpenAI Developers</span>
+    <span class="src-badge src-google">Google AI for Developers</span>
+    <span class="src-badge src-mcp">modelcontextprotocol.io</span>
+    <span class="src-badge src-paper">學術論文</span>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- §02 LLM + TOKEN -->
+<div class="section" id="llm-token">
+  <div class="section-number">// 02</div>
+  <h2>模組 1–2：LLM 與 Token</h2>
+  <p class="intro">LLM 是基於 Token 序列的條件生成系統，不是資料庫，也不是穩定記憶體。</p>
+
+  <div class="mode-section">
+    <div class="mode-header t1-h"><span style="font-size:20px">🧠</span><h3>① LLM — 大型語言模型</h3><span class="mode-tag">TRANSFORMER · ATTENTION · RLHF</span></div>
+    <div class="mode-body">
+      <div class="fact-grid">
+        <div class="fact-label">核心定義</div>
+        <div class="fact-value">以 Transformer 架構為基底，透過 Attention Mechanism（注意力機制）處理 Token 序列；訓練目標是預測下一個 Token（Next-Token Prediction）。Google Research Transformer 論文奠定此架構基礎<sup>[1]</sup></div>
+        <div class="fact-label">能力來源</div>
+        <div class="fact-value">參數量 × 訓練資料品質 × RLHF（人類回饋強化學習）共同決定能力上限；規模帶來湧現能力（Emergent Capabilities）。Google Cloud 定義 LLM 為以大量資料訓練、可生成與轉換文字的統計語言模型<sup>[2]</sup></div>
+        <div class="fact-label">2026 主流</div>
+        <div class="fact-value">Claude Opus 4.7 / Sonnet 4.6（Anthropic）、GPT-5 系列（OpenAI）、Gemini 3.5 Flash（Google）為當前旗艦；競爭焦點在長 Context 處理、Tool 呼叫精準度與推理能力</div>
+        <div class="fact-label">正確理解</div>
+        <div class="fact-value">LLM 應視為「條件式序列生成器」：輸入是 token 序列，輸出是下一段 token 序列。可靠產品通常還需要工具、檢索、狀態管理、權限與評測</div>
+      </div>
+      <div class="tip-box"><span class="tip-icon">💡</span><p><strong>LLM 不是資料庫：</strong>訓練截止日後的知識它不知道；私有資料也不知道。這兩個場景正是 RAG 存在的原因。能力來自預訓練資料、模型規模、指令微調、RLHF 與推論時上下文——缺一不可。</p></div>
+    </div>
+  </div>
+
+  <div class="mode-section">
+    <div class="mode-header t1-h"><span style="font-size:20px">🔡</span><h3>② Token — 詞元</h3><span class="mode-tag">BPE · SUBWORD · COST UNIT</span></div>
+    <div class="mode-body">
+      <div class="fact-grid">
+        <div class="fact-label">定義</div>
+        <div class="fact-value">LLM 處理文字的最小計算單位。OpenAI 官方說明 token 可能短至單一字元，也可能長至完整單字；英文常見約 1 token ≈ 4 個字元，但不同語言與 tokenizer 有差異<sup>[3]</sup></div>
+        <div class="fact-label">中英差異</div>
+        <div class="fact-value">中文每字約 1–2 Token；英文平均約 4 字元 / Token。<strong>注意：</strong>此為入門估算，精確計費應用 tokenizer 或 API usage metadata</div>
+        <div class="fact-label">成本影響</div>
+        <div class="fact-value">API 通常依 input tokens、output tokens、cached tokens、reasoning tokens 分別計價。Claude Sonnet 4.6：輸入 $3 / MTok、輸出 $15 / MTok；快取讀取 $0.30 / MTok（Anthropic 官方）</div>
+        <div class="fact-label">工程面向</div>
+        <div class="fact-value">輸入越長，prefill 成本越高；輸出越長，decode 時間越長。RAG chunk size 與 top-k 直接消耗 token budget；靜態內容前置以利 prompt caching</div>
+      </div>
+      <div style="margin:12px 0 4px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;">從文字到 Token 預測的流程</div>
+      <div class="flow-steps">
+        <div class="flow-step t1-s"><div class="flow-step-num">① INPUT</div><h4>輸入文字</h4><p>原始自然語言</p></div>
+        <div class="flow-step t1-s"><div class="flow-step-num">② TOKENIZE</div><h4>詞元化</h4><p>BPE / SentencePiece 切分</p></div>
+        <div class="flow-step t1-s"><div class="flow-step-num">③ TRANSFORM</div><h4>模型處理</h4><p>Attention 建模脈絡</p></div>
+        <div class="flow-step t1-s"><div class="flow-step-num">④ PREDICT</div><h4>預測下一 Token</h4><p>機率分佈取樣</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- §03 CONTEXT + PROMPT -->
+<div class="section" id="context-prompt">
+  <div class="section-number">// 03</div>
+  <h2>模組 3–4：Context Window 與 Prompt</h2>
+  <p class="intro">Context Window 是模型的工作記憶；Prompt 是與模型溝通的主要控制面。兩者品質決定 80% 的輸出品質。</p>
+
+  <div class="mode-section">
+    <div class="mode-header t2-h"><span style="font-size:20px">📋</span><h3>③ Context Window — 上下文視窗</h3><span class="mode-tag">WORKING MEMORY · 1M TOKEN · LOST-IN-MIDDLE</span></div>
+    <div class="mode-body">
+      <div class="fact-grid">
+        <div class="fact-label">組成（5 層）</div>
+        <div class="fact-value"><strong>① System Prompt</strong>（角色/規則/目標）→ <strong>② 對話歷史</strong>（先前輪次）→ <strong>③ 檢索內容</strong>（RAG 注入）→ <strong>④ Tool 結果</strong>（工具回傳）→ <strong>⑤ 用戶訊息</strong>（本輪指令）</div>
+        <div class="fact-label">2026 上限</div>
+        <div class="fact-value">Claude Opus 4.7 / Sonnet 4.6：1M Token；Claude Haiku 4.5：200K；GPT-5 系列：128K–400K；Gemini 3.5 Flash：1M+（Anthropic 官方模型頁面，2026/05）</div>
+        <div class="fact-label">中段遺忘</div>
+        <div class="fact-value">Lost-in-the-Middle 效應：關鍵資訊置於長 Context 中段，模型召回率顯著下降。MIT TACL 研究證實此現象<sup>[4]</sup>。NVIDIA RULER 測試顯示有效 Context ≈ 廣告容量的 50–65%</div>
+        <div class="fact-label">管理策略</div>
+        <div class="fact-value">重要規則放前段、最新問題與關鍵結論放後段；長文件應用 RAG + 摘要 + 分段引用，不要全部塞入；多輪任務建立狀態摘要，不無限保留對話</div>
+        <div class="fact-label">工程原則</div>
+        <div class="fact-value">Context Window 是單次推論可見內容，<strong>不是</strong>模型持久化記憶。OpenAI 說明超過上限時需縮短、拆分、摘要或前處理輸入<sup>[3]</sup></div>
+      </div>
+      <div class="tip-box"><span class="tip-icon">⚠️</span><p><strong>1M Token ≠ 1M Token 有效：</strong>Claude Opus 4.6 在 1M token 下 MRCR v2 得分 76%，代表「質性飛躍」但仍非 100%。重要資訊應放 Context 兩端（開頭 + 結尾），避免中段。</p></div>
+    </div>
+  </div>
+
+  <div class="mode-section">
+    <div class="mode-header t2-h"><span style="font-size:20px">💬</span><h3>④ Prompt — 提示詞</h3><span class="mode-tag">SYSTEM · FEW-SHOT · OUTPUT FORMAT</span></div>
+    <div class="mode-body">
+      <div class="fact-grid">
+        <div class="fact-label">標準結構</div>
+        <div class="fact-value">角色規則（Role &amp; Rules）→ Few-shot 範例 → User Turn（用戶指令）→ 輸出格式約束。OpenAI 建議用 Markdown 或 XML 標籤界定邏輯邊界<sup>[5]</sup></div>
+        <div class="fact-label">四個條件</div>
+        <div class="fact-value"><strong>明確</strong>（具體指令比模糊有效）/ <strong>可測</strong>（有可驗證完成標準）/ <strong>可分層</strong>（系統規則/任務資料/範例/用戶需求分離）/ <strong>可維護</strong>（長流程抽成 Skill，不塞進單一 prompt）</div>
+        <div class="fact-label">System Prompt</div>
+        <div class="fact-value">定義角色、規則、限制與目標；在 API 中以 <code>system</code> 參數傳入；應放穩定的「永遠開啟」規則，並前置以利快取命中</div>
+        <div class="fact-label">Few-shot</div>
+        <div class="fact-value">提供 input/output 示範對，引導模型格式與邏輯。2026 新世代模型已降低對 Few-shot 的依賴，但複雜格式任務仍有效</div>
+      </div>
+      <div class="two-col">
+        <div class="mini-card"><h4>✓ 高效 Prompt</h4><ul><li>「以 JSON 格式輸出，含 name / score / reason 欄位」</li><li>「步驟不超過 5 條，每條一句話」</li><li>「不確定時說『無法確認』，不要猜測」</li><li>「若資訊不足，列出缺口」</li></ul></div>
+        <div class="mini-card"><h4>✗ 低效 Prompt</h4><ul><li>「請盡量優化這段程式」（模糊，無可驗證標準）</li><li>「Be smart and helpful」（人格描述非行為規則）</li><li>「保持簡潔」（無具體長度限制）</li><li>「你是專家，請幫我處理」（無任務邊界）</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- §04 TOOL + MCP -->
+<div class="section" id="tool-mcp">
+  <div class="section-number">// 04</div>
+  <h2>模組 5–6：Tool / Function Calling 與 MCP</h2>
+  <p class="intro">Tool 讓模型能呼叫外部函式；MCP 將此機制標準化為開放協定。兩者層次不同：Tool 是呼叫機制，MCP 是連接協定。</p>
+
+  <div class="mode-section">
+    <div class="mode-header t3-h"><span style="font-size:20px">🔧</span><h3>⑤ Tool / Function Calling — 工具呼叫</h3><span class="mode-tag">JSON SCHEMA · TOOL_USE · PARALLEL CALLS</span></div>
+    <div class="mode-body">
+      <div class="fact-grid">
+        <div class="fact-label">定義</div>
+        <div class="fact-value">Tool 是具型別定義的函式 Schema（結構描述）。模型不執行函式——輸出結構化 tool_use 指令，由宿主系統執行後以 tool_result 回傳。OpenAI / Google Vertex AI / Anthropic 三家官方均採此架構<sup>[6]</sup></div>
+        <div class="fact-label">標準流程</div>
+        <div class="fact-value">User 提問 → LLM 輸出 tool_use → 宿主執行函式 → tool_result 回傳 Context → LLM 整合生成最終回覆</div>
+        <div class="fact-label">Parallel 呼叫</div>
+        <div class="fact-value">模型可在同一輪輸出多個 tool_calls；Response 有陣列結構，最佳實踐是預設處理多個呼叫（OpenAI 官方<sup>[6]</sup>）</div>
+        <div class="fact-label">典型應用</div>
+        <div class="fact-value">網路搜尋、資料庫查詢、程式執行、第三方 API 呼叫、計算機、日曆操作、寄送郵件</div>
+      </div>
+      <div style="margin:12px 0 4px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;">工具設計五原則</div>
+      <table class="gen-table">
+        <tr><th>原則</th><th>說明</th></tr>
+        <tr><td>單一職責</td><td>一個工具只做一類動作，避免職責重疊</td></tr>
+        <tr><td>Schema 嚴格</td><td>參數型別、required 欄位、enum 應清楚定義；無效狀態不可表示</td></tr>
+        <tr><td>描述可判斷</td><td>工具描述必須讓模型知道「何時使用」——通過「實習生測試」（intern test）<sup>[6]</sup></td></tr>
+        <tr><td>結果可回填</td><td>tool_result 應簡潔、結構化、可被模型引用；失敗時回傳錯誤說明而非靜默</td></tr>
+        <tr><td>安全可審核</td><td>寫入、刪除、付款、寄信等高風險動作需權限確認</td></tr>
+      </table>
+      <div class="pipeline">
+        <div class="pipe-box t3">User 請求</div><div class="pipe-arrow">→</div>
+        <div class="pipe-box t3">LLM 決策 tool_use</div><div class="pipe-arrow">→</div>
+        <div class="pipe-box t3">宿主執行函式</div><div class="pipe-arrow">→</div>
+        <div class="pipe-box t3">tool_result 回傳</div><div class="pipe-arrow">→</div>
+        <div class="pipe-box t3">LLM 整合 → Final Answer</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mode-section">
+    <div class="mode-header t3-h"><span style="font-size:20px">🔗</span><h3>⑥ MCP — 模型上下文協定</h3><span class="mode-tag">OPEN STANDARD · TOOLS / RESOURCES / PROMPTS</span></div>
+    <div class="mode-body">
+      <div class="fact-grid">
+        <div class="fact-label">定義</div>
+        <div class="fact-value">Model Context Protocol（MCP）是連接 LLM 宿主與 Tool 伺服器的開放標準，由 Anthropic 於 2024/11 發布；官方規格定義為可讓 LLM 應用與外部資料源、工具無縫整合的開放協定<sup>[7]</sup>，現已移交 Agentic AI Foundation 治理</div>
+        <div class="fact-label">三大 Primitive</div>
+        <div class="fact-value"><strong>Tools（行動）</strong>：可執行的行動與功能（有副作用）／<strong>Resources（資料）</strong>：結構化或非結構化靜態上下文資料庫／<strong>Prompts（範本）</strong>：提示詞範本與最佳實踐</div>
+        <div class="fact-label">傳輸方式</div>
+        <div class="fact-value">stdio（本機低延遲）/ SSE + HTTP（遠端跨網路）。最新 2026-07-28 RC：增加無狀態核心 + Tasks 擴充 + MCP Apps（伺服器端渲染 UI）+ OAuth 對齊<sup>[8]</sup></div>
+        <div class="fact-label">採用狀況</div>
+        <div class="fact-value">6 個月內 9,700 萬次安裝；OpenAI 與 Google DeepMind 已採用；官方 Registry 上線；支援 10+ 語言 SDK（TypeScript / Python / Go / Rust / Java / PHP 等）</div>
+        <div class="fact-label">核心價值</div>
+        <div class="fact-value">解決 N×M 整合問題：以前每個模型對每個工具需客製化連接器；MCP 讓「一次整合，多個相容宿主重用」</div>
+      </div>
+      <div style="margin:14px 0 4px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;">Tool Calling vs MCP — 層次差異</div>
+      <table class="gen-table">
+        <tr><th>項目</th><th>Tool / Function Calling</th><th>MCP</th></tr>
+        <tr><td>層級</td><td>單一模型請求中的工具呼叫機制</td><td>Host、Client、Server 的標準傳輸協定</td></tr>
+        <tr><td>重點</td><td>函式 schema 與呼叫結果</td><td>工具、資源、提示範本、連線與能力協商</td></tr>
+        <tr><td>適用場景</td><td>單一 app 綁定少數工具</td><td>多工具、多資料源、多 AI host 的企業整合</td></tr>
+        <tr><td>主要風險</td><td>錯誤參數、危險動作</td><td>權限管理、資料外洩、工具注入、跨系統信任</td></tr>
+      </table>
+      <div class="tip-box"><span class="tip-icon">🎯</span><p><strong>MCP ≠ RAG，MCP ≠ Agent：</strong>MCP 是讓 Agent 或 LLM Host 以標準方式連到工具與資料源的<strong>協定層</strong>。Tool Calling 是模型呼叫工具的互動機制；MCP 定義此互動的傳輸與結構規範。</p></div>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- §05 AGENT + SKILL -->
+<div class="section" id="agent-skill">
+  <div class="section-number">// 05</div>
+  <h2>模組 7–8：Agent 與 Skill</h2>
+  <p class="intro">Agent 讓 LLM 在迴圈中自主多步驟推理；Skill 讓 Agent 行為可重用、可版本控制。兩者合力使 LLM 從「問答工具」升級為「自主工作系統」。</p>
+
+  <div class="mode-section">
+    <div class="mode-header t4-h"><span style="font-size:20px">🤖</span><h3>⑦ Agent — 智能代理</h3><span class="mode-tag">ReAct · PLAN-ACT-OBSERVE · AGENTIC LOOP</span></div>
+    <div class="mode-body">
+      <div class="fact-grid">
+        <div class="fact-label">定義</div>
+        <div class="fact-value">Agent = LLM 在有狀態的自主控制迴圈中運作。OpenAI Agents SDK 定義為：會 plan（規劃）、call tools（呼叫工具）、collaborate（協作）並保留足夠 state 完成多步驟工作的應用<sup>[9]</sup></div>
+        <div class="fact-label">經典模式</div>
+        <div class="fact-value">ReAct（Reasoning + Acting）：推理與行動交織進行；持續執行 Plan → Act（Tool calls）→ Observe → Re-plan，直到達成目標</div>
+        <div class="fact-label">關鍵特性</div>
+        <div class="fact-value">目標持續性（Goal Persistence）、工具使用能力、動態狀態管理</div>
+        <div class="fact-label">常見風險</div>
+        <div class="fact-value">無限迴圈（Infinite Loops）、幻覺式工具呼叫（呼叫不存在工具或用錯誤參數）、Context 耗盡（長任務超出視窗）</div>
+      </div>
+      <div style="margin:12px 0 4px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;">工程化 Agent 必備控制項</div>
+      <table class="gen-table">
+        <tr><th>控制項</th><th>目的</th></tr>
+        <tr><td>終止條件</td><td>防止無限迴圈；目標達成或錯誤累積超閾值即停止</td></tr>
+        <tr><td>最大步數 / 成本</td><td>控制 token、API、工具呼叫費用上限</td></tr>
+        <tr><td>狀態摘要</td><td>避免 Context 無限膨脹；定期壓縮已完成步驟</td></tr>
+        <tr><td>工具權限</td><td>破壞性操作（刪除 / 推送 / 付款 / 寄信）需人工確認</td></tr>
+        <tr><td>可觀測性</td><td>記錄每步 plan、tool call、result、error；用於 debug 與審計</td></tr>
+        <tr><td>評測</td><td>任務成功率、回歸測試、人工審核衡量</td></tr>
+      </table>
+      <div class="pipeline">
+        <div class="pipe-box t4">Plan 規劃</div><div class="pipe-arrow">→</div>
+        <div class="pipe-box t4">Act（Tool calls）</div><div class="pipe-arrow">→</div>
+        <div class="pipe-box t4">Observe 觀察</div><div class="pipe-arrow">→</div>
+        <div class="pipe-box t4">Re-plan</div><div class="pipe-arrow">→ 達成目標 / 終止條件</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mode-section">
+    <div class="mode-header t4-h"><span style="font-size:20px">🧩</span><h3>⑧ Skill — 技能單元</h3><span class="mode-tag">REUSABLE · VERSIONED · SKILL.MD</span></div>
+    <div class="mode-body">
+      <div class="fact-grid">
+        <div class="fact-label">定義</div>
+        <div class="fact-value">Skill 是具名稱與版本的打包單元，讓 Agent 能重用專家行為，而不必部署獨立模型。OpenAI Codex / Claude Code 均採 SKILL.md 規格<sup>[10]</sup></div>
+        <div class="fact-label">打包內容</div>
+        <div class="fact-value">System Prompt（系統提示）+ Tools（工具清單）+ Few-shot Examples（範例）+ Evaluation（評測標準）</div>
+        <div class="fact-label">載入機制</div>
+        <div class="fact-value">Progressive Disclosure：agent 先讀名稱與描述，必要時才載入完整 SKILL.md（節省 Context）。已被 Claude Code / Codex CLI / Antigravity / Cursor / GitHub Copilot 共同採用</div>
+        <div class="fact-label">觸發條件</div>
+        <div class="fact-value">同一任務出現 3 次以上；任務有固定流程（PR review、RAG ingest、資料清洗）；需附帶範例、腳本或評測標準</div>
+        <div class="fact-label">設計原則</div>
+        <div class="fact-value">單一能力、可版本控制、可測試、可組合。Skill 儲存為 SKILL.md 檔案，或 MCP Resource 進行分發</div>
+      </div>
+      <div class="tip-box"><span class="tip-icon">💡</span><p><strong>Skill vs Tool：</strong>Tool 是模型呼叫的函式（程式碼執行）；Skill 是封裝了 Prompt + Tool + 示範的行為模組（知識與流程包裝）。一個 Skill 通常會使用多個 Tools。</p></div>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- §06 RAG + CACHE -->
+<div class="section" id="rag-cache">
+  <div class="section-number">// 06</div>
+  <h2>模組 9–10：RAG 與 Cache</h2>
+  <p class="intro">RAG 解決「模型不知道私有 / 新知識」問題；Cache 解決「重複計算」效能問題。兩者是生產環境的必備機制。</p>
+
+  <div class="mode-section">
+    <div class="mode-header t5-h"><span style="font-size:20px">🔍</span><h3>⑨ RAG — 檢索增強生成</h3><span class="mode-tag">CHUNK · EMBED · VECTOR DB · RE-RANK</span></div>
+    <div class="mode-body">
+      <div class="fact-grid">
+        <div class="fact-label">定義</div>
+        <div class="fact-value">結合模型內部參數記憶與外部非參數記憶（dense vector index），以改善知識密集任務。RAG 論文（Lewis et al., 2020）奠定此架構<sup>[11]</sup>；Google Vertex AI RAG Engine 定義為協助檢索並提供相關上下文的系統<sup>[12]</sup></div>
+        <div class="fact-label">標準流程</div>
+        <div class="fact-value">資料來源 → Chunk（分塊）→ Embed（向量嵌入）→ 向量資料庫 → Query（查詢）→ Re-rank（重排）→ 注入 Context → Generate（生成）</div>
+        <div class="fact-label">品質關鍵</div>
+        <div class="fact-value">2026 業界研究：RAG 失敗 73% 發生在 Retrieval 階段，非 Generation。Naive RAG（只有向量搜尋）已不足；Hybrid Search + Contextual Chunking 是現在最低標準。Anthropic 研究：混合搜尋減少 49% 檢索失敗率</div>
+        <div class="fact-label">主要用途</div>
+        <div class="fact-value">私有知識接入（企業文件 / 內部規範）/ 知識更新（不必重訓模型）/ 降低幻覺（依據外部文件）/ 可追溯（回答附 citation）/ 成本控制（只送相關片段）</div>
+        <div class="fact-label">常見工具</div>
+        <div class="fact-value">向量 DB：pgvector、Pinecone、Weaviate；嵌入模型：OpenAI text-embedding-3-large、Cohere embed-v3；框架：LlamaIndex、LangChain</div>
+      </div>
+      <div style="margin:12px 0 4px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;">RAG 品質 7 大關鍵（GPT 報告）</div>
+      <table class="gen-table">
+        <tr><th>#</th><th>關鍵因素</th><th>說明</th></tr>
+        <tr><td>1</td><td>Chunk 策略</td><td>依語意 / 段落 / 標題 / 表格結構切分；避免語意截斷</td></tr>
+        <tr><td>2</td><td>Embedding 模型</td><td>直接影響語意召回品質；多語言場景選多語言模型</td></tr>
+        <tr><td>3</td><td>Metadata</td><td>保留來源、日期、權限、章節；支援過濾與存取控制</td></tr>
+        <tr><td>4</td><td>Hybrid Retrieval</td><td>向量搜尋 + BM25 詞彙搜尋並行；比單一向量搜尋更穩</td></tr>
+        <tr><td>5</td><td>Re-rank</td><td>處理 top-k 召回過寬問題；二次校準關聯度</td></tr>
+        <tr><td>6</td><td>Citation</td><td>輸出需回指來源；不能只給生成結論</td></tr>
+        <tr><td>7</td><td>權限過濾</td><td>不同用戶只能檢索有權讀取的資料</td></tr>
+      </table>
+      <div class="pipeline">
+        <div class="pipe-box t5">資料來源</div><div class="pipe-arrow">→</div>
+        <div class="pipe-box t5">Chunk 分塊</div><div class="pipe-arrow">→</div>
+        <div class="pipe-box t5">Embed 向量化</div><div class="pipe-arrow">→</div>
+        <div class="pipe-box t5">向量資料庫</div><div class="pipe-arrow">→</div>
+        <div class="pipe-box t5">Hybrid Search + Re-rank</div><div class="pipe-arrow">→</div>
+        <div class="pipe-box t5">注入 Context → LLM</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mode-section">
+    <div class="mode-header t5-h"><span style="font-size:20px">⚡</span><h3>⑩ Cache — 快取</h3><span class="mode-tag">KV CACHE · PROMPT CACHING · 4 LAYERS</span></div>
+    <div class="mode-body">
+      <div class="fact-grid">
+        <div class="fact-label">KV Cache</div>
+        <div class="fact-value">在 Transformer 推理過程中，將先前 Token 的 Attention Key / Value 矩陣計算結果暫存，避免重複運算；大幅縮短後續 Token 生成的 Prefill 與解碼延遲。屬模型推論內部機制，開發者通常不需直接操作</div>
+        <div class="fact-label">Prompt Caching</div>
+        <div class="fact-value">對重複利用的穩定前綴（System Prompt / 工具描述 / 大型文件）進行快取。設計法則：<strong>穩定內容置頂，動態內容置底</strong></div>
+        <div class="fact-label">成本對比</div>
+        <div class="fact-value">Anthropic：讀取 ×0.10（節省 90%），寫入 ×1.25；OpenAI：自動快取，讀取 ×0.50；Google Gemini：寫入免費但有每小時儲存費（$4.50/MTok/h）<sup>[13]</sup></div>
+      </div>
+      <div style="margin:12px 0 4px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;">快取四層架構（GPT 報告）</div>
+      <div class="cache-grid">
+        <div class="cache-card"><div class="cache-card-head t1">KV Cache（模型層）</div><ul><li>所在：模型推論內部</li><li>作用：重用 Attention K/V 計算</li><li>改善自回歸生成效率</li><li>開發者無需設定</li></ul></div>
+        <div class="cache-card"><div class="cache-card-head t3">Prompt Cache（API 層）</div><ul><li>所在：API / 平台層</li><li>作用：重複 prompt prefix 降成本</li><li>Anthropic 需 cache_control 標記</li><li>OpenAI 自動啟動（≥1024 tokens）</li></ul></div>
+        <div class="cache-card"><div class="cache-card-head t5">RAG Cache（應用層）</div><ul><li>所在：應用程式層</li><li>作用：快取查詢結果</li><li>含 embedding / rerank 結果</li><li>避免重複向量計算</li></ul></div>
+        <div class="cache-card"><div class="cache-card-head t4">Tool Cache（應用層）</div><ul><li>所在：應用程式層</li><li>作用：快取外部 API 查詢</li><li>含資料庫查詢結果</li><li>設定 TTL 防資料過舊</li></ul></div>
+      </div>
+      <div class="tip-box"><span class="tip-icon">🎯</span><p><strong>設計法則：穩定在前，動態在後。</strong>System Prompt、工具描述、大型參考文件前置並標記快取；用戶訊息和每輪變動內容放最後。首次請求付快取寫入費，後續讀取節省 50–90%。</p></div>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- §07 COMPARE -->
+<div class="section" id="compare">
+  <div class="section-number">// 07</div>
+  <h2>跨概念比較矩陣</h2>
+  <p class="intro">釐清容易混淆的概念邊界，以及各概念的工程首要指標。</p>
+
+  <table class="compare-table">
+    <thead><tr><th>概念</th><th>🧠 一句話定義</th><th>🔧 主要工具</th><th>📊 工程首要指標</th></tr></thead>
+    <tbody>
+      <tr><td>LLM</td><td>基於 Token 的機率引擎</td><td>Claude / GPT / Gemini</td><td>Benchmark 分數、模型版本</td></tr>
+      <tr><td>Token</td><td>計費與運算的最小單位</td><td>Tokenizer（BPE）</td><td>Token 消耗量、成本</td></tr>
+      <tr><td>Context</td><td>單次呼叫的工作記憶</td><td>Context Engineering</td><td>視窗利用率、Lost-in-Middle 風險</td></tr>
+      <tr><td>Prompt</td><td>與模型溝通的主要控制面</td><td>Prompt 範本、Few-shot</td><td>輸出品質、格式遵循率</td></tr>
+      <tr><td>Tool</td><td>模型可呼叫的函式</td><td>JSON Schema 定義</td><td>工具選擇準確率、執行成功率</td></tr>
+      <tr><td>MCP</td><td>標準化的工具連接協定</td><td>MCP Server / SDK</td><td>伺服器可靠性、協定版本相容</td></tr>
+      <tr><td>Agent</td><td>目標導向的執行迴圈</td><td>ReAct / Plan-Act-Observe</td><td>任務完成率、迴圈次數、可觀測性</td></tr>
+      <tr><td>Skill</td><td>可重用的行為打包單元</td><td>SKILL.md</td><td>觸發準確率、可重用次數</td></tr>
+      <tr><td>RAG</td><td>有依據的知識檢索</td><td>pgvector / Pinecone / LangChain</td><td>Retrieval 準確率、Answer Faithfulness</td></tr>
+      <tr><td>Cache</td><td>成本與延遲最佳化機制</td><td>Prompt Caching API</td><td>Cache Hit Rate、成本降幅</td></tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top:20px;"></div>
+  <table class="compare-table">
+    <thead><tr><th>容易混淆</th><th>🧠 LLM 層</th><th>🔧 擴充層</th><th>📚 知識層</th></tr></thead>
+    <tbody>
+      <tr><td>核心角色</td><td>LLM / Token / Context / Prompt</td><td>Tool / MCP / Agent / Skill</td><td>RAG / Cache</td></tr>
+      <tr><td>執行位置</td><td>模型內部（推理時）</td><td>宿主系統 / Agent 迴圈</td><td>外部資料庫 + 快取層</td></tr>
+      <tr><td>易混淆點</td><td>Context ≠ Memory（前者是單次；後者是跨 session 記憶機制）</td><td>Tool ≠ MCP（能力 vs 協定）Agent ≠ Chatbot（有迴圈與工具）</td><td>RAG ≠ Fine-tuning（inference 注入 vs 更新模型權重）Cache ≠ RAG（快取計算 vs 檢索知識）</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="rule">
+
+<!-- §08 MISCONCEPTIONS -->
+<div class="section" id="misconceptions">
+  <div class="section-number">// 08</div>
+  <h2>常見誤解與校正</h2>
+  <p class="intro">整合三模型報告中共同指出的高頻誤解，是教學重點也是工程防雷點。</p>
+
+  <table class="gen-table">
+    <thead><tr><th>誤解</th><th>正確認知</th></tr></thead>
+    <tbody>
+      <tr><td>LLM 會「記得」所有對話</td><td>模型只能看到當次 Context；長期記憶需另建 memory store 或資料庫。Context Window 是工作記憶，不是持久化記憶</td></tr>
+      <tr><td>Context 越長越好</td><td>長 Context 成本高，且 Lost-in-the-Middle 效應使中段資訊使用不穩；有效 Context ≈ 廣告容量 50–65%</td></tr>
+      <tr><td>Prompt 可以解決所有問題</td><td>需要工具、RAG、權限、評測與工作流；Prompt 是控制面，不是萬能膠</td></tr>
+      <tr><td>Tool 只要提供 API 就好</td><td>Tool schema、描述、權限、結果格式都會影響模型是否正確選擇與使用工具</td></tr>
+      <tr><td>MCP 等於 Tool Calling</td><td>MCP 是協定層（傳輸 / 結構 / 能力協商）；Tool Calling 是模型呼叫工具的互動機制。Tool Calling 透過 MCP 標準化</td></tr>
+      <tr><td>Agent 越自主越好</td><td>Agent 必須有終止條件、成本上限、Observability 與人工審核點；無限自主是生產環境風險</td></tr>
+      <tr><td>RAG 可以完全消除幻覺</td><td>RAG 只能降低風險，還需高品質 Retrieval（Hybrid Search）、Re-rank 與答案約束（不得編造）</td></tr>
+      <tr><td>1M Token 視窗讓 RAG 過時</td><td>知識庫 &gt; 1M tokens 仍需 RAG；1M 視窗適合「一次性」載入單一大型文件分析，無法取代大型知識庫的管理</td></tr>
+      <tr><td>Cache 只影響速度</td><td>Cache 同時影響延遲、成本與系統架構；但設計不當（TTL 過長）可能導致語義結果不一致</td></tr>
+      <tr><td>中文 Token ≈ 1 字 / Token</td><td>此為入門估算，精確計費應用 tokenizer 或 API usage metadata；不同模型 tokenizer 有差異</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="rule">
+
+<!-- §09 SYSTEM ARCH -->
+<div class="section" id="system-arch">
+  <div class="section-number">// 09</div>
+  <h2>端到端系統架構</h2>
+  <p class="intro">現代工業級 LLM 應用的完整執行路徑（依簡報模組 10 + 三模型報告整合）。四個層次各司其職。</p>
+
+  <div class="mode-section">
+    <div class="mode-header t2-h"><span style="font-size:20px">🏗</span><h3>完整系統層次圖（端到端路徑）</h3><span class="mode-tag">USER → CACHE · 8 LAYERS</span></div>
+    <div class="mode-body">
+      <div class="steps">
+        <div class="step t1-step"><div class="step-num">1</div><div class="step-content"><h4>User（使用者）</h4><p>發出請求或問題</p></div></div>
+        <div class="step t4-step"><div class="step-num">2</div><div class="step-content"><h4>Agent（智能代理）—— 規劃迴圈</h4><p>接收請求，啟動 Plan → Act → Observe → Re-plan 迴圈；決定需要哪些 Skill 與工具</p></div></div>
+        <div class="step t4-step"><div class="step-num">3</div><div class="step-content"><h4>Skills（技能單元）</h4><p>根據任務類型載入對應 Skill（Prompt + Tools + Examples）；Progressive Disclosure 節省 Context</p></div></div>
+        <div class="step t3-step"><div class="step-num">4</div><div class="step-content"><h4>MCP / Tools（協定 / 工具）</h4><p>透過 MCP 標準協定呼叫外部服務：MCP Server、資料庫 API、第三方工具；tool_result 回傳模型</p></div></div>
+        <div class="step t5-step"><div class="step-num">5</div><div class="step-content"><h4>RAG（檢索增強生成）</h4><p>從向量資料庫 / 知識庫 Hybrid Search，Re-rank 後注入 Context 作為生成依據</p></div></div>
+        <div class="step t2-step"><div class="step-num">6</div><div class="step-content"><h4>Prompt / Context Window（提示詞 / 上下文）</h4><p>組合 System Prompt、對話歷史、RAG 結果、Tool 輸出；靜態前綴快取，動態部分即時處理</p></div></div>
+        <div class="step t5-step"><div class="step-num">7</div><div class="step-content"><h4>Cache 層（KV Cache + Prompt Cache）</h4><p>KV Cache 避免 Attention 重複計算；Prompt Cache 對穩定前綴降成本 50–90%</p></div></div>
+        <div class="step t1-step"><div class="step-num">8</div><div class="step-content"><h4>LLM（大型語言模型）</h4><p>接收完整 Context，推理生成最終回覆；Token by Token 輸出</p></div></div>
+      </div>
+
+      <div style="margin:16px 0 8px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;">四層架構職責（GPT 報告）</div>
+      <table class="gen-table">
+        <tr><th>層次</th><th>元件</th><th>主要責任</th></tr>
+        <tr><td>推論核心</td><td>LLM、Token、Context</td><td>生成、理解、推理、上下文使用</td></tr>
+        <tr><td>控制介面</td><td>Prompt、Skill</td><td>行為規範、任務模板、重用流程</td></tr>
+        <tr><td>外部能力</td><td>Tool、MCP、RAG</td><td>查資料、執行動作、連接系統</td></tr>
+        <tr><td>運維最佳化</td><td>Cache、Observability、Eval</td><td>成本、延遲、可觀測性、品質驗證</td></tr>
+      </table>
+
+      <div class="tip-box"><span class="tip-icon">⚖️</span><p><strong>核心三角權衡（Gemini 報告）：延遲 × 能力 × 成本</strong>——多步驟 Agent 推理 / 複雜 RAG 多重檢索會拉長延遲；引入越多工具與規劃能力越強但成本越高；Cache 可同時降低延遲與成本但需管理失效機制。工程師的工作是在三者間找到最佳點。</p></div>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- §10 DECISION TREE -->
+<div class="section" id="decision">
+  <div class="section-number">// 10</div>
+  <h2>工程決策樹</h2>
+  <p class="intro">根據具體需求選擇應加入哪些 LLM 組件。</p>
+</div>
+<div class="decision">
+  <h3>🌿 根據需求情境選擇組件</h3>
+  <div class="decision-item"><div class="decision-q">需回答訓練截止日後的新知識</div><div class="decision-arrow">→</div><div class="decision-a a-t5">RAG（向量檢索 + Context 注入）</div></div>
+  <div class="decision-item"><div class="decision-q">需查詢私有資料（企業文件 / 內部資料庫）</div><div class="decision-arrow">→</div><div class="decision-a a-t5">RAG + 向量資料庫 / Tool 連接私有 API</div></div>
+  <div class="decision-item"><div class="decision-q">需操作外部系統（搜尋 / 計算 / API）</div><div class="decision-arrow">→</div><div class="decision-a a-t3">Tool / Function Calling + MCP</div></div>
+  <div class="decision-item"><div class="decision-q">需多步驟自主執行、跨工具協調</div><div class="decision-arrow">→</div><div class="decision-a a-t4">Agent（ReAct 迴圈 + 終止條件）</div></div>
+  <div class="decision-item"><div class="decision-q">需整合多個外部工具且可重用</div><div class="decision-arrow">→</div><div class="decision-a a-t3">MCP Server（標準化工具暴露）</div></div>
+  <div class="decision-item"><div class="decision-q">相同流程重複執行 3 次以上</div><div class="decision-arrow">→</div><div class="decision-a a-t4">建立 Skill（打包 Prompt + Tools + 示範）</div></div>
+  <div class="decision-item"><div class="decision-q">System Prompt / 文件每次都要重複傳入</div><div class="decision-arrow">→</div><div class="decision-a a-t5">Prompt Caching（穩定內容前置快取）</div></div>
+  <div class="decision-item"><div class="decision-q">輸出品質不穩定、格式不一致</div><div class="decision-arrow">→</div><div class="decision-a a-t2">優化 Prompt（具體規則 + 輸出格式約束）</div></div>
+  <div class="decision-item"><div class="decision-q">Context 視窗快滿 / 成本過高</div><div class="decision-arrow">→</div><div class="decision-a a-t2">Context Engineering（壓縮 / 截斷 / Sliding Window）+ Cache</div></div>
+  <div class="decision-item"><div class="decision-q">需要回答有可追溯來源的問題</div><div class="decision-arrow">→</div><div class="decision-a a-t5">RAG + Citation 機制（回答附出處）</div></div>
+</div>
+
+<!-- §11 GETTING STARTED -->
+<div class="section" id="start">
+  <div class="section-number">// 11</div>
+  <h2>動手實作路徑</h2>
+  <p class="intro">簡報建議實作任務：<strong>2 小時內建置一個最小化 RAG + Tool Agent</strong>（GPT 報告詳細拆解）。</p>
+
+  <div class="path-grid">
+    <div class="path-card t1"><div class="path-label">PATH A — 基礎層（Week 1–2）</div><ol><li>呼叫 API，送出第一個請求</li><li>理解 Token 消耗與成本計算</li><li>設計 System Prompt（角色 + 規則 + 格式）</li><li>測試 Few-shot 對輸出品質的影響</li><li>練習 Context 管理（截斷 / 壓縮）</li></ol></div>
+    <div class="path-card t2"><div class="path-label">PATH B — 工具層（Week 3–4）</div><ol><li>實作第一個 Tool（天氣 / 搜尋 API）</li><li>處理完整 tool_use → tool_result 流程</li><li>設置本機 MCP Server（stdio 傳輸）</li><li>建立 Agent 迴圈（ReAct + 終止條件）</li><li>啟用 Prompt Caching 降低 API 成本</li></ol></div>
+    <div class="path-card t3"><div class="path-label">PATH C — 知識層（Week 5–6）</div><ol><li>建立文件 Pipeline（Chunk → Embed → DB）</li><li>實作 Hybrid Search（向量 + BM25）</li><li>加入 Re-rank 提升檢索精準度</li><li>整合 RAG 到 Agent 迴圈</li><li>用 RAGAS 框架評估 RAG 品質</li></ol></div>
+  </div>
+
+  <div style="margin-top:20px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;">2 小時最小化 RAG + Tool Agent 任務拆解（GPT 報告）</div>
+  <table class="task-table">
+    <thead><tr><th>時間</th><th>任務</th><th>產出</th></tr></thead>
+    <tbody>
+      <tr><td>0–20 min</td><td>準備 5–10 份文件（Markdown / PDF / txt）</td><td>原始語料庫</td></tr>
+      <tr><td>20–45 min</td><td>Chunk + Embedding + Vector Store</td><td>可查詢向量索引</td></tr>
+      <tr><td>45–70 min</td><td>建立 RAG 查詢流程（query → retrieve → rerank → answer）</td><td>可回答文件問題</td></tr>
+      <tr><td>70–90 min</td><td>加入一個 Tool（訂單狀態 / 天氣 / 庫存查詢）</td><td>Tool 呼叫閉環</td></tr>
+      <tr><td>90–110 min</td><td>包成 Agent loop（plan → tool/RAG → observe → answer）</td><td>自主多步驟 Agent</td></tr>
+      <tr><td>110–120 min</td><td>加入評測（5 題 golden questions + expected citations）</td><td>可量化品質基準</td></tr>
+    </tbody>
+  </table>
+  <div class="tip-box"><span class="tip-icon">✅</span><p><strong>驗收標準：</strong>回答必須引用檢索來源 / 找不到答案時明確說「資料不足」/ 工具呼叫參數符合 schema / 每次回答記錄 retrieved chunks + tool call + final answer / 至少通過 5 題測試問題。</p></div>
+</div>
+
+<hr class="rule">
+
+<!-- §12 QA CHECKLIST -->
+<div class="section" id="qa">
+  <div class="section-number">// 12</div>
+  <h2>品管檢核表</h2>
+  <p class="intro">建構或審查 LLM 系統時，用以下標準逐項確認。（GPT 報告 §7）</p>
+  <table class="qa-table">
+    <thead><tr><th>檢查項</th><th>合格標準</th></tr></thead>
+    <tbody>
+      <tr><td>Token 管理</td><td>有估算 input / output / cached tokens；API 費用在預算範圍內</td></tr>
+      <tr><td>Context 結構</td><td>系統規則、檢索資料、工具結果、使用者問題分層；關鍵資訊置於 Context 兩端</td></tr>
+      <tr><td>Prompt 可測性</td><td>有明確輸出格式與失敗處理（找不到 → 說「無法確認」）；禁止事項有明確規則</td></tr>
+      <tr><td>Tool 安全</td><td>寫入 / 刪除 / 付費類工具需人工確認；錯誤時回傳說明而非靜默</td></tr>
+      <tr><td>MCP 安全</td><td>Server 權限、資料來源、工具描述已審核；跨系統信任已評估</td></tr>
+      <tr><td>Agent 控制</td><td>有最大步數、終止條件、成本上限；破壞性操作有 checkpoint</td></tr>
+      <tr><td>RAG 品質</td><td>有 Chunk 策略、Metadata、Hybrid Search、Re-rank、Citation；答案有來源可追溯</td></tr>
+      <tr><td>Cache 策略</td><td>靜態內容前置；重複資料已設定快取；KV Cache TTL 不過長</td></tr>
+      <tr><td>可觀測性</td><td>記錄 prompt / retrieval / tool call / latency / cost；可 debug 與審計</td></tr>
+      <tr><td>評測</td><td>有 golden question set、錯誤分類、回歸測試；RAG 用 RAGAS 量化</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="rule">
+
+<!-- §13 REFERENCES -->
+<div class="section" id="references">
+  <div class="section-number">// 13</div>
+  <h2>參考資料</h2>
+  <p class="intro">本指南以下列官方文件與學術論文為主要依據，所有連結以 2026/05/27 為基準日。</p>
+
+  <ul class="ref-list">
+    <li class="ref-item">
+      <div class="ref-num">[1]</div>
+      <div class="ref-body">
+        <strong>Attention Is All You Need — Transformer 原始論文<span class="ref-tag paper">PAPER</span></strong>
+        Vaswani et al. (2017). Google Research. 奠定現代 LLM Transformer 架構基礎。
+        <a href="https://research.google/pubs/attention-is-all-you-need/" target="_blank">research.google/pubs/attention-is-all-you-need →</a>
+      </div>
+    </li>
+    <li class="ref-item">
+      <div class="ref-num">[2]</div>
+      <div class="ref-body">
+        <strong>Large Language Models with Google AI — LLM 官方定義<span class="ref-tag google">Google</span></strong>
+        Google Cloud 官方說明 LLM 定義、Transformer / self-attention 架構。
+        <a href="https://cloud.google.com/ai/llms" target="_blank">cloud.google.com/ai/llms →</a>
+      </div>
+    </li>
+    <li class="ref-item">
+      <div class="ref-num">[3]</div>
+      <div class="ref-body">
+        <strong>What are tokens and how to count them — Token 官方說明<span class="ref-tag openai">OpenAI</span></strong>
+        OpenAI Help Center 說明 token 定義、計量方式與上下文限制。
+        <a href="https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them" target="_blank">help.openai.com → what are tokens →</a>
+      </div>
+    </li>
+    <li class="ref-item">
+      <div class="ref-num">[4]</div>
+      <div class="ref-body">
+        <strong>Lost in the Middle: How Language Models Use Long Contexts — 中段遺忘論文<span class="ref-tag paper">PAPER</span></strong>
+        Liu et al. (2023). MIT TACL. 證實長 Context 中段資訊召回率下降。
+        <a href="https://direct.mit.edu/tacl/article/doi/10.1162/tacl_a_00638/119630/" target="_blank">direct.mit.edu/tacl → lost in the middle →</a>
+      </div>
+    </li>
+    <li class="ref-item">
+      <div class="ref-num">[5]</div>
+      <div class="ref-body">
+        <strong>Prompt Engineering Guide — Prompt 工程最佳實踐<span class="ref-tag openai">OpenAI</span></strong>
+        OpenAI 官方 Prompt Engineering 文件；建議用標籤界定邊界、參考文本、範本。
+        <a href="https://developers.openai.com/api/docs/guides/prompt-engineering" target="_blank">developers.openai.com → prompt-engineering →</a>
+      </div>
+    </li>
+    <li class="ref-item">
+      <div class="ref-num">[6]</div>
+      <div class="ref-body">
+        <strong>Function Calling — Tool Calling 官方規格<span class="ref-tag openai">OpenAI</span></strong>
+        OpenAI 官方 Function Calling 文件，含 tool_calls 陣列、parallel 呼叫、intern test 設計原則。
+        <a href="https://developers.openai.com/api/docs/guides/function-calling" target="_blank">developers.openai.com → function-calling →</a>
+      </div>
+    </li>
+    <li class="ref-item">
+      <div class="ref-num">[7]</div>
+      <div class="ref-body">
+        <strong>Model Context Protocol Specification 2025-11-25<span class="ref-tag mcp">MCP</span></strong>
+        MCP 官方規格；定義 Tools / Resources / Prompts Primitive 及傳輸標準。
+        <a href="https://modelcontextprotocol.io/specification/2025-11-25" target="_blank">modelcontextprotocol.io → specification →</a>
+      </div>
+    </li>
+    <li class="ref-item">
+      <div class="ref-num">[8]</div>
+      <div class="ref-body">
+        <strong>MCP 2026-07-28 Release Candidate — 最新規格更新<span class="ref-tag mcp">MCP</span></strong>
+        MCP 官方 Blog（2026/05）；無狀態核心 + Tasks 擴充 + MCP Apps + OAuth 對齊 + 棄用政策。
+        <a href="https://blog.modelcontextprotocol.io/posts/2026-07-28-release-candidate/" target="_blank">blog.modelcontextprotocol.io → 2026-07-28 RC →</a>
+      </div>
+    </li>
+    <li class="ref-item">
+      <div class="ref-num">[9]</div>
+      <div class="ref-body">
+        <strong>OpenAI Agents SDK — Agent 官方定義<span class="ref-tag openai">OpenAI</span></strong>
+        OpenAI Agents SDK 文件；定義 agent 為多步驟、可工具呼叫、保留狀態的應用。
+        <a href="https://developers.openai.com/api/docs/guides/agents" target="_blank">developers.openai.com → agents →</a>
+      </div>
+    </li>
+    <li class="ref-item">
+      <div class="ref-num">[10]</div>
+      <div class="ref-body">
+        <strong>Agent Skills — Skill 官方規格<span class="ref-tag openai">OpenAI</span></strong>
+        OpenAI Codex 官方 Skills 文件；說明 SKILL.md 格式、Progressive Disclosure 載入機制。
+        <a href="https://developers.openai.com/codex/skills" target="_blank">developers.openai.com/codex/skills →</a>
+      </div>
+    </li>
+    <li class="ref-item">
+      <div class="ref-num">[11]</div>
+      <div class="ref-body">
+        <strong>Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks — RAG 原始論文<span class="ref-tag paper">PAPER</span></strong>
+        Lewis et al. (2020). Facebook AI Research / arXiv. 提出 RAG 架構，結合參數與非參數記憶。
+        <a href="https://arxiv.org/abs/2005.11401" target="_blank">arxiv.org → 2005.11401 →</a>
+      </div>
+    </li>
+    <li class="ref-item">
+      <div class="ref-num">[12]</div>
+      <div class="ref-body">
+        <strong>Vertex AI RAG Engine — Google RAG 官方文件<span class="ref-tag google">Google</span></strong>
+        Google Cloud Vertex AI RAG Engine 定義與 Grounding 功能說明。
+        <a href="https://cloud.google.com/vertex-ai/generative-ai/docs/rag-overview" target="_blank">cloud.google.com → vertex-ai → rag-overview →</a>
+      </div>
+    </li>
+    <li class="ref-item">
+      <div class="ref-num">[13]</div>
+      <div class="ref-body">
+        <strong>Prompt Caching Guide — 三平台快取比較<span class="ref-tag openai">OpenAI</span><span class="ref-tag anthropic">Anthropic</span><span class="ref-tag google">Google</span></strong>
+        OpenAI Prompt Caching 官方文件；Anthropic Prompt Caching 官方文件；Google Gemini Caching API。
+        <a href="https://developers.openai.com/api/docs/guides/prompt-caching" target="_blank">openai → prompt-caching →</a>
+        <a href="https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching" target="_blank">anthropic → prompt-caching →</a>
+      </div>
+    </li>
+    <li class="ref-item">
+      <div class="ref-num">[14]</div>
+      <div class="ref-body">
+        <strong>Anthropic Models Overview — Claude Context Window 規格<span class="ref-tag anthropic">Anthropic</span></strong>
+        Anthropic 官方模型頁面（2026/05）；Claude Opus 4.7 / Sonnet 4.6 均為 1M Token Context Window。
+        <a href="https://docs.anthropic.com/en/docs/about-claude/models/overview" target="_blank">docs.anthropic.com → models overview →</a>
+      </div>
+    </li>
+    <li class="ref-item">
+      <div class="ref-num">[15]</div>
+      <div class="ref-body">
+        <strong>Anthropic Prompt Engineering Overview — Prompt 最佳實踐<span class="ref-tag anthropic">Anthropic</span></strong>
+        Anthropic 官方 Prompt Engineering 文件；含 system prompt、few-shot、output format 設計建議。
+        <a href="https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview" target="_blank">docs.anthropic.com → prompt-engineering →</a>
+      </div>
+    </li>
+    <li class="ref-item">
+      <div class="ref-num">[16]</div>
+      <div class="ref-body">
+        <strong>MCP 2026 Roadmap — 協定演進路線<span class="ref-tag mcp">MCP</span></strong>
+        MCP 官方 Blog（2026/03）；無狀態核心、Tasks primitive、Extensions Framework 路線說明。
+        <a href="https://blog.modelcontextprotocol.io/posts/2026-mcp-roadmap/" target="_blank">blog.modelcontextprotocol.io → 2026 roadmap →</a>
+      </div>
+    </li>
+  </ul>
+
+  <div class="source-row" style="margin-top:20px;">
+    <span class="src-badge src-anthropic">Anthropic Docs × 4</span>
+    <span class="src-badge src-openai">OpenAI Developers × 6</span>
+    <span class="src-badge src-google">Google Cloud / AI × 3</span>
+    <span class="src-badge src-mcp">modelcontextprotocol.io × 3</span>
+    <span class="src-badge src-paper">學術論文 × 2</span>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <span>10 大 LLM 核心概念教學指南 v2.0 · 2026-05-27 · Claude × Gemini × GPT 三模型整合</span>
+  <a href="https://docs.anthropic.com" target="_blank">docs.anthropic.com →</a>
+</div>
+
+</div><!-- /container -->
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+<script>
+(function(){
+  var btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', function(){
+    btn.classList.toggle('visible', window.scrollY > 400);
+  }, { passive: true });
+  btn.addEventListener('click', function(){
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+</script>
+</body>
+</html>

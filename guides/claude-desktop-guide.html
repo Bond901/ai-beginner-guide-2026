@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Desktop 入門指南：Chat、Cowork、Code 三種模式</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;900&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0e0d;
+    --paper: #f5f0e8;
+    --warm-mid: #e8e0d0;
+    --accent-orange: #d4541a;
+    --accent-teal: #1a7a6e;
+    --accent-indigo: #2d3a8c;
+    --chat-color: #2d3a8c;
+    --chat-bg: #eef0fa;
+    --cowork-color: #1a7a6e;
+    --cowork-bg: #e8f5f3;
+    --code-color: #8c3d1a;
+    --code-bg: #faf0e8;
+    --muted: #7a7060;
+    --border: #c8bfa8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.75;
+    font-size: 15px;
+  }
+
+  /* HEADER */
+  .hero {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 56px 48px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 280px; height: 280px;
+    border: 1px solid rgba(245,240,232,0.12);
+    border-radius: 50%;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: 20%;
+    width: 200px; height: 200px;
+    border: 1px solid rgba(245,240,232,0.08);
+    border-radius: 50%;
+  }
+  .hero-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent-orange);
+    margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    font-size: 2.4rem;
+    line-height: 1.25;
+    margin-bottom: 16px;
+    max-width: 600px;
+  }
+  .hero-sub {
+    font-size: 14px;
+    color: rgba(245,240,232,0.65);
+    max-width: 520px;
+    font-weight: 300;
+  }
+  .hero-badges {
+    display: flex;
+    gap: 8px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+  .badge {
+    padding: 5px 14px;
+    border-radius: 2px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  .badge-chat { background: var(--chat-color); color: #fff; }
+  .badge-cowork { background: var(--cowork-color); color: #fff; }
+  .badge-code { background: var(--code-color); color: #fff; }
+
+  /* LAYOUT */
+  .container {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  /* TOC */
+  .toc {
+    background: var(--warm-mid);
+    border-left: 3px solid var(--accent-orange);
+    padding: 24px 28px;
+    margin: 40px 0 0;
+  }
+  .toc-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .toc ol {
+    padding-left: 20px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 2;
+  }
+  .toc a { color: inherit; text-decoration: none; }
+  .toc a:hover { color: var(--accent-orange); }
+
+  /* SECTIONS */
+  .section {
+    padding: 48px 0 0;
+  }
+  .section-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .section h2 {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    font-size: 1.7rem;
+    margin-bottom: 18px;
+    line-height: 1.3;
+  }
+  .section p {
+    color: #3a3530;
+    margin-bottom: 14px;
+    max-width: 680px;
+  }
+
+  /* MODE CARDS */
+  .mode-overview {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    margin: 32px 0;
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .mode-card {
+    padding: 24px 20px;
+    border-right: 1px solid var(--border);
+  }
+  .mode-card:last-child { border-right: none; }
+  .mode-card.chat { background: var(--chat-bg); }
+  .mode-card.cowork { background: var(--cowork-bg); }
+  .mode-card.code { background: var(--code-bg); }
+  .mode-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+  .icon-chat { background: var(--chat-color); }
+  .icon-cowork { background: var(--cowork-color); }
+  .icon-code { background: var(--code-color); }
+  .mode-card h3 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .mode-card.chat h3 { color: var(--chat-color); }
+  .mode-card.cowork h3 { color: var(--cowork-color); }
+  .mode-card.code h3 { color: var(--code-color); }
+  .mode-card p {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* MODE DEEP-DIVE */
+  .mode-section {
+    border: 1px solid var(--border);
+    margin: 28px 0;
+    overflow: hidden;
+  }
+  .mode-header {
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .mode-header.chat-h { background: var(--chat-color); }
+  .mode-header.cowork-h { background: var(--cowork-color); }
+  .mode-header.code-h { background: var(--code-color); }
+  .mode-header h3 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.15rem;
+    font-weight: 900;
+    color: #fff;
+  }
+  .mode-header .mode-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: rgba(255,255,255,0.6);
+    margin-left: auto;
+  }
+  .mode-body {
+    padding: 24px;
+    background: var(--paper);
+  }
+  .mode-body p {
+    font-size: 14px;
+    color: #3a3530;
+    margin-bottom: 12px;
+  }
+
+  /* WHAT / WHEN / HOW table */
+  .fact-grid {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 0;
+    margin: 16px 0;
+    border: 1px solid var(--border);
+    font-size: 13px;
+    overflow: hidden;
+  }
+  .fact-label {
+    background: var(--warm-mid);
+    padding: 12px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    display: flex;
+    align-items: flex-start;
+    border-bottom: 1px solid var(--border);
+  }
+  .fact-label:last-of-type { border-bottom: none; }
+  .fact-value {
+    padding: 12px 16px;
+    color: #2a2520;
+    border-bottom: 1px solid var(--border);
+    line-height: 1.65;
+  }
+  .fact-value:last-child { border-bottom: none; }
+
+  /* STEP BY STEP */
+  .steps {
+    margin: 20px 0;
+    counter-reset: steps;
+  }
+  .step {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    padding: 16px;
+    background: var(--warm-mid);
+    border-left: 3px solid transparent;
+  }
+  .step.chat-step { border-left-color: var(--chat-color); }
+  .step.cowork-step { border-left-color: var(--cowork-color); }
+  .step.code-step { border-left-color: var(--code-color); }
+  .step-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--border);
+    min-width: 28px;
+    line-height: 1.4;
+  }
+  .step.chat-step .step-num { color: var(--chat-color); }
+  .step.cowork-step .step-num { color: var(--cowork-color); }
+  .step.code-step .step-num { color: var(--code-color); }
+  .step-content h4 {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--ink);
+  }
+  .step-content p {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.55;
+  }
+
+  /* CODE BLOCKS */
+  .code-block {
+    background: #1a1814;
+    border-radius: 4px;
+    padding: 14px 18px;
+    margin: 12px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: #d4c9a8;
+    overflow-x: auto;
+    line-height: 1.6;
+  }
+  .code-block .comment { color: #7a7060; }
+  .code-block .cmd { color: #d4541a; }
+  .code-block .str { color: #6aad8e; }
+  .code-block .kw { color: #8baee0; }
+
+  /* COMPARISON TABLE */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 24px 0;
+  }
+  .compare-table th {
+    padding: 10px 14px;
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    font-weight: 600;
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--ink);
+  }
+  .compare-table th:nth-child(2) { background: var(--chat-bg); color: var(--chat-color); }
+  .compare-table th:nth-child(3) { background: var(--cowork-bg); color: var(--cowork-color); }
+  .compare-table th:nth-child(4) { background: var(--code-bg); color: var(--code-color); }
+  .compare-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  .compare-table td:first-child {
+    font-weight: 500;
+    color: var(--muted);
+    white-space: nowrap;
+    background: var(--warm-mid);
+  }
+  .compare-table tr:hover td { background: rgba(200,191,168,0.15); }
+  .compare-table tr:hover td:first-child { background: var(--warm-mid); }
+  .yes { color: var(--accent-teal); font-weight: 700; }
+  .no { color: #c0555a; }
+  .partial { color: var(--accent-orange); }
+
+  /* TIPS */
+  .tip-box {
+    border: 1px solid var(--border);
+    padding: 16px 20px;
+    margin: 16px 0;
+    display: flex;
+    gap: 12px;
+    background: #fdf9f2;
+  }
+  .tip-icon { font-size: 18px; flex-shrink: 0; }
+  .tip-box p { font-size: 13px; color: #3a3530; margin: 0; line-height: 1.65; }
+  .tip-box strong { color: var(--ink); }
+
+  /* DECISION TREE */
+  .decision {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 28px 32px;
+    margin: 28px 0;
+  }
+  .decision h3 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+  }
+  .decision-item {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+    align-items: flex-start;
+  }
+  .decision-q {
+    font-size: 13px;
+    color: rgba(245,240,232,0.7);
+    min-width: 220px;
+    padding-top: 2px;
+  }
+  .decision-arrow {
+    color: var(--accent-orange);
+    font-size: 14px;
+    padding-top: 1px;
+  }
+  .decision-a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .a-chat { color: #8baee0; }
+  .a-cowork { color: #6aad8e; }
+  .a-code { color: #e8904a; }
+
+  /* PLAN TABLE */
+  .plan-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+    margin: 20px 0;
+  }
+  .plan-table th {
+    background: var(--warm-mid);
+    padding: 8px 12px;
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 700;
+    border: 1px solid var(--border);
+  }
+  .plan-table td {
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+
+  /* FOOTER */
+  .footer {
+    margin: 56px 0 0;
+    padding: 24px 0 32px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .footer a { color: var(--muted); }
+
+  /* DIVIDER */
+  hr.rule {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 40px 0;
+  }
+
+  /* ── BACK-TO-TOP ── */
+.back-to-top {
+  position:fixed; bottom:32px; right:32px;
+  width:40px; height:40px;
+  background:var(--ink); color:var(--paper);
+  border:1px solid var(--border); border-radius:2px;
+  font-family:'JetBrains Mono',monospace; font-size:16px; font-weight:600; line-height:1;
+  cursor:pointer; opacity:0; transform:translateY(8px);
+  transition:opacity .2s ease, transform .2s ease, background .15s ease;
+  z-index:100;
+}
+.back-to-top.visible { opacity:1; transform:translateY(0); }
+.back-to-top:hover { background:var(--hero-accent); border-color:var(--hero-accent); }
+
+@media (max-width: 640px) {
+    .hero { padding: 36px 20px 32px; }
+    .hero h1 { font-size: 1.7rem; }
+    .container { padding: 0 16px; }
+    .mode-overview { grid-template-columns: 1fr; }
+    .mode-card { border-right: none; border-bottom: 1px solid var(--border); }
+    .compare-table { font-size: 11px; }
+    .compare-table td, .compare-table th { padding: 8px 8px; }
+    .decision-item { flex-direction: column; gap: 4px; }
+    .decision-q { min-width: unset; }
+    .back-to-top { bottom:20px; right:20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-label">// Beginner's Guide · 2026</div>
+  <h1>Claude Desktop<br>三種模式入門指南</h1>
+  <p class="hero-sub">Chat、Cowork、Code 各有何不同？我該用哪一個？從零開始的完整教學。</p>
+  <div class="hero-badges">
+    <span class="badge badge-chat">Chat</span>
+    <span class="badge badge-cowork">Cowork</span>
+    <span class="badge badge-code">Code</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- TOC -->
+  <div class="toc">
+    <div class="toc-title">// 目錄</div>
+    <ol>
+      <li><a href="#overview">一眼看懂三種模式</a></li>
+      <li><a href="#chat">Chat 模式詳解</a></li>
+      <li><a href="#cowork">Cowork 模式詳解</a></li>
+      <li><a href="#code">Code 模式詳解</a></li>
+      <li><a href="#compare">三者完整比較</a></li>
+      <li><a href="#choose">我該選哪一個？</a></li>
+      <li><a href="#plans">費用與方案</a></li>
+      <li><a href="#start">立刻開始：5 分鐘上手</a></li>
+    </ol>
+  </div>
+
+  <!-- SECTION 0: OVERVIEW -->
+  <div class="section" id="overview">
+    <div class="section-number">// 01</div>
+    <h2>一眼看懂三種模式</h2>
+    <p>很多人只知道在瀏覽器用 Claude 聊天，其實 Claude Desktop 提供三種根本不同的工作方式。每種模式設計給不同的工作情境，不是「升級版」的關係，而是並列的三條路徑。</p>
+
+    <div class="mode-overview">
+      <div class="mode-card chat">
+        <div class="mode-icon icon-chat">💬</div>
+        <h3>CHAT</h3>
+        <p>對話助手。問問題、寫作、分析、腦力激盪。你輸入，它回答。和瀏覽器版完全一樣。</p>
+      </div>
+      <div class="mode-card cowork">
+        <div class="mode-icon icon-cowork">🗂️</div>
+        <h3>COWORK</h3>
+        <p>自主代理人。指派任務後讓 Claude 去執行，可讀寫本機檔案、串接 Google Drive / Slack / Gmail。不需要技術背景。</p>
+      </div>
+      <div class="mode-card code">
+        <div class="mode-icon icon-code">⌨️</div>
+        <h3>CODE</h3>
+        <p>工程師的 AI 協作者。在 Terminal 或 IDE 裡運行，理解整個 codebase，自動改檔案、跑測試、送 PR。</p>
+      </div>
+    </div>
+
+    <div class="tip-box">
+      <span class="tip-icon">💡</span>
+      <p><strong>一句話記憶法：</strong>Chat 是你<em>問</em>它答、Cowork 是你<em>指派</em>它執行、Code 是你<em>協作</em>一起寫程式。</p>
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <!-- SECTION 1: CHAT -->
+  <div class="section" id="chat">
+    <div class="section-number">// 02</div>
+    <h2>Chat 模式</h2>
+    <p>Chat 是最多人熟悉的入口，也是理解 Claude 能力的起點。無論在瀏覽器、手機 App、還是 Desktop App，功能完全相同。</p>
+
+    <div class="mode-section">
+      <div class="mode-header chat-h">
+        <span style="font-size:20px">💬</span>
+        <h3>Claude Chat — 對話助手</h3>
+        <span class="mode-tag">CONVERSATION MODE</span>
+      </div>
+      <div class="mode-body">
+        <div class="fact-grid">
+          <div class="fact-label">能做什麼</div>
+          <div class="fact-value">問答、文章撰寫、翻譯、摘要、分析文件、腦力激盪、草擬 Email、解釋概念、程式片段說明</div>
+          <div class="fact-label">在哪裡用</div>
+          <div class="fact-value">瀏覽器 claude.ai、手機 App（iOS / Android）、Claude Desktop App（Chat 分頁）</div>
+          <div class="fact-label">需要什麼</div>
+          <div class="fact-value">免費帳號即可使用（有每日限制），付費方案（Pro $20/月）取得更高配額</div>
+          <div class="fact-label">侷限</div>
+          <div class="fact-value">關閉視窗後對話記憶消失（Projects 功能可儲存記憶）；不能主動操作你電腦的檔案</div>
+        </div>
+
+        <h4 style="margin:18px 0 10px; font-size:13px; font-weight:700; color:var(--chat-color);">📖 實際使用情境</h4>
+        <ul style="padding-left:18px; font-size:13px; color:#3a3530; line-height:2;">
+          <li>「幫我把這封英文 Email 翻成中文，語氣要正式」</li>
+          <li>「解釋一下機器學習中的 overfitting 是什麼意思」</li>
+          <li>「草擬一份會議紀錄，重點如下：…」</li>
+          <li>「分析這段文字的論述邏輯，指出其中的漏洞」</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="font-size:1rem; font-weight:700; margin:24px 0 12px;">Step-by-step：Chat 第一次使用</h3>
+    <div class="steps">
+      <div class="step chat-step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <h4>前往 claude.ai</h4>
+          <p>直接在瀏覽器開啟 claude.ai，或下載 Claude Desktop App（claude.com/download）。點選左上角「New chat」。</p>
+        </div>
+      </div>
+      <div class="step chat-step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <h4>輸入你的問題或任務</h4>
+          <p>在底部輸入框直接打中文就好。盡量具體描述：背景 + 你要的結果 + 格式需求，越清楚回答越精準。</p>
+        </div>
+      </div>
+      <div class="step chat-step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <h4>多輪對話迭代</h4>
+          <p>回答不夠好？繼續說「太冗長，精簡到 200 字」或「改成更正式的語氣」。Chat 記得這輪的對話，可以持續修改。</p>
+        </div>
+      </div>
+      <div class="step chat-step">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <h4>使用 Projects 儲存記憶</h4>
+          <p>左側欄建立「Project」，上傳參考文件並寫入說明。之後的對話 Claude 會記住這個 Project 的背景，不用每次重新解釋。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <!-- SECTION 2: COWORK -->
+  <div class="section" id="cowork">
+    <div class="section-number">// 03</div>
+    <h2>Cowork 模式</h2>
+    <p>Cowork 是 Anthropic 在 2026 年 1 月推出的新功能，定位是「知識工作的自主代理人」。它和 Chat 最大的差異是：你不用坐在電腦前盯著它，你<strong>指派任務</strong>，它自己去執行。</p>
+
+    <div class="mode-section">
+      <div class="mode-header cowork-h">
+        <span style="font-size:20px">🗂️</span>
+        <h3>Claude Cowork — 知識工作代理人</h3>
+        <span class="mode-tag">AUTONOMOUS AGENT MODE</span>
+      </div>
+      <div class="mode-body">
+        <div class="fact-grid">
+          <div class="fact-label">能做什麼</div>
+          <div class="fact-value">讀寫本機資料夾的檔案；連接 Google Drive、Gmail、Slack 等服務；執行多步驟任務（例：讀 40 份 PDF → 整理成 Excel 分析表）；排程重複性任務</div>
+          <div class="fact-label">在哪裡用</div>
+          <div class="fact-value">只在 Claude Desktop App（macOS / Windows）。Pro 和 Max 使用者可用手機下達指令，電腦端執行。</div>
+          <div class="fact-label">需要什麼</div>
+          <div class="fact-value">付費方案（Pro、Max、Team、Enterprise 均可）+ Claude Desktop App</div>
+          <div class="fact-label">適合誰</div>
+          <div class="fact-value">研究員、分析師、律師、財務人員、營運人員——任何處理大量文件、重複性任務、但不需要寫程式的知識工作者</div>
+        </div>
+
+        <h4 style="margin:18px 0 10px; font-size:13px; font-weight:700; color:var(--cowork-color);">📖 實際使用情境</h4>
+        <ul style="padding-left:18px; font-size:13px; color:#3a3530; line-height:2;">
+          <li>「這個資料夾有 40 份供應商報價 PDF，幫我彙整成一張比較 Excel 表，包含品項、單價、交期」</li>
+          <li>「讀我 Gmail 最近 50 封信，找出所有需要我回覆的 action item 列成清單」</li>
+          <li>「把 Slack #general 頻道本週的重點摘要成一份週報，存成 Word 檔」</li>
+          <li>「分析我 Google Drive 的財報資料夾，找出過去三季的收入趨勢」</li>
+        </ul>
+
+        <div class="tip-box" style="margin-top:16px">
+          <span class="tip-icon">⚠️</span>
+          <p><strong>安全提醒：</strong>Cowork 有桌面控制能力（可操作鍵盤滑鼠），Anthropic 建議不要在含有敏感資料的應用程式旁使用，並隨時確認它的執行步驟。</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-size:1rem; font-weight:700; margin:24px 0 12px;">Step-by-step：Cowork 第一次使用</h3>
+    <div class="steps">
+      <div class="step cowork-step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <h4>下載並安裝 Claude Desktop</h4>
+          <p>前往 claude.com/download，下載 macOS 或 Windows 版。安裝後登入你的付費帳號。</p>
+        </div>
+      </div>
+      <div class="step cowork-step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <h4>切換到 Cowork 分頁</h4>
+          <p>開啟 Desktop App，點選左側「Cowork」分頁（或頂部導航切換）。</p>
+        </div>
+      </div>
+      <div class="step cowork-step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <h4>連接你需要的服務</h4>
+          <p>點選「Connectors」，授權連接 Google Drive / Gmail / Slack 等。也可以直接指定本機資料夾路徑讓 Cowork 存取。</p>
+        </div>
+      </div>
+      <div class="step cowork-step">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <h4>下達具體任務</h4>
+          <p>描述你要的<em>結果</em>，而不是步驟。例如：「分析 /Downloads/reports 資料夾的所有 PDF，輸出一份 summary.md」。</p>
+        </div>
+      </div>
+      <div class="step cowork-step">
+        <div class="step-num">05</div>
+        <div class="step-content">
+          <h4>審查執行步驟</h4>
+          <p>Cowork 會顯示每個動作（讀哪個檔案、寫什麼）。確認沒問題後按「繼續」，它會自動完成剩餘步驟。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <!-- SECTION 3: CODE -->
+  <div class="section" id="code">
+    <div class="section-number">// 04</div>
+    <h2>Code 模式</h2>
+    <p>Claude Code 是給工程師和想學程式的人設計的。它不只是「幫你寫程式碼片段」的 AI，而是能理解你整個專案結構、跨多個檔案同時修改、自動跑測試的<strong>編程代理人</strong>。</p>
+
+    <div class="mode-section">
+      <div class="mode-header code-h">
+        <span style="font-size:20px">⌨️</span>
+        <h3>Claude Code — 工程師 AI 協作者</h3>
+        <span class="mode-tag">AGENTIC CODING MODE</span>
+      </div>
+      <div class="mode-body">
+        <div class="fact-grid">
+          <div class="fact-label">能做什麼</div>
+          <div class="fact-value">理解整個 codebase 架構；跨多檔案修改；執行 shell 命令；跑測試並修 bug；管理 Git（commit、PR）；和 VS Code / JetBrains IDE 整合</div>
+          <div class="fact-label">入口方式</div>
+          <div class="fact-value">① Terminal CLI（輸入 <code>claude</code>）②  Claude Desktop App 的 Code 分頁 ③ VS Code / JetBrains 擴充套件</div>
+          <div class="fact-label">需要什麼</div>
+          <div class="fact-value">付費方案（Pro $20/月以上）+ macOS / Linux / Windows 10+。Desktop App 不支援 Linux（Linux 用 CLI）。</div>
+          <div class="fact-label">適合誰</div>
+          <div class="fact-value">軟體工程師、想學程式的人、獨立開發者、技術創業者</div>
+        </div>
+
+        <h4 style="margin:18px 0 10px; font-size:13px; font-weight:700; color:var(--code-color);">📖 實際使用情境</h4>
+        <ul style="padding-left:18px; font-size:13px; color:#3a3530; line-height:2;">
+          <li>「在這個 signup form 加入 email 格式驗證，修改相關測試」</li>
+          <li>「分析整個專案架構，找出效能瓶頸並提出改善方案」</li>
+          <li>「把這個 Python 2 專案遷移到 Python 3，保留所有功能」</li>
+          <li>「幫我寫一個 CLAUDE.md，記錄這個專案的 coding convention」</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="font-size:1rem; font-weight:700; margin:24px 0 12px;">Step-by-step：Claude Code CLI 第一次使用</h3>
+    <div class="steps">
+      <div class="step code-step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <h4>確認系統需求</h4>
+          <p>需要 macOS / Linux / Windows 10+，以及 Terminal（macOS 用內建 Terminal；Windows 用 PowerShell，<em>不要</em>用 Git Bash）。</p>
+        </div>
+      </div>
+      <div class="step code-step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <h4>安裝 Claude Code CLI</h4>
+          <p>在 Terminal 執行以下指令：</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block"><span class="comment"># macOS / Linux</span>
+<span class="cmd">curl -fsSL https://claude.ai/install.sh | sh</span>
+
+<span class="comment"># 或用 Homebrew（macOS）</span>
+<span class="cmd">brew install claude-code</span>
+
+<span class="comment"># Windows PowerShell</span>
+<span class="cmd">winget install Anthropic.ClaudeCode</span></div>
+
+    <div class="steps" style="margin-top:0">
+      <div class="step code-step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <h4>登入帳號</h4>
+          <p>執行 <code>claude</code>，第一次會開啟瀏覽器進行授權登入。完成後回到 Terminal 即可使用。</p>
+        </div>
+      </div>
+      <div class="step code-step">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <h4>進入你的專案目錄</h4>
+          <p>切換到你的程式碼資料夾，執行 <code>claude</code> 啟動互動模式。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block"><span class="cmd">cd</span> <span class="str">~/my-project</span>
+<span class="cmd">claude</span>
+
+<span class="comment"># 啟動後輸入你的任務，例如：</span>
+<span class="comment"># > 分析這個專案的架構，告訴我主要的模組有哪些</span></div>
+
+    <div class="steps" style="margin-top:0">
+      <div class="step code-step">
+        <div class="step-num">05</div>
+        <div class="step-content">
+          <h4>善用 Plan Mode（重要！）</h4>
+          <p>複雜任務前先輸入「先制定計畫，不要修改任何檔案」，讓 Claude 分析並展示方案，確認後再執行。這能大幅降低出錯風險。</p>
+        </div>
+      </div>
+      <div class="step code-step">
+        <div class="step-num">06</div>
+        <div class="step-content">
+          <h4>建立 CLAUDE.md（強烈建議）</h4>
+          <p>在專案根目錄建立 <code>CLAUDE.md</code> 檔案，寫入 coding 規範、技術棧、測試要求。Claude Code 每次啟動都會自動讀取，確保一致性。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block"><span class="comment"># CLAUDE.md 範例</span>
+<span class="comment">## Tech Stack</span>
+<span class="str">- Backend: Python 3.12 + FastAPI</span>
+<span class="str">- Frontend: React 18 + TypeScript</span>
+<span class="str">- DB: PostgreSQL + SQLAlchemy</span>
+
+<span class="comment">## Coding Rules</span>
+<span class="str">- All functions must have type hints</span>
+<span class="str">- Tests required for all new features (pytest)</span>
+<span class="str">- No direct SQL queries, use ORM only</span></div>
+  </div>
+
+  <hr class="rule">
+
+  <!-- SECTION 4: COMPARE -->
+  <div class="section" id="compare">
+    <div class="section-number">// 05</div>
+    <h2>三者完整比較</h2>
+
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>比較項目</th>
+          <th>💬 Chat</th>
+          <th>🗂️ Cowork</th>
+          <th>⌨️ Code</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>主要定位</td>
+          <td>對話助手</td>
+          <td>知識工作代理人</td>
+          <td>程式碼代理人</td>
+        </tr>
+        <tr>
+          <td>操作介面</td>
+          <td>瀏覽器 / App 對話框</td>
+          <td>Desktop App GUI</td>
+          <td>Terminal / IDE</td>
+        </tr>
+        <tr>
+          <td>讀寫本機檔案</td>
+          <td class="no">✗ 不行</td>
+          <td class="yes">✓ 可以</td>
+          <td class="yes">✓ 可以</td>
+        </tr>
+        <tr>
+          <td>連接外部服務</td>
+          <td class="partial">△ 有限（Connector 對話）</td>
+          <td class="yes">✓ 深度整合</td>
+          <td class="partial">△ 透過 MCP</td>
+        </tr>
+        <tr>
+          <td>自主執行多步驟</td>
+          <td class="no">✗</td>
+          <td class="yes">✓</td>
+          <td class="yes">✓</td>
+        </tr>
+        <tr>
+          <td>需要技術背景</td>
+          <td class="no">✗ 不需要</td>
+          <td class="no">✗ 不需要</td>
+          <td class="yes">✓ 建議有基礎</td>
+        </tr>
+        <tr>
+          <td>免費方案可用</td>
+          <td class="yes">✓ 有限制</td>
+          <td class="no">✗ 需付費</td>
+          <td class="no">✗ 需付費</td>
+        </tr>
+        <tr>
+          <td>最低付費方案</td>
+          <td>Free / Pro</td>
+          <td>Pro（$20/月）</td>
+          <td>Pro（$20/月）</td>
+        </tr>
+        <tr>
+          <td>支援 Linux</td>
+          <td class="yes">✓</td>
+          <td class="no">✗（Desktop only）</td>
+          <td class="yes">✓（CLI）</td>
+        </tr>
+        <tr>
+          <td>手機使用</td>
+          <td class="yes">✓ App</td>
+          <td class="partial">△ 可下指令，桌機執行</td>
+          <td class="partial">△ Remote Control</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr class="rule">
+
+  <!-- SECTION 5: CHOOSE -->
+  <div class="section" id="choose">
+    <div class="section-number">// 06</div>
+    <h2>我該選哪一個？</h2>
+
+    <div class="decision">
+      <h3>🌲 決策樹：根據情境選擇模式</h3>
+      <div class="decision-item">
+        <div class="decision-q">我只是想問問題、寫文章、分析一段文字</div>
+        <div class="decision-arrow">→</div>
+        <div class="decision-a a-chat">Chat</div>
+      </div>
+      <div class="decision-item">
+        <div class="decision-q">我有一批文件要處理，懶得自己做</div>
+        <div class="decision-arrow">→</div>
+        <div class="decision-a a-cowork">Cowork</div>
+      </div>
+      <div class="decision-item">
+        <div class="decision-q">我要串接 Gmail / Google Drive 自動化</div>
+        <div class="decision-arrow">→</div>
+        <div class="decision-a a-cowork">Cowork</div>
+      </div>
+      <div class="decision-item">
+        <div class="decision-q">我要寫程式 / 修 bug / 跑測試</div>
+        <div class="decision-arrow">→</div>
+        <div class="decision-a a-code">Code</div>
+      </div>
+      <div class="decision-item">
+        <div class="decision-q">我是工程師，想讓 AI 幫我管整個 repo</div>
+        <div class="decision-arrow">→</div>
+        <div class="decision-a a-code">Code</div>
+      </div>
+      <div class="decision-item">
+        <div class="decision-q">我沒有技術背景，但想要自動化複雜任務</div>
+        <div class="decision-arrow">→</div>
+        <div class="decision-a a-cowork">Cowork</div>
+      </div>
+      <div class="decision-item">
+        <div class="decision-q">我剛開始使用 Claude，想先試試看</div>
+        <div class="decision-arrow">→</div>
+        <div class="decision-a a-chat">Chat（免費）</div>
+      </div>
+    </div>
+
+    <div class="tip-box">
+      <span class="tip-icon">🔑</span>
+      <p><strong>三種模式不互斥。</strong>很多人的日常是：用 Chat 腦力激盪 → Cowork 整理研究資料 → Code 實作功能。買一個 Pro 訂閱，三種都能用。</p>
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <!-- SECTION 6: PLANS -->
+  <div class="section" id="plans">
+    <div class="section-number">// 07</div>
+    <h2>費用與方案</h2>
+    <p>Claude Desktop App 本身免費下載（claude.com/download），功能取決於你的訂閱方案。</p>
+
+    <table class="plan-table">
+      <thead>
+        <tr>
+          <th>方案</th>
+          <th>費用</th>
+          <th>Chat</th>
+          <th>Cowork</th>
+          <th>Code</th>
+          <th>備註</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Free</strong></td>
+          <td>免費</td>
+          <td class="yes">✓（有限）</td>
+          <td class="no">✗</td>
+          <td class="no">✗</td>
+          <td>每日有訊息上限</td>
+        </tr>
+        <tr>
+          <td><strong>Pro</strong></td>
+          <td>$20/月<br><small>（$17/月 年繳）</small></td>
+          <td class="yes">✓</td>
+          <td class="yes">✓</td>
+          <td class="yes">✓</td>
+          <td>個人用戶首選</td>
+        </tr>
+        <tr>
+          <td><strong>Max</strong></td>
+          <td>$100–200/月</td>
+          <td class="yes">✓</td>
+          <td class="yes">✓</td>
+          <td class="yes">✓</td>
+          <td>更高用量上限，重度使用者</td>
+        </tr>
+        <tr>
+          <td><strong>Team</strong></td>
+          <td>詢問報價</td>
+          <td class="yes">✓</td>
+          <td class="yes">✓</td>
+          <td class="yes">✓</td>
+          <td>團隊協作功能</td>
+        </tr>
+        <tr>
+          <td><strong>API 用量計費</strong></td>
+          <td>按 token 計費</td>
+          <td class="yes">✓</td>
+          <td class="partial">△</td>
+          <td class="yes">✓</td>
+          <td>開發者 / 高階用戶</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="tip-box">
+      <span class="tip-icon">💰</span>
+      <p><strong>新手建議：</strong>先用 Free 方案試 Chat 模式。如果覺得有用、想試 Cowork 或 Code，再升級 Pro（$20/月）。Pro 訂閱同時涵蓋三種模式。</p>
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <!-- SECTION 7: START -->
+  <div class="section" id="start">
+    <div class="section-number">// 08</div>
+    <h2>立刻開始：5 分鐘上手路徑</h2>
+    <p>根據你的身份，選擇最適合的入門路徑：</p>
+
+    <div style="display:grid; gap:16px; margin:20px 0;">
+
+      <div style="border:1px solid var(--border); padding:20px 24px; background:var(--chat-bg);">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--chat-color); font-weight:700; letter-spacing:0.1em; margin-bottom:10px;">PATH A — 完全新手</div>
+        <ol style="padding-left:18px; font-size:13px; color:#3a3530; line-height:2.1;">
+          <li>前往 <strong>claude.ai</strong>，免費建立帳號</li>
+          <li>開一個 New Chat，用中文問任何問題（例：「幫我解釋量子電腦是什麼」）</li>
+          <li>試試上傳 PDF / 圖片讓 Claude 分析</li>
+          <li>熟悉後，建立一個 <strong>Project</strong>，上傳你的工作資料當背景知識</li>
+        </ol>
+      </div>
+
+      <div style="border:1px solid var(--border); padding:20px 24px; background:var(--cowork-bg);">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--cowork-color); font-weight:700; letter-spacing:0.1em; margin-bottom:10px;">PATH B — 非技術工作者想要自動化</div>
+        <ol style="padding-left:18px; font-size:13px; color:#3a3530; line-height:2.1;">
+          <li>下載 <strong>Claude Desktop</strong>（claude.com/download），升級 Pro</li>
+          <li>切換到 <strong>Cowork</strong> 分頁</li>
+          <li>先試一個簡單任務：「讀桌面上的 report.pdf，列出其中的三個主要結論，存成 summary.txt」</li>
+          <li>成功後，嘗試連接 Google Drive，指派更複雜的任務</li>
+        </ol>
+      </div>
+
+      <div style="border:1px solid var(--border); padding:20px 24px; background:var(--code-bg);">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--code-color); font-weight:700; letter-spacing:0.1em; margin-bottom:10px;">PATH C — 工程師 / 想學程式的人</div>
+        <ol style="padding-left:18px; font-size:13px; color:#3a3530; line-height:2.1;">
+          <li>升級 Pro，安裝 CLI：<code>curl -fsSL https://claude.ai/install.sh | sh</code></li>
+          <li>進入一個現有的小專案目錄，執行 <code>claude</code></li>
+          <li>第一個任務：「描述這個專案的架構，不要修改任何檔案」（先觀察）</li>
+          <li>建立 <code>CLAUDE.md</code>，寫入你的 coding 規範</li>
+          <li>嘗試要求它修復一個小 bug，觀察它的 Plan → Execute 流程</li>
+        </ol>
+      </div>
+
+    </div>
+
+    <div class="tip-box">
+      <span class="tip-icon">🎯</span>
+      <p><strong>給所有新手的通用建議：</strong>第一次使用時，<em>給越具體的任務，效果越好</em>。不要說「幫我整理資料」，而是說「讀 /Downloads/sales_2026Q1.xlsx，找出銷售額前三名的產品，存成 top3.md」。清晰的輸入 = 精準的輸出。</p>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <span>Claude Desktop Guide · 2026-05-25</span>
+    <a href="https://claude.com/download" target="_blank">claude.com/download →</a>
+  </div>
+
+</div>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+<script>
+(function(){
+  var btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', function(){
+    btn.classList.toggle('visible', window.scrollY > 400);
+  }, { passive: true });
+  btn.addEventListener('click', function(){
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+</script>
+</body>
+</html>
