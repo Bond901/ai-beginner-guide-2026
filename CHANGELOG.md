@@ -8,6 +8,18 @@
 
 （尚無未發布變更）
 
+## [1.2.0] - 2026-05-29
+
+### Added
+
+- 每篇指南頂部新增「匯出 / 分享列」：一鍵**匯出 PDF**（透過瀏覽器列印 → 另存 PDF）、**開啟 NotebookLM**、**複製本頁網址**，方便讀者存檔、加入自己的 NotebookLM 筆記本或分享連結。
+- 列印樣式表（`@media print`）：匯出 PDF 時自動隱藏互動元件與懸浮按鈕，並避免表格跨頁切斷列、程式碼區塊溢出。
+
+### Changed
+
+- 提升次要文字色彩對比至 WCAG AA（調深 `--muted`），改善可讀性與無障礙。
+- Claude Opus 4.8 技術指南更新為彙整完整版，並與其餘指南統一加入上述「匯出 / 分享列」。
+
 ## [1.1.0] - 2026-05-29
 
 ### Added
@@ -31,6 +43,7 @@
 - 每篇 guide 右下角「回到頂部」懸浮按鈕。
 - MIT License。
 
-[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/Bond901/ai-beginner-guide-2026/releases/tag/v1.0.0

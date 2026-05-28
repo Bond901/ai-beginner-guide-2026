@@ -12,7 +12,7 @@
     --paper: #f4f6f0;
     --warm-mid: #e4e8dc;
     --border: #c4cbb8;
-    --muted: #6a7560;
+    --muted:#6b6353; --link:#b8460f;
 
     --ag-color: #1a6b4a;
     --ag-bg: #e8f5ee;
@@ -463,6 +463,12 @@
 .back-home{position:fixed;bottom:80px;right:32px;width:40px;height:40px;background:var(--ink);color:var(--paper);border:1px solid var(--border);border-radius:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s ease,border-color .15s ease;z-index:100;text-decoration:none;}
 .back-home:hover{background:var(--hero-accent);border-color:var(--hero-accent);}
 @media(max-width:640px){.back-home{bottom:68px;right:20px;}}
+.actions-bar{display:flex;flex-direction:column;gap:10px;border:1px solid var(--border);background:var(--warm-mid);padding:12px 16px;margin:24px 0 0;}
+.actions-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;}
+.act-btn{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--ink);background:var(--paper);border:1px solid var(--border);border-radius:2px;padding:7px 14px;cursor:pointer;text-decoration:none;transition:background .15s ease,border-color .15s ease,color .15s ease;}
+.act-btn:hover{background:var(--link);border-color:var(--link);color:#fff;}
+.act-hint{font-size:11.5px;color:var(--muted);line-height:1.6;}
+@media print{@page{margin:14mm;}*{-webkit-print-color-adjust:exact;color-adjust:exact;print-color-adjust:exact;}.actions-bar,.back-to-top,.back-home,.no-print{display:none !important;}a{color:inherit;}tr{break-inside:avoid;}thead{display:table-header-group;}pre,code{white-space:pre-wrap;word-break:break-word;}}
 </style>
 </head>
 <body>
@@ -481,6 +487,15 @@
 </div>
 
 <div class="container">
+<div class="actions-bar no-print">
+  <div class="actions-row">
+    <button class="act-btn" onclick="window.print()" title="開啟列印視窗 → 目的地選「另存為 PDF」→ 儲存">⬇ PDF</button>
+    <a class="act-btn" href="https://notebooklm.google.com/" target="_blank" rel="noopener">↗ NotebookLM</a>
+    <button class="act-btn" id="copyUrlBtn" onclick="copyPageURL(this)">⧉ Copy Link</button>
+  </div>
+  <span class="act-hint">① 點 <strong>PDF</strong> 匯出檔案，或 <strong>Copy Link</strong> 複製網址　② 開 <strong>NotebookLM</strong> →「新增來源 → 網站」貼上，加入你的筆記本</span>
+</div>
+
 
   <!-- TOC -->
   <div class="toc">
@@ -1066,6 +1081,14 @@ response = model.<span class="cmd">generate_content</span>(<span class="str">"�
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 })();
+function copyPageURL(btn){
+  var orig=btn.textContent;
+  var flash=function(msg){btn.textContent=msg;setTimeout(function(){btn.textContent=orig;},1800);};
+  var ok=function(){flash('✓ 已複製');};var fail=function(){flash('複製失敗，請手動複製');};
+  if(location.protocol==='file:'){alert('您正在以本機檔案 (file://) 開啟。\nNotebookLM 的「網站來源」需要可公開存取的 https 網址。\n請先部署，或改用「⬇ PDF」。');return;}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(location.href).then(ok).catch(fail);}
+  else{var ta=document.createElement('textarea');ta.value=location.href;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.top='-9999px';document.body.appendChild(ta);ta.select();var d=false;try{d=document.execCommand('copy');}catch(e){d=false;}document.body.removeChild(ta);d?ok():fail();}
+}
 </script>
 </body>
 </html>
