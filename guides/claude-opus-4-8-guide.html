@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Opus 4.8 完整技術指南 — Effort · Workflows · Fast Mode · API</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;900&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:       #0f0e0d;
+  --paper:     #f5f0e8;
+  --warm-mid:  #e8e0d0;
+  --border:    #c8bfa8;
+  --muted:     #7a7060;
+  --hero-accent: #d4541a;
+
+  /* 五大功能 accent */
+  --t1-color: #8c3d1a;  --t1-bg: #faf0e8;  /* Effort Control — amber-brown */
+  --t2-color: #2d3a8c;  --t2-bg: #eef0fa;  /* Dynamic Workflows — indigo */
+  --t3-color: #1a7a6e;  --t3-bg: #e8f5f3;  /* Fast Mode — teal */
+  --t4-color: #6b3db8;  --t4-bg: #f0eaf9;  /* Mid-conversation system msgs — purple */
+  --t5-color: #1a6b4a;  --t5-bg: #e8f5ee;  /* Adaptive Thinking — forest green */
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--ink);
+  background: var(--paper);
+}
+
+/* ── HERO ── */
+.hero {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 56px 48px 48px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content:''; position:absolute; top:-60px; right:-60px;
+  width:280px; height:280px;
+  border:1px solid rgba(245,240,232,.12); border-radius:50%;
+}
+.hero::after {
+  content:''; position:absolute; bottom:-80px; left:20%;
+  width:200px; height:200px;
+  border:1px solid rgba(245,240,232,.08); border-radius:50%;
+}
+.hero-inner { max-width:820px; margin:0 auto; position:relative; z-index:1; }
+.hero-label {
+  font-family:'JetBrains Mono',monospace; font-size:11px;
+  letter-spacing:.18em; text-transform:uppercase;
+  color:var(--hero-accent); margin-bottom:16px;
+}
+.hero h1 {
+  font-family:'Noto Serif TC',serif; font-weight:900;
+  font-size:2.4rem; line-height:1.25; margin-bottom:16px; max-width:620px;
+}
+.hero-sub { font-size:14px; color:rgba(245,240,232,.65); max-width:560px; font-weight:300; line-height:1.8; }
+.hero-badges { display:flex; gap:8px; margin-top:28px; flex-wrap:wrap; }
+.badge {
+  padding:5px 14px; border-radius:2px;
+  font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600;
+  letter-spacing:.05em; color:#fff;
+}
+.badge-t1 { background:var(--t1-color); }
+.badge-t2 { background:var(--t2-color); }
+.badge-t3 { background:var(--t3-color); }
+.badge-t4 { background:var(--t4-color); }
+.badge-t5 { background:var(--t5-color); }
+.hero-meta {
+  margin-top:24px; display:flex; gap:22px; flex-wrap:wrap;
+  font-family:'JetBrains Mono',monospace; font-size:11px;
+  letter-spacing:.08em; color:rgba(245,240,232,.4);
+}
+
+/* ── LAYOUT ── */
+.container { max-width:820px; margin:0 auto; padding:0 32px; }
+hr.rule { border:none; border-top:1px solid var(--border); margin:40px 0; }
+
+/* ── SECTION ── */
+.section { padding:48px 0 0; }
+.section-number {
+  font-family:'JetBrains Mono',monospace; font-size:11px;
+  letter-spacing:.15em; color:var(--muted); margin-bottom:6px;
+}
+.section h2 {
+  font-family:'Noto Serif TC',serif; font-weight:900;
+  font-size:1.7rem; margin-bottom:18px; line-height:1.3;
+}
+.section > p.intro { font-size:14px; color:var(--muted); margin-bottom:22px; max-width:680px; }
+
+/* ── TOC ── */
+.toc { background:var(--warm-mid); border-left:3px solid var(--hero-accent); padding:24px 28px; margin:40px 0 0; }
+.toc-title {
+  font-family:'JetBrains Mono',monospace; font-size:10px;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-bottom:12px;
+}
+.toc ol { padding-left:20px; font-size:13px; color:var(--muted); line-height:2; }
+.toc a { color:inherit; text-decoration:none; }
+.toc a:hover { color:var(--hero-accent); }
+
+/* ── OVERVIEW CARDS ── */
+.mode-overview {
+  display:grid; grid-template-columns:repeat(5,1fr);
+  border:1px solid var(--border); overflow:hidden; margin:24px 0;
+}
+.mode-card { padding:22px 18px; border-right:1px solid var(--border); }
+.mode-card:last-child { border-right:none; }
+.mode-card.t1 { background:var(--t1-bg); }
+.mode-card.t2 { background:var(--t2-bg); }
+.mode-card.t3 { background:var(--t3-bg); }
+.mode-card.t4 { background:var(--t4-bg); }
+.mode-card.t5 { background:var(--t5-bg); }
+.mode-icon {
+  width:36px; height:36px; border-radius:6px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; margin-bottom:12px; color:#fff;
+}
+.icon-t1 { background:var(--t1-color); }
+.icon-t2 { background:var(--t2-color); }
+.icon-t3 { background:var(--t3-color); }
+.icon-t4 { background:var(--t4-color); }
+.icon-t5 { background:var(--t5-color); }
+.mode-card h3 { font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:600; margin-bottom:6px; }
+.mode-card.t1 h3 { color:var(--t1-color); }
+.mode-card.t2 h3 { color:var(--t2-color); }
+.mode-card.t3 h3 { color:var(--t3-color); }
+.mode-card.t4 h3 { color:var(--t4-color); }
+.mode-card.t5 h3 { color:var(--t5-color); }
+.mode-card p { font-size:11.5px; color:var(--muted); line-height:1.6; margin:0; }
+
+/* ── TOOL SECTION ── */
+.mode-section { border:1px solid var(--border); margin:28px 0; overflow:hidden; }
+.mode-header { padding:18px 24px; display:flex; align-items:center; gap:14px; }
+.mode-header.t1-h { background:var(--t1-color); }
+.mode-header.t2-h { background:var(--t2-color); }
+.mode-header.t3-h { background:var(--t3-color); }
+.mode-header.t4-h { background:var(--t4-color); }
+.mode-header.t5-h { background:var(--t5-color); }
+.mode-header h3 { font-family:'Noto Serif TC',serif; font-size:1.15rem; font-weight:900; color:#fff; }
+.mode-header .mode-tag {
+  font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.15em;
+  color:rgba(255,255,255,.65); margin-left:auto; white-space:nowrap;
+}
+.mode-body { padding:24px; background:var(--paper); }
+.mode-body h4.sub {
+  font-family:'Noto Sans TC',sans-serif; font-weight:700; font-size:13.5px;
+  margin:20px 0 8px; letter-spacing:.02em;
+}
+.mode-body p { font-size:13.5px; margin:8px 0; }
+.mode-body ul.uc { list-style:none; margin:10px 0; }
+.mode-body ul.uc li { font-size:13px; padding:4px 0 4px 18px; position:relative; color:var(--ink); }
+.mode-body ul.uc li::before { content:'▸'; position:absolute; left:0; color:var(--muted); }
+
+/* ── FACT GRID ── */
+.fact-grid { display:grid; grid-template-columns:120px 1fr; border:1px solid var(--border); font-size:13px; overflow:hidden; margin:16px 0; }
+.fact-label {
+  background:var(--warm-mid); padding:12px 14px;
+  font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600;
+  color:var(--muted); letter-spacing:.08em; display:flex; align-items:flex-start;
+  border-bottom:1px solid var(--border);
+}
+.fact-label:last-of-type { border-bottom:none; }
+.fact-value { padding:12px 16px; border-bottom:1px solid var(--border); line-height:1.65; }
+.fact-value:last-child { border-bottom:none; }
+.fact-value code { font-family:'JetBrains Mono',monospace; font-size:12px; background:var(--warm-mid); padding:1px 5px; border-radius:2px; }
+
+/* ── STEPS ── */
+.steps { margin:20px 0; }
+.step { display:flex; gap:16px; margin-bottom:14px; padding:16px; background:var(--warm-mid); border-left:3px solid transparent; }
+.step.t2-step { border-left-color:var(--t2-color); }
+.step-num { font-family:'JetBrains Mono',monospace; font-size:18px; font-weight:600; min-width:28px; line-height:1.4; }
+.step.t2-step .step-num { color:var(--t2-color); }
+.step-content h4 { font-size:13px; font-weight:700; margin-bottom:4px; }
+.step-content p { font-size:13px; color:var(--muted); margin:0; line-height:1.55; }
+
+/* ── CODE BLOCK ── */
+.code-block {
+  background:#1a1814; border-radius:4px; padding:14px 18px; margin:12px 0;
+  font-family:'JetBrains Mono',monospace; font-size:12.5px; color:#d4c9a8;
+  overflow-x:auto; line-height:1.7; white-space:pre;
+}
+.code-block .comment { color:#7a7060; }
+.code-block .cmd     { color:#d4541a; }
+.code-block .str     { color:#6aad8e; }
+.code-block .kw      { color:#8baee0; }
+
+/* ── TABLES ── */
+.compare-table { width:100%; border-collapse:collapse; font-size:13px; margin:20px 0; }
+.compare-table th {
+  padding:10px 12px; text-align:left;
+  font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.12em;
+  font-weight:600; text-transform:uppercase; border-bottom:2px solid var(--ink);
+}
+.compare-table th.h-self { background:var(--t1-bg); color:var(--t1-color); }
+.compare-table td { padding:9px 12px; border-bottom:1px solid var(--border); vertical-align:top; }
+.compare-table td:first-child { font-weight:500; color:var(--muted); background:var(--warm-mid); white-space:nowrap; }
+.compare-table td.best { color:var(--t1-color); font-weight:700; }
+.compare-table .lead { color:#a06020; font-weight:700; }
+
+.plan-table { width:100%; border-collapse:collapse; font-size:12.5px; margin:20px 0; }
+.plan-table th {
+  background:var(--warm-mid); padding:9px 12px; text-align:left;
+  font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em;
+  text-transform:uppercase; font-weight:700; border:1px solid var(--border);
+}
+.plan-table td { padding:9px 12px; border:1px solid var(--border); vertical-align:top; line-height:1.5; }
+.plan-table td code { font-family:'JetBrains Mono',monospace; font-size:11.5px; }
+
+/* generic data table */
+.data-table { width:100%; border-collapse:collapse; font-size:12.5px; margin:18px 0; }
+.data-table th { background:var(--ink); color:var(--paper); padding:9px 11px; text-align:left; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase; }
+.data-table td { padding:8px 11px; border-bottom:1px solid var(--border); vertical-align:top; }
+.data-table td:first-child { color:var(--muted); }
+.data-table tr td.up { color:var(--t5-color); font-weight:600; }
+
+/* ── DECISION ── */
+.decision { background:var(--ink); color:var(--paper); padding:28px 32px; margin:28px 0; }
+.decision h3 { font-family:'Noto Serif TC',serif; font-size:1.1rem; margin-bottom:20px; }
+.decision-item { display:flex; gap:12px; margin-bottom:12px; align-items:flex-start; }
+.decision-q { font-size:13px; color:rgba(245,240,232,.72); min-width:300px; padding-top:2px; }
+.decision-arrow { color:var(--hero-accent); font-size:14px; padding-top:1px; }
+.decision-a { font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600; }
+.a-t1 { color:#e8904a; }
+.a-t2 { color:#8baee0; }
+.a-t3 { color:#6aad8e; }
+.a-t5 { color:#7ec79f; }
+
+/* ── TIP BOX ── */
+.tip-box { border:1px solid var(--border); padding:16px 20px; margin:16px 0; display:flex; gap:12px; background:rgba(245,240,232,.6); }
+.tip-icon { font-size:18px; flex-shrink:0; }
+.tip-box p { font-size:13px; margin:0; line-height:1.65; }
+.tip-box.warn { border-color:#c9a45a; background:#faf3e2; }
+
+/* ── CHECKLIST ── */
+.checklist { list-style:none; margin:16px 0; }
+.checklist li { font-size:13px; padding:6px 0 6px 28px; position:relative; border-bottom:1px solid var(--border); line-height:1.6; }
+.checklist li::before { content:'☐'; position:absolute; left:4px; color:var(--hero-accent); font-size:15px; }
+.checklist li code { font-family:'JetBrains Mono',monospace; font-size:12px; background:var(--warm-mid); padding:1px 5px; border-radius:2px; }
+
+/* ── GETTING STARTED ── */
+.paths { display:grid; gap:16px; margin:20px 0; }
+.path-card { border:1px solid var(--border); padding:20px 24px; }
+.path-card.p1 { background:var(--t1-bg); }
+.path-card.p2 { background:var(--t2-bg); }
+.path-card.p3 { background:var(--t3-bg); }
+.path-label { font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; letter-spacing:.1em; margin-bottom:10px; }
+.path-card.p1 .path-label { color:var(--t1-color); }
+.path-card.p2 .path-label { color:var(--t2-color); }
+.path-card.p3 .path-label { color:var(--t3-color); }
+.path-card ol { padding-left:18px; font-size:13px; line-height:2; }
+.path-card ol code { font-family:'JetBrains Mono',monospace; font-size:12px; }
+
+/* ── SOURCES ── */
+.sources { font-size:12px; color:var(--muted); line-height:1.9; margin:14px 0; }
+.sources a { color:var(--hero-accent); text-decoration:none; word-break:break-all; }
+.sources h4 { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.15em; text-transform:uppercase; color:var(--ink); margin:18px 0 8px; }
+
+/* ── FOOTER ── */
+.footer {
+  margin:56px 0 0; padding:24px 0 32px; border-top:1px solid var(--border);
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:12px; color:var(--muted); font-family:'JetBrains Mono',monospace;
+}
+.footer a { color:inherit; text-decoration:none; }
+.footer a:hover { color:var(--hero-accent); }
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  .hero { padding:36px 20px 32px; }
+  .hero h1 { font-size:1.7rem; }
+  .container { padding:0 16px; }
+  .mode-overview { grid-template-columns:repeat(2,1fr); }
+  .mode-card { border-right:none; border-bottom:1px solid var(--border); }
+  .compare-table, .data-table, .plan-table { font-size:11px; }
+  .compare-table td, .compare-table th { padding:7px 8px; }
+  .fact-grid { grid-template-columns:90px 1fr; }
+  .decision-item { flex-direction:column; gap:4px; }
+  .decision-q { min-width:unset; }
+  .footer { flex-direction:column; gap:8px; text-align:center; }
+}
+.back-home{position:fixed;bottom:80px;right:32px;width:40px;height:40px;background:var(--ink);color:var(--paper);border:1px solid var(--border);border-radius:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s ease,border-color .15s ease;z-index:100;text-decoration:none;}
+.back-home:hover{background:var(--hero-accent);border-color:var(--hero-accent);}
+@media(max-width:640px){.back-home{bottom:68px;right:20px;}}
+.back-to-top{position:fixed;bottom:32px;right:32px;width:40px;height:40px;background:var(--ink);color:var(--paper);border:1px solid var(--border);border-radius:2px;font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;line-height:1;cursor:pointer;opacity:0;transform:translateY(8px);transition:opacity .2s ease,transform .2s ease,background .15s ease;z-index:100;}
+.back-to-top.visible{opacity:1;transform:translateY(0);}
+.back-to-top:hover{background:var(--hero-accent);border-color:var(--hero-accent);}
+@media(max-width:640px){.back-to-top{bottom:20px;right:20px;}}
+</style>
+</head>
+<body>
+
+<!-- ══ HERO ══ -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">// Claude Opus 4.8 · Technical Guide · 2026</div>
+    <h1>Claude Opus 4.8<br>完整技術指南</h1>
+    <p class="hero-sub">Anthropic 目前對外可用的最強模型（generally available）。一次升級五件事：長程 agentic coding、effort 校準、工具觸發可靠度、誠實度，以及和 Opus 4.7 完全相同的價格。本指南聚焦五大功能與 API / Prompt 實務。</p>
+    <div class="hero-badges">
+      <span class="badge badge-t1">Effort Control</span>
+      <span class="badge badge-t2">Dynamic Workflows</span>
+      <span class="badge badge-t3">Fast Mode</span>
+      <span class="badge badge-t4">Mid-conversation System</span>
+      <span class="badge badge-t5">Adaptive Thinking</span>
+    </div>
+    <div class="hero-meta">
+      <span>claude-opus-4-8</span>
+      <span>發布 2026-05-28</span>
+      <span>1M context</span>
+      <span>繁體中文</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ══ TOC ══ -->
+<div class="toc">
+  <div class="toc-title">// 目錄</div>
+  <ol>
+    <li><a href="#overview">規格快覽 · 五大功能總覽 · 三個常見誤解</a></li>
+    <li><a href="#effort">Effort Control（用力程度控制）</a></li>
+    <li><a href="#workflows">Dynamic Workflows（動態工作流）</a></li>
+    <li><a href="#fast">Fast Mode（2.5× 快速模式）</a></li>
+    <li><a href="#midsys">Mid-conversation System Messages（中途系統指令）</a></li>
+    <li><a href="#thinking">Adaptive Thinking + Prompt Engineering</a></li>
+    <li><a href="#compare">基準對比 · 4.6→4.7→4.8 軌跡</a></li>
+    <li><a href="#choose">選型決策樹 · Effort 矩陣</a></li>
+    <li><a href="#pricing">定價（標準 vs Fast Mode）</a></li>
+    <li><a href="#start">立刻開始 · 4.7→4.8 遷移 Checklist</a></li>
+    <li><a href="#sources">資料來源 · 資料邊界</a></li>
+  </ol>
+</div>
+
+<!-- ══ §01 OVERVIEW ══ -->
+<div class="section" id="overview">
+  <div class="section-number">// 01</div>
+  <h2>規格快覽與五大功能總覽</h2>
+  <p class="intro">Opus 4.8 是一次<strong>幅度溫和但方向明確</strong>的升級：訴求不是「更聰明」的單點突破，而是「<strong>更可靠的協作者</strong>」。核心動作是把推理、工具與誠實度三條線同時校準，而價格不變。</p>
+
+  <div class="fact-grid">
+    <div class="fact-label">API model ID</div>
+    <div class="fact-value"><code>claude-opus-4-8</code></div>
+    <div class="fact-label">Context window</div>
+    <div class="fact-value"><strong>1M token（預設）</strong>於 Claude API / Bedrock / Vertex AI；Microsoft Foundry 發布時為 200k。與 4.7 相同上限。</div>
+    <div class="fact-label">最大輸出</div>
+    <div class="fact-value"><strong>128k</strong> output tokens。</div>
+    <div class="fact-label">Thinking 模式</div>
+    <div class="fact-value">僅支援 <strong>adaptive thinking</strong>（<code>thinking: {type:"adaptive"}</code>）。不支援 <code>budget_tokens</code>，設定即回 <code>400</code>。</div>
+    <div class="fact-label">Effort 預設</div>
+    <div class="fact-value"><strong><code>high</code></strong>（所有介面，含 API 與 Claude Code）。</div>
+    <div class="fact-label">定價（標準）</div>
+    <div class="fact-value"><strong>$5 / 1M input</strong>、<strong>$25 / 1M output</strong>。與 4.7 一致，未漲價。</div>
+    <div class="fact-label">定價（Fast）</div>
+    <div class="fact-value"><strong>$10 / 1M input</strong>、<strong>$50 / 1M output</strong>（research preview）。</div>
+    <div class="fact-label">Prompt cache</div>
+    <div class="fact-value">最低長度降到 <strong>1,024 token</strong>（較 4.7 更低），短 prompt 也能命中快取。</div>
+    <div class="fact-label">不支援參數</div>
+    <div class="fact-value"><code>temperature</code> / <code>top_p</code> / <code>top_k</code> 設非預設值即回 <code>400</code>（沿用 4.7 限制）。</div>
+  </div>
+
+  <p class="intro" style="margin-top:8px;">下面五張卡片是 4.8 發布日最值得關注的功能，本指南 §02–§06 逐一深入。</p>
+  <div class="mode-overview">
+    <div class="mode-card t1">
+      <div class="mode-icon icon-t1">🎚️</div>
+      <h3>Effort Control</h3>
+      <p>控制 Claude 對一則回應投入多少推理。所有介面預設 <code>high</code>。</p>
+    </div>
+    <div class="mode-card t2">
+      <div class="mode-icon icon-t2">⚙️</div>
+      <h3>Dynamic Workflows</h3>
+      <p>Claude Code 並行調度數十～數百 subagent，自我驗證後合併。</p>
+    </div>
+    <div class="mode-card t3">
+      <div class="mode-icon icon-t3">⚡</div>
+      <h3>Fast Mode</h3>
+      <p>同模型、同品質，最高 2.5× 輸出吞吐；價格為前代 fast 的 1/3。</p>
+    </div>
+    <div class="mode-card t4">
+      <div class="mode-icon icon-t4">🧩</div>
+      <h3>Mid-conv System</h3>
+      <p>對話中途插入 <code>role:"system"</code>，不重寫整段 system prompt。</p>
+    </div>
+    <div class="mode-card t5">
+      <div class="mode-icon icon-t5">🧠</div>
+      <h3>Adaptive Thinking</h3>
+      <p>非新參數，4.8 改的是校準：只在該輪需要時才觸發推理。</p>
+    </div>
+  </div>
+
+  <div class="tip-box warn">
+    <span class="tip-icon">⚠️</span>
+    <p><strong>三個容易誤解的釐清：</strong>（1）<strong>Adaptive thinking 不是 4.8 新參數</strong>——它在 4.6 引入、4.7 已是唯一模式，4.8 改的是「校準」。（2）<strong>Effort「參數」≠ Effort「Control」</strong>——API 的 <code>effort</code> 參數自 4.6 就有；4.8 真正新的是 claude.ai / Cowork 的使用者端 Effort Control UI，以及所有介面預設 <code>high</code>。（3）<strong>Mid-conversation system messages 才是 4.8 真正的 API 新能力</strong>（見 §05）。</p>
+  </div>
+
+  <div class="tip-box">
+    <span class="tip-icon">🔑</span>
+    <p><strong>誠實度（honesty）是 4.8 著墨最深的維度：</strong>對自己寫的程式碼，<strong>漏判缺陷的機率約為 4.7 的 1/4</strong>（約 4 倍改善）；更傾向主動標示不確定性、較少做無證據宣稱；misaligned 行為（欺騙、配合濫用）顯著低於 4.7，接近最佳對齊的 Mythos Preview。對「錯誤成本高」的場景（如 cross-model triangulation、補助文件審查），這比 benchmark 分數更實用。</p>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- ══ §02 EFFORT CONTROL ══ -->
+<div class="section" id="effort">
+  <div class="section-number">// 02</div>
+  <h2>Effort Control（用力程度控制）</h2>
+</div>
+<div class="mode-section">
+  <div class="mode-header t1-h">
+    <span style="font-size:20px">🎚️</span>
+    <h3>Effort Control — 決定 Claude 對一則回應投入多少 effort</h3>
+    <span class="mode-tag">RESPONSE TUNING</span>
+  </div>
+  <div class="mode-body">
+    <div class="fact-grid">
+      <div class="fact-label">能做什麼</div>
+      <div class="fact-value">調節推理深度、token 花費、工具呼叫行為與回答完整度。官方明確指出 <code>effort</code> 是<strong>行為訊號（behavioral signal）</strong>，不是嚴格的 token 預算。</div>
+      <div class="fact-label">使用介面</div>
+      <div class="fact-value">claude.ai 與 Cowork 模型選單旁的控制（<strong>所有方案皆可用</strong>）；API 與 Claude Code 以 <code>output_config.effort</code> 設定。</div>
+      <div class="fact-label">適合誰</div>
+      <div class="fact-value">想在「速度／成本」與「品質／深度」之間明確取捨的所有使用者。</div>
+      <div class="fact-label">預設值</div>
+      <div class="fact-value">Opus 4.8 在<strong>所有介面預設 <code>high</code></strong>；官方判斷 high 是品質與體驗的最佳平衡點。</div>
+    </div>
+
+    <h4 class="sub">Effort 級別（API / Claude Code）</h4>
+    <table class="plan-table">
+      <thead><tr><th>級別</th><th>API 值</th><th>行為</th><th>建議場景</th></tr></thead>
+      <tbody>
+        <tr><td>Low</td><td><code>low</code></td><td>簡單問題可能跳過思考</td><td>分類、查詢、短子任務</td></tr>
+        <tr><td>Medium</td><td><code>medium</code></td><td>視情況思考</td><td>成本敏感但需穩定品質</td></tr>
+        <tr><td><strong>High（預設）</strong></td><td><code>high</code></td><td>幾乎一定思考</td><td>複雜推理、一般高價值任務</td></tr>
+        <tr><td>Extra</td><td><code>xhigh</code></td><td>花更多 token 換更好結果</td><td>30 分鐘以上長程 agentic、反覆工具呼叫</td></tr>
+        <tr><td>Max</td><td><code>max</code></td><td>最深思考</td><td>無 token 約束的前沿關鍵任務</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:12.5px;color:var(--muted);">claude.ai / Cowork 端：「<strong>extra</strong>」對應 Claude Code 的 <code>xhigh</code>；「<strong>max</strong>」對應 <code>max</code>。</p>
+
+    <h4 class="sub">關鍵實務</h4>
+    <ul class="uc">
+      <li>在 coding 上，<code>high</code> effort 花費的 token 量<strong>與 4.7 預設相近，但表現更好</strong>。</li>
+      <li>官方建議：<strong>困難任務與長程非同步 workflow 用 extra（<code>xhigh</code>）</strong>。</li>
+      <li>Claude Code 已<strong>調高 rate limit</strong> 以容納高 effort 的較高 token 用量。</li>
+      <li>若在複雜問題上看到推理過淺：<strong>直接調高 effort，而非用 prompt 繞過</strong>。</li>
+    </ul>
+
+    <div class="code-block"><span class="comment"># 一般高價值任務：預設 high 即可，視需要拉到 xhigh / max</span>
+<span class="kw">import</span> anthropic
+client = anthropic.Anthropic()
+
+resp = client.messages.create(
+    model=<span class="str">"claude-opus-4-8"</span>,
+    max_tokens=<span class="kw">4096</span>,
+    output_config={<span class="str">"effort"</span>: <span class="str">"high"</span>},   <span class="comment"># low / medium / high / xhigh / max</span>
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Analyze monolith vs microservices trade-offs."</span>}],
+)</div>
+  </div>
+</div>
+
+<!-- ══ §03 DYNAMIC WORKFLOWS ══ -->
+<div class="section" id="workflows">
+  <div class="section-number">// 03</div>
+  <h2>Dynamic Workflows（動態工作流）</h2>
+</div>
+<div class="mode-section">
+  <div class="mode-header t2-h">
+    <span style="font-size:20px">⚙️</span>
+    <h3>Dynamic Workflows — 單一 session 內並行運行數十～數百 subagent</h3>
+    <span class="mode-tag">CLAUDE CODE · PREVIEW</span>
+  </div>
+  <div class="mode-body">
+    <div class="fact-grid">
+      <div class="fact-label">能做什麼</div>
+      <div class="fact-value">針對「單一 agent 一次跑不完」的超大任務，由 Claude <strong>動態撰寫編排腳本</strong>，並行調度數十到數百個 subagent，並在結果回到你面前前<strong>先自行驗證</strong>。</div>
+      <div class="fact-label">使用介面</div>
+      <div class="fact-value">Claude Code CLI / Desktop / VS Code 擴充；亦支援 Claude API、Bedrock、Vertex AI、Foundry。</div>
+      <div class="fact-label">方案 / 開關</div>
+      <div class="fact-value">Max、Team、API <strong>預設開啟</strong>；Enterprise 發布時<strong>預設關閉</strong>（需 admin 啟用）。</div>
+      <div class="fact-label">適合誰</div>
+      <div class="fact-value">做全 codebase bug hunt / 效能・資安審查、大型遷移與現代化、需要「複查兩次」關鍵工作的工程團隊。</div>
+      <div class="fact-label">侷限</div>
+      <div class="fact-value">research preview；<strong>token 耗用遠高於一般 session</strong>，建議先用 scoped 小任務試水溫。</div>
+    </div>
+
+    <h4 class="sub">運作機制（協調發生在對話之外，所以任務再大計畫都不跑偏）</h4>
+    <div class="steps">
+      <div class="step t2-step"><div class="step-num">01</div><div class="step-content"><h4>動態規劃 · 拆解子任務</h4><p>Claude 把大型問題拆成可平行處理的工作流，協調腳本獨立於對話脈絡之外運行。</p></div></div>
+      <div class="step t2-step"><div class="step-num">02</div><div class="step-content"><h4>並行 fan-out</h4><p>同時派生數十～數百個 subagent，從不同角度解題；另有 reviewer / 對抗 agent 嘗試推翻結果。</p></div></div>
+      <div class="step t2-step"><div class="step-num">03</div><div class="step-content"><h4>合併前驗證</h4><p>每個發現都跑獨立驗證，過濾假陽性；答案未收斂則退回重新規劃。</p></div></div>
+      <div class="step t2-step"><div class="step-num">04</div><div class="step-content"><h4>單一協調答案 + 進度存檔</h4><p>回報一個整合過的答案；進度持續存檔，被中斷可從斷點續跑，可延伸到數小時甚至數天。</p></div></div>
+    </div>
+
+    <h4 class="sub">啟用方式</h4>
+    <ul class="uc">
+      <li>直接叫 Claude「<strong>Create a workflow</strong>」。</li>
+      <li>或開啟 Claude Code 專屬設定 <strong><code>ultracode</code></strong>（在 effort 選單中）：把 effort 設為 <code>xhigh</code> 並讓 Claude 自動決定何時動用 workflow；搭配 <strong>auto mode</strong> 體驗最佳。</li>
+      <li>首次觸發時 Claude Code 會顯示即將執行的內容並要求確認；admin 可透過 managed settings 停用。</li>
+    </ul>
+
+    <div class="tip-box">
+      <span class="tip-icon">🎯</span>
+      <p><strong>規模實例（官方）：</strong>Jarred Sumner 用 Dynamic Workflows 把 <strong>Bun 從 Zig 移植到 Rust</strong>——既有測試套件 <strong>99.8% 通過</strong>、約 <strong>75 萬行 Rust</strong>、從首次 commit 到 merge <strong>僅 11 天</strong>（目前尚未上 production）。一個 workflow 負責對映每個 struct 欄位的 Rust lifetime，下一個逐檔產出行為等價的 <code>.rs</code>（數百 agent 並行、每檔 2 名 reviewer），再由 fix loop 驅動 build/test 直到全綠。</p>
+    </div>
+    <p style="font-size:12.5px;color:var(--muted);">文件：<code>https://code.claude.com/docs/en/workflows</code></p>
+  </div>
+</div>
+
+<!-- ══ §04 FAST MODE ══ -->
+<div class="section" id="fast">
+  <div class="section-number">// 04</div>
+  <h2>Fast Mode（2.5× 快速模式）</h2>
+</div>
+<div class="mode-section">
+  <div class="mode-header t3-h">
+    <span style="font-size:20px">⚡</span>
+    <h3>Fast Mode — 同一個模型，最高 2.5× 輸出吞吐</h3>
+    <span class="mode-tag">CLAUDE API · PREVIEW</span>
+  </div>
+  <div class="mode-body">
+    <div class="fact-grid">
+      <div class="fact-label">能做什麼</div>
+      <div class="fact-value">在 request 設 <code>speed:"fast"</code>，從<strong>同一個 Opus 模型</strong>取得最高 <strong>2.5 倍</strong>的 output tokens/秒。</div>
+      <div class="fact-label">品質</div>
+      <div class="fact-value"><strong>同模型、同品質</strong>，只是輸出更快——不是另一個較弱的模型。</div>
+      <div class="fact-label">定價</div>
+      <div class="fact-value"><code>$10 / 1M input</code>、<code>$50 / 1M output</code>（標準模式的 2 倍）。</div>
+      <div class="fact-label">成本變化</div>
+      <div class="fact-value">較前代 fast mode（4.6/4.7 為 <code>$30/$150</code>）<strong>便宜約 3 倍</strong>。</div>
+      <div class="fact-label">適合誰</div>
+      <div class="fact-value">互動式 / 低延遲體驗、串流輸出、需要快速回饋的 agent loop。</div>
+      <div class="fact-label">侷限</div>
+      <div class="fact-value">有獨立 rate limit，超限回 <code>429</code> + <code>retry-after</code>；fast 降級回 standard 時 prompt cache 會 miss（不同 speed 不共享 cached prefixes）。</div>
+    </div>
+
+    <div class="code-block"><span class="comment"># Fast Mode 為 beta，需帶 betas header</span>
+resp = client.beta.messages.create(
+    model=<span class="str">"claude-opus-4-8"</span>,
+    max_tokens=<span class="kw">1024</span>,
+    speed=<span class="str">"fast"</span>,
+    betas=[<span class="str">"fast-mode-2026-02-01"</span>],
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Summarize this incident report."</span>}],
+)
+<span class="kw">print</span>(resp.usage.speed)  <span class="comment"># "fast" or "standard"</span></div>
+    <div class="tip-box">
+      <span class="tip-icon">💡</span>
+      <p><strong>成本敏感的高量背景任務：</strong>先用真實流量比較吞吐與帳單再決定，別只看「便宜 3 倍」的相對宣稱。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ §05 MID-CONVERSATION SYSTEM ══ -->
+<div class="section" id="midsys">
+  <div class="section-number">// 05</div>
+  <h2>Mid-conversation System Messages（中途系統指令）★ 真正的 API 新能力</h2>
+</div>
+<div class="mode-section">
+  <div class="mode-header t4-h">
+    <span style="font-size:20px">🧩</span>
+    <h3>Mid-conversation System — 對話中途插入 system 指令</h3>
+    <span class="mode-tag">MESSAGES API · NEW</span>
+  </div>
+  <div class="mode-body">
+    <div class="fact-grid">
+      <div class="fact-label">能做什麼</div>
+      <div class="fact-value">在 <code>messages</code> 陣列中、緊接某個 user turn 之後插入 <code>role:"system"</code> 訊息，於長對話中途追加 / 更新具 system 權重的指令。</div>
+      <div class="fact-label">為何重要</div>
+      <div class="fact-value"><strong>不必重述整段 system prompt</strong>；前段未變故<strong>保留前面 turn 的 prompt cache 命中</strong>，降低 agentic loop 的 input 成本與延遲。</div>
+      <div class="fact-label">模型限制</div>
+      <div class="fact-value"><strong>僅 Opus 4.8 支援</strong>。</div>
+      <div class="fact-label">平台限制</div>
+      <div class="fact-value">Claude API 與 Claude Platform on AWS 支援；<strong>Bedrock、Vertex AI、Foundry 不支援</strong>。</div>
+      <div class="fact-label">位置限制</div>
+      <div class="fact-value">須緊接 <code>user</code> message，或緊接以 server tool use 結尾的 <code>assistant</code> message；實務建議放在最新 user turn 後的陣列尾端。</div>
+      <div class="fact-label">快取策略</div>
+      <div class="fact-value">不要修改既有的 mid-conversation system message；指令變更時<strong>追加</strong>一則新的 system message。無需 beta header。</div>
+    </div>
+
+    <h4 class="sub">典型用途</h4>
+    <ul class="uc">
+      <li>中途新增安全規則（例：「後續 SQL 必須使用 parameterized queries」）。</li>
+      <li>中途改變權限（更新可用工具、禁止修改路徑、部署限制）。</li>
+      <li>工具回傳的關鍵上下文應成為後續行為約束時，用 system 而非 user message。</li>
+      <li>更新 token budget（宣告剩餘 token、最大修復輪數、截止條件）。</li>
+    </ul>
+
+    <div class="code-block">resp = client.messages.create(
+    model=<span class="str">"claude-opus-4-8"</span>,
+    max_tokens=<span class="kw">1024</span>,
+    system=<span class="str">"You are a code review assistant. Be concise."</span>,
+    messages=[
+        {<span class="str">"role"</span>: <span class="str">"user"</span>,      <span class="str">"content"</span>: <span class="str">"Review process() in utils.py."</span>},
+        {<span class="str">"role"</span>: <span class="str">"assistant"</span>, <span class="str">"content"</span>: <span class="str">"The comprehension is fine for small inputs."</span>},
+        {<span class="str">"role"</span>: <span class="str">"user"</span>,      <span class="str">"content"</span>: <span class="str">"Now review the calling code."</span>},
+        {<span class="str">"role"</span>: <span class="str">"system"</span>,    <span class="str">"content"</span>: <span class="str">"From now on, every suggestion must include explicit type annotations."</span>},
+    ],
+)</div>
+    <p style="font-size:12.5px;color:var(--muted);">確切 placement rules 以官方 docs 為準：<code>build-with-claude/mid-conversation-system-messages</code>。</p>
+  </div>
+</div>
+
+<!-- ══ §06 ADAPTIVE THINKING ══ -->
+<div class="section" id="thinking">
+  <div class="section-number">// 06</div>
+  <h2>Adaptive Thinking + Prompt Engineering</h2>
+</div>
+<div class="mode-section">
+  <div class="mode-header t5-h">
+    <span style="font-size:20px">🧠</span>
+    <h3>Adaptive Thinking — 唯一支援的 thinking 模式，搭配 effort 控制深度</h3>
+    <span class="mode-tag">REASONING</span>
+  </div>
+  <div class="mode-body">
+    <h4 class="sub">4.8 的 adaptive thinking 行為</h4>
+    <ul class="uc">
+      <li><strong>只在該輪需要時才觸發推理</strong>：簡單查詢 / 短 agentic 步驟直接回答；複雜多步問題才先推理。</li>
+      <li>相同 effort 下，bimodal 工作負載的<strong>浪費 token 比 4.7 更少</strong>。</li>
+      <li><strong>預設仍是關閉</strong>：未顯式設 <code>thinking:{type:"adaptive"}</code> 就不會思考（與 4.7 相同）。</li>
+      <li>adaptive thinking <strong>自動啟用 interleaved thinking</strong>（可在工具呼叫之間思考），對 agentic workflow 特別有效，無需 beta header。</li>
+    </ul>
+
+    <h4 class="sub">從舊版遷移（官方範例）</h4>
+    <div class="code-block"><span class="comment"># Before（Opus 4.6 或更早）—— 在 4.8 上會回 400 error</span>
+thinking = {<span class="str">"type"</span>: <span class="str">"enabled"</span>, <span class="str">"budget_tokens"</span>: <span class="kw">32000</span>}
+
+<span class="comment"># After（Opus 4.7 與之後）</span>
+resp = client.messages.create(
+    model=<span class="str">"claude-opus-4-8"</span>,
+    max_tokens=<span class="kw">64000</span>,                      <span class="comment"># 高 effort 需留足空間</span>
+    thinking={<span class="str">"type"</span>: <span class="str">"adaptive"</span>},        <span class="comment"># 唯一支援的 thinking 模式</span>
+    output_config={<span class="str">"effort"</span>: <span class="str">"high"</span>},     <span class="comment"># low / medium / high / xhigh / max</span>
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Design a migration plan for this legacy service."</span>}],
+)</div>
+
+    <h4 class="sub">結構化 Prompt 準則</h4>
+    <table class="plan-table">
+      <thead><tr><th>準則</th><th>內容</th></tr></thead>
+      <tbody>
+        <tr><td><strong>不可調取樣參數</strong></td><td><code>temperature</code>/<code>top_p</code>/<code>top_k</code> 設非預設 → 400。請省略，改用 prompt 引導行為。</td></tr>
+        <tr><td><strong>高 effort 給足 max_tokens</strong></td><td><code>xhigh</code>/<code>max</code> 下模型需空間跨 subagent 與工具呼叫思考；<strong>從 64k 起跳</strong>。看到 <code>stop_reason:"max_tokens"</code> 就調高或降 effort。</td></tr>
+        <tr><td><strong>推理過淺就調 effort</strong></td><td>別繞 prompt。若因延遲須維持低 effort，加定向提示：<em>「This task involves multi-step reasoning. Think carefully before responding.」</em></td></tr>
+        <tr><td><strong>善用低快取門檻</strong></td><td>prompt cache 最低降到 1,024 token，過去太短無法快取的 prompt 現在可命中，無需改碼。</td></tr>
+        <tr><td><strong>Refusal stop details</strong></td><td>拒答的 <code>stop_details</code> 會描述拒絕類別，便於應用層分辨並導向正確下一步；無需 beta header。</td></tr>
+        <tr><td><strong>Thinking display</strong></td><td>⚠️ 4.8 的 <code>display</code> 預設值未在來源中明確；保守做法是<strong>顯式設定 <code>display</code></strong>，不假設預設。</td></tr>
+      </tbody>
+    </table>
+
+    <h4 class="sub">誠實性導向輸出格式（高錯誤成本場景強烈建議）</h4>
+    <div class="code-block"><span class="comment"># 把「事實 / 推論 / 假設 / 未驗證項」分欄，而非只輸出結論</span>
+Output format:
+  <span class="kw">1.</span> Verified facts（已驗證事實）
+  <span class="kw">2.</span> Inferences（推論）
+  <span class="kw">3.</span> Assumptions（假設）
+  <span class="kw">4.</span> Unsupported or uncertain claims（未支撐或不確定主張）
+  <span class="kw">5.</span> Validation steps performed（已執行驗證）
+  <span class="kw">6.</span> Remaining validation required（仍需驗證項）</div>
+    <div class="tip-box">
+      <span class="tip-icon">💡</span>
+      <p><strong>應對過度謹慎（over-caution）：</strong>若 4.8 因過度追求「誠實」而對開放性任務回「資訊不足無法判斷」，可加一行授權：<em>「允許並鼓勵你在聲明假設的前提下，進行合理的推論與推演。」</em></p>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- ══ §07 COMPARE ══ -->
+<div class="section" id="compare">
+  <div class="section-number">// 07</div>
+  <h2>基準對比與 4.6 → 4.7 → 4.8 軌跡</h2>
+  <p class="intro">官方主表為圖檔，數值由官方 footnote 與二手來源（9to5Mac、officechai）交叉確認。下表數據衝突一律採<strong>官方口徑</strong>並於註解標註分歧。</p>
+
+  <h4 class="sub" style="margin-top:4px;">Opus 4.8 vs 4.7 vs 競品（官方發布對比）</h4>
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>能力 / 基準</th>
+        <th class="h-self">Opus 4.8</th>
+        <th>Opus 4.7</th>
+        <th>GPT-5.5</th>
+        <th>Gemini 3.1 Pro</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Agentic coding（SWE-bench Pro）</td><td class="best">69.2%</td><td>64.3%</td><td>58.6%</td><td>54.2%</td></tr>
+      <tr><td>Terminal coding（Terminal-Bench 2.1）¹</td><td>74.6%</td><td>66.1%</td><td class="lead">78.2%</td><td>70.3%</td></tr>
+      <tr><td>Computer use（OSWorld-Verified）²</td><td class="best">83.4%</td><td>82.3%</td><td>78.7%</td><td>76.2%</td></tr>
+      <tr><td>Browser agent（Online-Mind2Web）³</td><td class="best">84%</td><td>低於 4.8</td><td>低於 4.8</td><td>—</td></tr>
+      <tr><td>推理（HLE，無工具）</td><td>49.8%</td><td>46.9%</td><td>—</td><td>—</td></tr>
+      <tr><td>推理（HLE，含工具）</td><td class="best">57.9%</td><td>54.7%</td><td>—</td><td>—</td></tr>
+      <tr><td>金融分析（Finance Agent v2）⁴</td><td>53.9%</td><td>51.5%</td><td>—</td><td>—</td></tr>
+      <tr><td>Knowledge work（GDPval-AA, Elo）</td><td class="best">1890</td><td>1753</td><td>1769</td><td>—</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:11.5px;color:var(--muted);line-height:1.8;">
+    ¹ 全部模型採 Terminus-2 public harness；官方 footnote 另記 GPT-5.5 在 Codex CLI harness 下為 83.4%。這是 4.8 唯一未居首的主要基準。<br>
+    ² Opus 4.7 的 OSWorld 經官方<strong>重新校正為 82.3%</strong>（harness 調整）；二手來源 officechai 報 82.8%，本表採官方值。<br>
+    ³ 84% 出自官方公告的合作夥伴實測證言，描述為「明顯領先 4.7 與 GPT-5.5」，未公開對手精確分數。<br>
+    ⁴ Finance Agent v2 4.7=51.5% 為二手來源數值（官方主表未列同口徑 4.7）；官方 footnote 另指 Gemini 3.5 Flash 在該項達 57.9%（型號與 3.1 Pro 不同）。
+  </p>
+
+  <h4 class="sub">4.6 → 4.7 → 4.8 趨勢軌跡</h4>
+  <div class="tip-box warn">
+    <span class="tip-icon">⚠️</span>
+    <p><strong>方法學警告：</strong>4.6 數字來自其各自發布時的測量，Anthropic 在後續發布中修訂過部分 harness 與評分（OSWorld 等）。下表僅供<strong>趨勢方向</strong>判讀，<strong>不可當作同口徑精確對比</strong>。</p>
+  </div>
+  <table class="data-table">
+    <thead><tr><th>基準</th><th>Opus 4.6</th><th>Opus 4.7</th><th>Opus 4.8</th><th>口徑</th></tr></thead>
+    <tbody>
+      <tr><td>SWE-bench Pro</td><td>53.4%</td><td>64.3%</td><td class="up">69.2%</td><td>各代發布</td></tr>
+      <tr><td>SWE-bench Verified</td><td>80.8%</td><td>87.6%</td><td>未列於 4.8 主表</td><td>4.8 改以 Pro 為 coding 頭條</td></tr>
+      <tr><td>Terminal-Bench</td><td>65.4%（2.0）</td><td>66.1%（2.1）</td><td class="up">74.6%（2.1）</td><td>版本不同，僅看方向</td></tr>
+      <tr><td>HLE（無工具）</td><td>40.0%</td><td>46.9%</td><td class="up">49.8%</td><td>各代發布</td></tr>
+      <tr><td>OSWorld-Verified</td><td>72.7%</td><td>82.3%（修訂）</td><td class="up">83.4%</td><td>4.8 footnote</td></tr>
+      <tr><td>GDPval-AA（Elo）</td><td>—</td><td>1753</td><td class="up">1890</td><td>各代發布</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:12.5px;color:var(--muted);">判讀：coding 與 computer use 呈<strong>單調上升</strong>；4.7→4.8 增幅小於 4.6→4.7——4.8 是「<strong>精修</strong>」而非「跳躍」。最大明確提升為 Terminal-Bench 2.1（+8.5pp）與 GDPval-AA（+137 Elo）。</p>
+
+  <div class="tip-box">
+    <span class="tip-icon">🔑</span>
+    <p><strong>更上層的模型：</strong>Anthropic 另有 <strong>Claude Mythos Preview</strong>，能力高於 Opus，但目前僅在 Project Glasswing 下開放給少數組織做資安用途。因此 <strong>Opus 4.8 是當前對外可用的最強模型</strong>，但非 Anthropic 內部最強。</p>
+  </div>
+</div>
+
+<!-- ══ §08 DECISION ══ -->
+<div class="section" id="choose">
+  <div class="section-number">// 08</div>
+  <h2>我該怎麼選？決策樹與 Effort 矩陣</h2>
+</div>
+<div class="decision">
+  <h3>🌿 選型決策樹</h3>
+  <div class="decision-item"><div class="decision-q">agentic coding / computer use / 多工具編排為主</div><div class="decision-arrow">→</div><div class="decision-a a-t1">直接升級（價格不變、增益明確）</div></div>
+  <div class="decision-item"><div class="decision-q">高自主、長程任務（數十分鐘以上）</div><div class="decision-arrow">→</div><div class="decision-a a-t2">升級 + xhigh effort + Dynamic Workflows</div></div>
+  <div class="decision-item"><div class="decision-q">需要低延遲 / 串流 / 快速 agent loop</div><div class="decision-arrow">→</div><div class="decision-a a-t3">啟用 Fast Mode</div></div>
+  <div class="decision-item"><div class="decision-q">終端機自動化為主</div><div class="decision-arrow">→</div><div class="decision-a a-t1">先實測 Terminal-Bench 類工作再遷移（GPT-5.5 領先）</div></div>
+  <div class="decision-item"><div class="decision-q">錯誤成本高、需要模型老實標示不確定性</div><div class="decision-arrow">→</div><div class="decision-a a-t5">升級 + 誠實性導向輸出格式（§06）</div></div>
+  <div class="decision-item"><div class="decision-q">創意寫作，或在 4.6 已運作良好</div><div class="decision-arrow">→</div><div class="decision-a a-t5">不急，可暫緩</div></div>
+</div>
+
+<div class="section">
+  <h4 class="sub" style="margin-top:0;">Effort × Thinking 選擇矩陣</h4>
+  <table class="plan-table">
+    <thead><tr><th>任務類型</th><th>thinking</th><th>effort</th><th>理由</th></tr></thead>
+    <tbody>
+      <tr><td>簡單分類 / 短摘要</td><td>不啟用或 <code>adaptive</code></td><td><code>low</code></td><td>降低延遲與成本</td></tr>
+      <tr><td>一般文件分析 / 單步程式修改</td><td><code>adaptive</code></td><td><code>medium</code>~<code>high</code></td><td>平衡品質與成本</td></tr>
+      <tr><td>複雜 bug hunt</td><td><code>adaptive</code></td><td><code>high</code>~<code>xhigh</code></td><td>需工具呼叫與多步推理</td></tr>
+      <tr><td>大型 refactor / migration</td><td><code>adaptive</code></td><td><code>xhigh</code></td><td>長程代理與多輪驗證</td></tr>
+      <tr><td>高風險架構決策 / 安全審查</td><td><code>adaptive</code></td><td><code>xhigh</code>~<code>max</code></td><td>需更深推理與完整驗證</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══ §09 PRICING ══ -->
+<div class="section" id="pricing">
+  <div class="section-number">// 09</div>
+  <h2>定價（標準 vs Fast Mode）</h2>
+  <p class="intro">標準價格與 Opus 4.7 完全相同；Fast Mode 為 research preview，價格為標準的 2 倍、但為前代 fast mode 的約 1/3。</p>
+  <table class="plan-table">
+    <thead><tr><th>模式</th><th>Input / 1M</th><th>Output / 1M</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td><strong>標準</strong></td><td><code>$5</code></td><td><code>$25</code></td><td>與 Opus 4.7 一致，未漲價</td></tr>
+      <tr><td><strong>Fast Mode</strong></td><td><code>$10</code></td><td><code>$50</code></td><td>同模型同品質，最高 2.5× 吞吐；research preview</td></tr>
+      <tr><td>（對照）前代 Fast</td><td><code>$30</code></td><td><code>$150</code></td><td>Opus 4.6 / 4.7 fast mode — 故 4.8 fast 便宜約 3 倍</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:12.5px;color:var(--muted);">Prompt cache 最低門檻降到 1,024 token；Mid-conversation system messages 可保留 cache 命中，進一步壓低長 agentic loop 的 input 成本。</p>
+</div>
+
+<!-- ══ §10 GETTING STARTED ══ -->
+<div class="section" id="start">
+  <div class="section-number">// 10</div>
+  <h2>立刻開始：4.7 → 4.8 遷移</h2>
+  <p class="intro">已在 4.7 上跑的程式碼<strong>無需改動即可在 4.8 執行</strong>；以下為「行為改變、非破壞性變更」的優化清單。</p>
+
+  <ul class="checklist">
+    <li>把 model ID 改為 <code>claude-opus-4-8</code></li>
+    <li>確認<strong>未</strong>使用 <code>thinking:{type:"enabled", budget_tokens:N}</code>（4.8 會回 400）→ 改用 <code>adaptive</code> + <code>effort</code></li>
+    <li>確認<strong>未</strong>設定非預設的 <code>temperature</code> / <code>top_p</code> / <code>top_k</code></li>
+    <li>視任務複雜度設 <code>effort</code>（預設已是 <code>high</code>）；高 effort 任務把 <code>max_tokens</code> 拉到 ≥ 64k</li>
+    <li><strong>顯式設定</strong> thinking <code>display</code>，不假設預設值</li>
+    <li>重新評估 prompt：4.8 工具觸發更積極、思考更省，部分「催思考」的舊 prompt 可精簡</li>
+    <li>評估啟用 mid-conversation system messages 以降低長 agentic loop 成本</li>
+    <li>視需要把短 prompt 納入快取（門檻已降至 1,024 token）</li>
+    <li>關鍵腳本（release / migration / cron）仍建議 <strong>cross-model triangulation</strong> 後再 ship</li>
+  </ul>
+
+  <div class="paths">
+    <div class="path-card p1">
+      <div class="path-label">PATH A — API / Pipeline 開發者</div>
+      <ol>
+        <li>改 model ID，移除 <code>budget_tokens</code> 與取樣參數</li>
+        <li>設 <code>thinking:adaptive</code> + 顯式 <code>display</code></li>
+        <li>依 §08 矩陣設 <code>effort</code>，高 effort 拉高 <code>max_tokens</code></li>
+        <li>長對話導入 mid-conversation system messages 省 cache</li>
+      </ol>
+    </div>
+    <div class="path-card p2">
+      <div class="path-label">PATH B — Claude Code / Agent 重度使用者</div>
+      <ol>
+        <li>升級後預設 <code>high</code> effort，困難任務切 <code>xhigh</code></li>
+        <li>大型 bug hunt / migration 用 <code>ultracode</code> + Dynamic Workflows</li>
+        <li>先以 scoped 小任務試 workflow，注意 token 警告</li>
+        <li>搭配 auto mode；關鍵 PR 仍跑跨模型 review</li>
+      </ol>
+    </div>
+    <div class="path-card p3">
+      <div class="path-label">PATH C — claude.ai / Cowork 一般使用者</div>
+      <ol>
+        <li>在模型選單旁用 Effort Control 調 effort</li>
+        <li>日常問答 / 格式整理調低省 token；難題拉到 extra / max</li>
+        <li>高錯誤成本任務用「事實 / 推論 / 假設」分欄輸出格式</li>
+        <li>遇到「過度謹慎」時加一行假設授權（§06）</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- ══ SOURCES ══ -->
+<div class="section" id="sources">
+  <div class="section-number">// 附錄</div>
+  <h2>資料來源與資料邊界</h2>
+  <p class="intro">本指南彙整三份獨立草稿（by Claude / by GPT / by Gemini）並以官方第一手為權威骨幹。所有數據以官方公告與官方 docs 為準，二手來源僅作交叉佐證。</p>
+
+  <div class="sources">
+    <h4>官方第一手</h4>
+    Anthropic 公告〈Introducing Claude Opus 4.8〉：<a href="https://www.anthropic.com/news/claude-opus-4-8">anthropic.com/news/claude-opus-4-8</a><br>
+    官方 docs〈What's new in Claude Opus 4.8〉：<a href="https://platform.claude.com/docs/en/about-claude/models/whats-new-claude-4-8">platform.claude.com/docs/.../whats-new-claude-4-8</a><br>
+    官方 docs〈Adaptive thinking〉：<a href="https://platform.claude.com/docs/en/build-with-claude/adaptive-thinking">.../build-with-claude/adaptive-thinking</a><br>
+    官方 docs〈Effort〉：<a href="https://platform.claude.com/docs/en/build-with-claude/effort">.../build-with-claude/effort</a><br>
+    官方 docs〈Fast mode〉：<a href="https://platform.claude.com/docs/en/build-with-claude/fast-mode">.../build-with-claude/fast-mode</a><br>
+    官方 docs〈Mid-conversation system messages〉：<a href="https://platform.claude.com/docs/en/build-with-claude/mid-conversation-system-messages">.../mid-conversation-system-messages</a><br>
+    官方 blog〈Introducing dynamic workflows in Claude Code〉：<a href="https://claude.com/blog/introducing-dynamic-workflows-in-claude-code">claude.com/blog/introducing-dynamic-workflows-in-claude-code</a><br>
+    Claude Code docs〈Workflows〉：<a href="https://code.claude.com/docs/en/workflows">code.claude.com/docs/en/workflows</a>
+
+    <h4>二手交叉佐證（數值對照用）</h4>
+    9to5Mac（benchmark 數值）：<a href="https://9to5mac.com/2026/05/28/anthropic-upgrades-claude-with-new-opus-4-8-model-heres-whats-new/">9to5mac.com/2026/05/28/...</a><br>
+    officechai（完整 benchmark 表）：<a href="https://officechai.com/ai/claude-opus-4-8-benchmarks/">officechai.com/ai/claude-opus-4-8-benchmarks</a><br>
+    TechCrunch（Dynamic Workflows / Mythos）：<a href="https://techcrunch.com/2026/05/28/anthropic-releases-opus-4-8-with-new-dynamic-workflow-tool/">techcrunch.com/2026/05/28/...</a>
+
+    <h4>未能驗證 / 需注意之處</h4>
+    • Opus 4.8 的 SWE-bench Verified 官方同口徑分數未在發布主表列出（4.8 改以 SWE-bench Pro 為 coding 頭條）。<br>
+    • Opus 4.7 OSWorld-Verified 存在 82.3%（官方修訂）vs 82.8%（officechai）的小差異，本指南採官方值。<br>
+    • Finance Agent v2 的 4.7 數值（51.5%）來自二手來源，官方主表未列同口徑 4.7。<br>
+    • 4.8 的 thinking <code>display</code> 預設值未在來源中明確，建議顯式設定。
+  </div>
+</div>
+
+<!-- ══ FOOTER ══ -->
+<div class="footer">
+  <span>Claude Opus 4.8 技術指南 · 2026-05-29</span>
+  <a href="https://www.anthropic.com/news/claude-opus-4-8" target="_blank">anthropic.com/news/claude-opus-4-8 →</a>
+</div>
+
+</div><!-- /container -->
+
+<a class="back-home" href="../index.html" title="回到首頁" aria-label="回到首頁"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10.5V20h14v-9.5"/></svg></a>
+<button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+<script>
+(function(){
+  var btn=document.getElementById('backToTop');
+  window.addEventListener('scroll',function(){btn.classList.toggle('visible',window.scrollY>400);},{passive:true});
+  btn.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+})();
+</script>
+</body>
+</html>

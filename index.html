@@ -23,6 +23,7 @@
   --c6-color: #1a3d70;  --c6-bg: #e8eff9;
   --c7-color: #8c6b1a;  --c7-bg: #faf5e8;
   --c8-color: #5a3d70;  --c8-bg: #f3eef9;
+  --c9-color: #8c1a1a;  --c9-bg: #f9eaea;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -181,6 +182,10 @@ body {
 .guide-card.c8 .card-num { color:var(--c8-color); }
 .guide-card.c8 .tag { background:var(--c8-color); color:#fff; }
 
+.guide-card.c9 { background:var(--c9-bg); }
+.guide-card.c9 .card-num { color:var(--c9-color); }
+.guide-card.c9 .tag { background:var(--c9-color); color:#fff; }
+
 /* ── READING ORDER ── */
 .reading-order {
   border:1px solid var(--border); padding:22px 26px;
@@ -260,12 +265,12 @@ body {
   <div class="hero-inner">
     <div class="hero-label">// AI Beginner Guide · 2026</div>
     <h1>AI 工具入門<br>指南集</h1>
-    <p class="hero-sub">從核心概念到實戰操作，8 篇完整指南帶你快速上手 2026 年主流 AI 工具。每篇獨立閱讀，也可依推薦順序從基礎讀起。</p>
+    <p class="hero-sub">從核心概念到實戰操作，9 篇完整指南帶你快速上手 2026 年主流 AI 工具。每篇獨立閱讀，也可依推薦順序從基礎讀起。</p>
     <div class="hero-meta">
-      <span>8 Guides</span>
+      <span>9 Guides</span>
       <span>繁體中文</span>
       <span>MIT License</span>
-      <span>2026-05-27</span>
+      <span>2026-05-29</span>
     </div>
   </div>
 </div>
@@ -377,6 +382,18 @@ body {
     </div>
   </a>
 
+  <a href="guides/claude-opus-4-8-guide.html" class="guide-card c9">
+    <span class="card-arrow">→</span>
+    <div class="card-num">Guide 09 · 進階</div>
+    <h3>Claude Opus 4.8 技術指南</h3>
+    <p class="card-desc">Anthropic 對外最強模型——Effort Control、Dynamic Workflows、Fast Mode、Mid-conv System 五大功能與 4.7→4.8 API 遷移實務。</p>
+    <div class="card-tags">
+      <span class="tag">Opus 4.8</span>
+      <span class="tag">Effort</span>
+      <span class="tag">API</span>
+    </div>
+  </a>
+
 </div>
 
 <!-- ══ 推薦閱讀順序 ══ -->
@@ -387,6 +404,7 @@ body {
     <li><a href="guides/prompt-engineering-evolution-guide.html">Prompt Engineering 演進</a> — 掌握與 AI 溝通的方法論</li>
     <li><a href="guides/ai-instruction-guide-2026.html">AI 個人化設定精煉</a> — 學會客製化你的 AI 工具</li>
     <li>挑選一個工具指南開始實作 → <a href="guides/claude-desktop-guide.html">Claude</a> · <a href="guides/openai-tools-guide.html">OpenAI</a> · <a href="guides/gemini-tools-guide.html">Gemini</a></li>
+    <li><a href="guides/claude-opus-4-8-guide.html">Claude Opus 4.8 技術指南</a> — 深入 Anthropic 旗艦模型的功能與 API 實務</li>
     <li><a href="guides/ai-extensions-guide-2026.html">AI Agent 擴充機制</a> — 理解 Skill / MCP / Plugin 三層架構</li>
     <li><a href="guides/ai-sdlc-guide-2026.html">AI 時代軟體開發流程</a> — 了解 AI 如何改變開發全流程</li>
   </ol>
@@ -408,7 +426,7 @@ body {
   <div class="about-label">如何使用</div>
   <div class="about-value">每篇可獨立閱讀；若從零開始，建議依上方推薦順序從基礎概念讀起，再挑選你想用的工具</div>
   <div class="about-label">更新日期</div>
-  <div class="about-value">2026-05-27 · 內容反映截至 2026 年 5 月的工具版本與功能</div>
+  <div class="about-value">2026-05-29 · 內容反映截至 2026 年 5 月的工具版本與功能</div>
   <div class="about-label">授權</div>
   <div class="about-value">MIT License — 自由使用、修改、分發（<a href="https://github.com/Bond901/ai-beginner-guide-2026" style="color:var(--hero-accent);text-decoration:none;">GitHub 原始碼</a>）</div>
 </div>
