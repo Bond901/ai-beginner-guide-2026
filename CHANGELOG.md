@@ -8,6 +8,13 @@
 
 （尚無未發布變更）
 
+## [1.6.5] - 2026-05-30
+
+### Changed
+
+- 搜尋入口改為右下角**懸浮圖示鈕**（與「回首頁／回頂部」整合成一致的控制群組），移除各頁內嵌的大型搜尋框；點圖示或 `⌘K`／`/` 皆可開啟指令面板。
+- 搜尋結果加入**相關性雙門檻**（`score ≥ max(1.0, 0.2×最高分)`），過濾亂數／低相關查詢的雜訊（例：輸入「333」不再回傳整頁低分結果）。
+
 ## [1.6.4] - 2026-05-30
 
 ### Changed
@@ -134,7 +141,8 @@
 - 每篇 guide 右下角「回到頂部」懸浮按鈕。
 - MIT License。
 
-[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.4...HEAD
+[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.5...HEAD
+[1.6.5]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.4...v1.6.5
 [1.6.4]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.3...v1.6.4
 [1.6.3]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.2...v1.6.3
 [1.6.2]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.1...v1.6.2
