@@ -571,6 +571,11 @@ pagefind-modal-trigger{display:inline-block;margin:24px 0 6px;}
 .freshness{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:.04em;margin:0 0 14px;}
 .stale-warn{display:none;gap:8px;align-items:flex-start;background:var(--warm-mid);border:1px solid var(--border);border-left:3px solid #d4541a;padding:10px 14px;margin:0 0 16px;font-size:13px;line-height:1.55;color:var(--ink);}
 .stale-warn.show{display:flex;}
+/* injected:search-style */
+#search{--pagefind-ui-scale:0.9;}
+#search .pagefind-ui__result{padding:12px 0;margin:0;border:none;border-top:1px solid var(--border);}
+#search .pagefind-ui__result-title{font-size:1rem;}
+#search .pagefind-ui__result-excerpt{margin-top:3px;font-size:12.5px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
 </style>
 <!-- analytics:goatcounter -->
 <script data-goatcounter="https://bond901.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -597,7 +602,7 @@ pagefind-modal-trigger{display:inline-block;margin:24px 0 6px;}
   </div>
 </div>
 
-<div class="container" data-pagefind-body>
+<div class="container" data-pagefind-body data-pagefind-meta="tag:基礎觀念 · 入門">
 <div id="search" class="pf-wrap no-print" data-pagefind-ignore></div>
 <div class="freshness no-print" data-pagefind-ignore>最後更新 <span class="lu">2026-05-30</span>　·　最後驗證 <span class="lv">2026-05-30</span></div>
 <div class="stale-warn no-print" data-pagefind-ignore hidden>⚠ <span></span></div>
@@ -1302,6 +1307,6 @@ function copyPageURL(btn){
 <!-- freshness:js -->
 <script>(function(){var lu=document.querySelector('meta[name=last-updated]'),lv=document.querySelector('meta[name=last-verified]');if(lu)document.querySelectorAll('.lu').forEach(function(e){e.textContent=lu.content;});if(lv){document.querySelectorAll('.lv').forEach(function(e){e.textContent=lv.content;});var d=(Date.now()-new Date(lv.content).getTime())/86400000;if(d>180){var w=document.querySelector('.stale-warn');if(w){w.classList.add('show');w.hidden=false;w.querySelector('span').textContent='本篇最後驗證於 '+lv.content+'，AI 工具更新快，部分資訊可能已變動。';}}}})();</script>
 <!-- search:init -->
-<script>window.addEventListener('DOMContentLoaded',function(){if(!window.PagefindUI)return;var s=document.querySelector('script[src$="pagefind-ui.js"]');var bp=s?s.src.replace(/pagefind-ui\.js.*$/,''):undefined;new PagefindUI({element:'#search',bundlePath:bp,showSubResults:true,translations:{placeholder:'搜尋指南…'}});});</script>
+<script>window.addEventListener('DOMContentLoaded',function(){if(!window.PagefindUI)return;var s=document.querySelector('script[src$="pagefind-ui.js"]');var bp=s?s.src.replace(/pagefind-ui\.js.*$/,''):undefined;new PagefindUI({element:'#search',bundlePath:bp,showImages:false,showSubResults:false,processResult:function(r){var m=r.meta||{};if(m.tag){r.excerpt=m.tag;}return r;},translations:{placeholder:'搜尋指南…',clear_search:'清除',load_more:'載入更多結果',search_label:'搜尋本站',filters_label:'篩選',zero_results:'找不到「[SEARCH_TERM]」的結果',many_results:'找到 [COUNT] 個「[SEARCH_TERM]」的相關結果',one_result:'找到 [COUNT] 個「[SEARCH_TERM]」的相關結果',total_zero_results:'沒有結果',total_one_result:'[COUNT] 個結果',total_many_results:'[COUNT] 個結果',alt_search:'找不到「[SEARCH_TERM]」的結果，改顯示「[DIFFERENT_TERM]」的結果',search_suggestion:'找不到「[SEARCH_TERM]」的結果，試試以下搜尋：',searching:'正在搜尋「[SEARCH_TERM]」…',results_label:'搜尋結果',keyboard_navigate:'瀏覽',keyboard_select:'選擇',keyboard_clear:'清除',keyboard_close:'關閉',keyboard_search:'搜尋',error_search:'搜尋失敗',input_hint:'輸入時即時顯示結果',loading:'載入中'}});});</script>
 </body>
 </html>
