@@ -2,5 +2,5 @@
 .DS_Store
 Thumbs.db
 
-# 下一階段草稿區（不納入版控）
+# 本機工作目錄（不納入版控）
 cooking/

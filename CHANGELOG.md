@@ -8,6 +8,18 @@
 
 （尚無未發布變更）
 
+## [1.4.0] - 2026-05-29
+
+### Added
+
+- 新增 **Guide 11：RAG 檢索增強生成 完整指南**（`guides/rag-guide-2026.html`）。以原始論文與官方文件為權威骨幹彙整，涵蓋 Chunking → Embedding → Retrieval → Generation → Evaluation 五階段管線、Naive→Advanced→Modular 架構演進、CRAG / Self-RAG / GraphRAG / Agentic 進階架構、常見失敗模式與對策、安全風險與治理（OWASP / NIST）、RAG vs. Long Context 決策，以及附原始論文與官方來源、詞彙表與資料邊界。衝突數據一律以原始論文／第一手來源為準並標註分歧。
+
+### Changed
+
+- `index.html`：新增第 11 張 guide 卡片（teal `c11` 配色）、hero 改為「11 Guides」、推薦閱讀順序加入 RAG。
+- `README.md`：指南列表新增 RAG 一列、推薦閱讀順序加入並重新編號（1–9）、總述改為「11 篇」。
+- 統一各指南頁與紀錄文件的來源描述用語，僅保留「以官方／原始論文為權威骨幹」的權威性陳述。
+
 ## [1.3.1] - 2026-05-29
 
 ### Fixed
@@ -45,7 +57,7 @@
 
 ### Added
 
-- 新增 **Guide 09：Claude Opus 4.8 技術指南**（`guides/claude-opus-4-8-guide.html`）。彙整三份獨立草稿（by Claude / by GPT / by Gemini），以官方第一手為權威骨幹，涵蓋五大功能（Effort Control、Dynamic Workflows、Fast Mode、Mid-conversation System Messages、Adaptive Thinking）、4.6→4.7→4.8 benchmark 軌跡、選型決策樹，以及 4.7→4.8 API 遷移 checklist。衝突數據一律採官方口徑並標註分歧。
+- 新增 **Guide 09：Claude Opus 4.8 技術指南**（`guides/claude-opus-4-8-guide.html`）。以官方第一手為權威骨幹彙整，涵蓋五大功能（Effort Control、Dynamic Workflows、Fast Mode、Mid-conversation System Messages、Adaptive Thinking）、4.6→4.7→4.8 benchmark 軌跡、選型決策樹，以及 4.7→4.8 API 遷移 checklist。衝突數據一律採官方口徑並標註分歧。
 - 全部 9 篇 guide 右下角新增「回到首頁」懸浮按鈕（連至 `index.html`），位於既有「回到頂部」按鈕上方；採 SVG house icon 確保跨字型一致顯示。
 - 為 `guides/claude-opus-4-8-guide.html` 補上「回到頂部」懸浮按鈕與對應 script，使 9 篇行為一致。
 - 新增 `.gitignore` 規則忽略 `.DS_Store`、`Thumbs.db`。
@@ -64,7 +76,9 @@
 - 每篇 guide 右下角「回到頂部」懸浮按鈕。
 - MIT License。
 
-[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.3.1...v1.4.0
+[1.3.1]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.0.0...v1.1.0

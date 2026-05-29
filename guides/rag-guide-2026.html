@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAG 檢索增強生成 — 完整技術指南 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;900&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Base palette — always present */
+  --ink:#0f0e0d; --paper:#f5f0e8; --warm-mid:#e8e0d0; --border:#c8bfa8;
+  --muted:#6b6353;            /* WCAG AA: 5.24:1 on --paper, 4.53:1 on --warm-mid */
+  --hero-accent:#1a7a6e;      /* CONFIG: RAG brand — retrieval teal */
+
+  /* Tool accents t1..t6 — define as many as you have tools (2–6). Pick distinct hues. */
+  --t1-color:#2d3a8c; --t1-bg:#eef0fa;   /* indigo  */
+  --t2-color:#1a7a6e; --t2-bg:#e8f5f3;   /* teal    */
+  --t3-color:#8c3d1a; --t3-bg:#faf0e8;   /* amber   */
+  --t4-color:#6b3db8; --t4-bg:#f0eaf9;   /* purple  */
+  --t5-color:#1a6b4a; --t5-bg:#e8f5ee;   /* forest  */
+  --t6-color:#8c1a1a; --t6-bg:#f9eaea;   /* red     */
+
+  /* On-dark variants of each accent — used by the decision tree (dark bg).
+     If you reassign a tool hue, also set its --tN-on-dark (a lightened version). */
+  --t1-on-dark:#8baee0; --t2-on-dark:#6aad8e; --t3-on-dark:#e8904a;
+  --t4-on-dark:#c0a8e8; --t5-on-dark:#7ec79f; --t6-on-dark:#d99a9e;
+
+  /* AA-safe orange for small text (links / code keyword / button hover).
+     Color blocks, badges and the hero label keep the brand --hero-accent. */
+  --link:#b8460f;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans TC',sans-serif;font-size:15px;line-height:1.75;color:var(--ink);background:var(--paper);}
+
+/* ── HERO ── */
+.hero{background:var(--ink);color:var(--paper);padding:56px 48px 48px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-60px;right:-60px;width:280px;height:280px;border:1px solid rgba(245,240,232,.12);border-radius:50%;}
+.hero::after{content:'';position:absolute;bottom:-80px;left:20%;width:200px;height:200px;border:1px solid rgba(245,240,232,.08);border-radius:50%;}
+.hero-inner{max-width:820px;margin:0 auto;position:relative;z-index:1;}
+.hero-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--hero-accent);margin-bottom:16px;}
+.hero h1{font-family:'Noto Serif TC',serif;font-weight:900;font-size:2.4rem;line-height:1.25;margin-bottom:16px;max-width:620px;}
+.hero-sub{font-size:14px;color:rgba(245,240,232,.65);max-width:560px;font-weight:300;line-height:1.8;}
+.hero-badges{display:flex;gap:8px;margin-top:28px;flex-wrap:wrap;}
+.badge{padding:5px 14px;border-radius:2px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.05em;color:#fff;}
+.badge-t1{background:var(--t1-color);} .badge-t2{background:var(--t2-color);} .badge-t3{background:var(--t3-color);}
+.badge-t4{background:var(--t4-color);} .badge-t5{background:var(--t5-color);} .badge-t6{background:var(--t6-color);}
+.hero-meta{margin-top:24px;display:flex;gap:22px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;color:rgba(245,240,232,.4);}
+
+/* ── LAYOUT ── */
+.container{max-width:820px;margin:0 auto;padding:0 32px;}
+hr.rule{border:none;border-top:1px solid var(--border);margin:40px 0;}
+.section{padding:48px 0 0;}
+.section-number{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.15em;color:var(--muted);margin-bottom:6px;}
+.section h2{font-family:'Noto Serif TC',serif;font-weight:900;font-size:1.7rem;margin-bottom:18px;line-height:1.3;}
+.section>p.intro{font-size:14px;color:var(--muted);margin-bottom:22px;max-width:680px;}
+
+/* ── ACTIONS BAR (PDF export + NotebookLM helper) ── */
+/* row 1 = three buttons horizontally; row 2 = a two-step hint */
+.actions-bar{display:flex;flex-direction:column;gap:10px;border:1px solid var(--border);background:var(--warm-mid);padding:12px 16px;margin:24px 0 0;}
+.actions-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;}
+.act-btn{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--ink);background:var(--paper);border:1px solid var(--border);border-radius:2px;padding:7px 14px;cursor:pointer;text-decoration:none;transition:background .15s ease,border-color .15s ease,color .15s ease;}
+.act-btn:hover{background:var(--link);border-color:var(--link);color:#fff;}  /* white on --link = 5.36:1 */
+.act-hint{font-size:11.5px;color:var(--muted);line-height:1.6;}
+
+/* ── TOC ── */
+.toc{background:var(--warm-mid);border-left:3px solid var(--hero-accent);padding:24px 28px;margin:24px 0 0;}
+.toc-title{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.toc ol{padding-left:20px;font-size:13px;color:var(--muted);line-height:2;}
+.toc a{color:inherit;text-decoration:none;} .toc a:hover{color:var(--link);}
+
+/* ── OVERVIEW CARDS ── */
+.mode-overview{display:grid;grid-template-columns:repeat(3,1fr);/* CONFIG: cols = min(N_TOOLS,4); 5–6 tools → 3 */ border:1px solid var(--border);overflow:hidden;margin:24px 0;}
+.mode-card{padding:22px 18px;border-right:1px solid var(--border);}
+.mode-card:last-child{border-right:none;}
+.mode-card.t1{background:var(--t1-bg);} .mode-card.t2{background:var(--t2-bg);} .mode-card.t3{background:var(--t3-bg);}
+.mode-card.t4{background:var(--t4-bg);} .mode-card.t5{background:var(--t5-bg);} .mode-card.t6{background:var(--t6-bg);}
+.mode-icon{width:36px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:12px;color:#fff;}
+.icon-t1{background:var(--t1-color);} .icon-t2{background:var(--t2-color);} .icon-t3{background:var(--t3-color);}
+.icon-t4{background:var(--t4-color);} .icon-t5{background:var(--t5-color);} .icon-t6{background:var(--t6-color);}
+.mode-card h3{font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:600;margin-bottom:6px;}
+.mode-card.t1 h3{color:var(--t1-color);} .mode-card.t2 h3{color:var(--t2-color);} .mode-card.t3 h3{color:var(--t3-color);}
+.mode-card.t4 h3{color:var(--t4-color);} .mode-card.t5 h3{color:var(--t5-color);} .mode-card.t6 h3{color:var(--t6-color);}
+.mode-card p{font-size:11.5px;color:var(--muted);line-height:1.6;margin:0;}
+
+/* ── TOOL SECTION ── */
+.mode-section{border:1px solid var(--border);margin:28px 0;overflow:hidden;}
+.mode-header{padding:18px 24px;display:flex;align-items:center;gap:14px;}
+.mode-header.t1-h{background:var(--t1-color);} .mode-header.t2-h{background:var(--t2-color);} .mode-header.t3-h{background:var(--t3-color);}
+.mode-header.t4-h{background:var(--t4-color);} .mode-header.t5-h{background:var(--t5-color);} .mode-header.t6-h{background:var(--t6-color);}
+.mode-header h3{font-family:'Noto Serif TC',serif;font-size:1.15rem;font-weight:900;color:#fff;}
+.mode-header .mode-tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.15em;color:rgba(255,255,255,.65);margin-left:auto;white-space:nowrap;}
+.mode-body{padding:24px;background:var(--paper);}
+.mode-body h4.sub{font-weight:700;font-size:13.5px;margin:20px 0 8px;}
+.mode-body p{font-size:13.5px;margin:8px 0;}
+.mode-body ul.uc{list-style:none;margin:10px 0;}
+.mode-body ul.uc li{font-size:13px;padding:4px 0 4px 18px;position:relative;}
+.mode-body ul.uc li::before{content:'▸';position:absolute;left:0;color:var(--muted);}
+
+/* ── FACT GRID ── */
+.fact-grid{display:grid;grid-template-columns:120px 1fr;border:1px solid var(--border);font-size:13px;overflow:hidden;margin:16px 0;}
+.fact-label{background:var(--warm-mid);padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.08em;display:flex;align-items:flex-start;border-bottom:1px solid var(--border);}
+.fact-label:last-of-type{border-bottom:none;}
+.fact-value{padding:12px 16px;border-bottom:1px solid var(--border);line-height:1.65;}
+.fact-value:last-child{border-bottom:none;}
+.fact-value code,.mode-body code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--warm-mid);padding:1px 5px;border-radius:2px;}
+
+/* ── STEPS ── */
+.steps{margin:20px 0;}
+.step{display:flex;gap:16px;margin-bottom:14px;padding:16px;background:var(--warm-mid);border-left:3px solid transparent;}
+.step.t1-step{border-left-color:var(--t1-color);} .step.t2-step{border-left-color:var(--t2-color);} .step.t3-step{border-left-color:var(--t3-color);}
+.step.t4-step{border-left-color:var(--t4-color);} .step.t5-step{border-left-color:var(--t5-color);} .step.t6-step{border-left-color:var(--t6-color);}
+.step-num{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;min-width:28px;line-height:1.4;}
+.step.t1-step .step-num{color:var(--t1-color);} .step.t2-step .step-num{color:var(--t2-color);} .step.t3-step .step-num{color:var(--t3-color);}
+.step.t4-step .step-num{color:var(--t4-color);} .step.t5-step .step-num{color:var(--t5-color);} .step.t6-step .step-num{color:var(--t6-color);}
+.step-content h4{font-size:13px;font-weight:700;margin-bottom:4px;}
+.step-content p{font-size:13px;color:var(--muted);margin:0;line-height:1.55;}
+
+/* ── CODE BLOCK ── */
+.code-block{background:#1a1814;border-radius:4px;padding:14px 18px;margin:12px 0;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#d4c9a8;overflow-x:auto;line-height:1.7;white-space:pre;}
+.code-block .comment{color:#9a8f78;} /* 5.55:1 on code bg */
+.code-block .cmd{color:#e8904a;} /* AA 7.2:1 on code bg (brand orange too dark here) */
+.code-block .str{color:#6aad8e;} .code-block .kw{color:#8baee0;}
+
+/* ── COMPARE TABLE ── */
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}  /* wrap wide tables (5–6 tools) so they scroll on mobile */
+.compare-table{width:100%;border-collapse:collapse;font-size:13px;margin:20px 0;}
+.compare-table th{padding:10px 12px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;font-weight:600;text-transform:uppercase;border-bottom:2px solid var(--ink);}
+.compare-table th:nth-child(2){background:var(--t1-bg);color:var(--t1-color);}
+.compare-table th:nth-child(3){background:var(--t2-bg);color:var(--t2-color);}
+.compare-table th:nth-child(4){background:var(--t3-bg);color:var(--t3-color);}
+.compare-table th:nth-child(5){background:var(--t4-bg);color:var(--t4-color);}
+.compare-table th:nth-child(6){background:var(--t5-bg);color:var(--t5-color);}
+.compare-table th:nth-child(7){background:var(--t6-bg);color:var(--t6-color);}
+.compare-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top;}
+.compare-table td:first-child{font-weight:500;color:var(--muted);background:var(--warm-mid);white-space:nowrap;}
+.yes{color:#1a7a6e;font-weight:700;} .no{color:#a3232a;} .partial{color:#7a4a12;}  /* AA on --paper: 6.5 / 6.6 */
+
+/* ── PLAN / PRICING TABLE ── */
+.plan-table{width:100%;border-collapse:collapse;font-size:12.5px;margin:20px 0;}
+.plan-table th{background:var(--warm-mid);padding:9px 12px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;border:1px solid var(--border);}
+.plan-table td{padding:9px 12px;border:1px solid var(--border);vertical-align:top;line-height:1.5;}
+.plan-table td code{font-family:'JetBrains Mono',monospace;font-size:11.5px;}
+
+/* ── DECISION TREE ── */
+.decision{background:var(--ink);color:var(--paper);padding:28px 32px;margin:28px 0;}
+.decision h3{font-family:'Noto Serif TC',serif;font-size:1.1rem;margin-bottom:20px;}
+.decision-item{display:flex;gap:12px;margin-bottom:12px;align-items:flex-start;}
+.decision-q{font-size:13px;color:rgba(245,240,232,.72);min-width:300px;padding-top:2px;}
+.decision-arrow{color:var(--hero-accent);font-size:14px;padding-top:1px;}
+.decision-a{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;}
+/* Driven by --tN-on-dark (set in :root) so they track the tool hues. */
+.a-t1{color:var(--t1-on-dark);} .a-t2{color:var(--t2-on-dark);} .a-t3{color:var(--t3-on-dark);}
+.a-t4{color:var(--t4-on-dark);} .a-t5{color:var(--t5-on-dark);} .a-t6{color:var(--t6-on-dark);}
+
+/* ── TIP BOX ── */
+.tip-box{border:1px solid var(--border);padding:16px 20px;margin:16px 0;display:flex;gap:12px;background:rgba(245,240,232,.6);}
+.tip-box.warn{border-color:#c9a45a;background:#faf3e2;}
+.tip-icon{font-size:18px;flex-shrink:0;}
+.tip-box p{font-size:13px;margin:0;line-height:1.65;}
+
+/* ── GETTING STARTED PATHS ── */
+.paths{display:grid;gap:16px;margin:20px 0;}
+.path-card{border:1px solid var(--border);padding:20px 24px;}
+.path-card.p1{background:var(--t1-bg);} .path-card.p2{background:var(--t2-bg);} .path-card.p3{background:var(--t3-bg);}
+.path-card.p4{background:var(--t4-bg);} .path-card.p5{background:var(--t5-bg);} .path-card.p6{background:var(--t6-bg);}
+.path-label{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.1em;margin-bottom:10px;}
+.path-card.p1 .path-label{color:var(--t1-color);} .path-card.p2 .path-label{color:var(--t2-color);} .path-card.p3 .path-label{color:var(--t3-color);}
+.path-card.p4 .path-label{color:var(--t4-color);} .path-card.p5 .path-label{color:var(--t5-color);} .path-card.p6 .path-label{color:var(--t6-color);}
+.path-card ol{padding-left:18px;font-size:13px;line-height:2;}
+
+/* ── SOURCES (optional) ── */
+.sources{font-size:12px;color:var(--muted);line-height:1.9;margin:14px 0;}
+.sources a{color:var(--link);text-decoration:none;word-break:break-all;}
+.sources h4{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink);margin:18px 0 8px;}
+
+/* ── FOOTER ── */
+.footer{margin:56px 0 0;padding:24px 0 32px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+.footer a{color:inherit;text-decoration:none;} .footer a:hover{color:var(--link);}
+
+/* ── FLOATING BUTTONS ── */
+.back-home{position:fixed;bottom:80px;right:32px;width:40px;height:40px;background:var(--ink);color:var(--paper);border:1px solid var(--border);border-radius:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s ease,border-color .15s ease;z-index:100;text-decoration:none;}
+.back-home:hover{background:var(--hero-accent);border-color:var(--hero-accent);}
+.back-to-top{position:fixed;bottom:32px;right:32px;width:40px;height:40px;background:var(--ink);color:var(--paper);border:1px solid var(--border);border-radius:2px;font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;line-height:1;cursor:pointer;opacity:0;transform:translateY(8px);transition:opacity .2s ease,transform .2s ease,background .15s ease;z-index:100;}
+.back-to-top.visible{opacity:1;transform:translateY(0);}
+.back-to-top:hover{background:var(--hero-accent);border-color:var(--hero-accent);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  .hero{padding:36px 20px 32px;} .hero h1{font-size:1.7rem;}
+  .container{padding:0 16px;}
+  .mode-overview{grid-template-columns:repeat(2,1fr);}
+  .mode-card{border-right:none;border-bottom:1px solid var(--border);}
+  .compare-table,.plan-table{font-size:11px;} .compare-table td,.compare-table th{padding:7px 8px;}
+  .compare-table{min-width:560px;}  /* forces horizontal scroll inside .table-scroll for 4+ tool tables */
+  .fact-grid{grid-template-columns:90px 1fr;}
+  .decision-item{flex-direction:column;gap:4px;} .decision-q{min-width:unset;}
+  .footer{flex-direction:column;gap:8px;text-align:center;}
+  .back-home{bottom:68px;right:20px;} .back-to-top{bottom:20px;right:20px;}
+}
+
+/* ── PRINT (one-click PDF via window.print) ── */
+@media print{
+  @page{margin:14mm;}
+  body{background:#fff;}
+  /* best-effort color retention; some browsers/user print settings can still override */
+  *{-webkit-print-color-adjust:exact;color-adjust:exact;print-color-adjust:exact;}
+  .no-print,.actions-bar,.back-to-top,.back-home{display:none !important;}
+  /* Keep ONLY small atomic blocks whole. Large containers (mode-section, decision,
+     steps) must flow across pages — break-inside:avoid on a block taller than one
+     page makes browsers clip/truncate it (the reported PDF cut-off). */
+  .mode-card,.fact-grid,.tip-box,.path-card,.step{break-inside:avoid;}
+  .compare-table tr,.plan-table tr{break-inside:avoid;}
+  .compare-table thead,.plan-table thead{display:table-header-group;}
+  /* never clip at a page edge: drop overflow:hidden/auto so tall/wide content flows */
+  .mode-section,.decision,.steps,.table-scroll{overflow:visible;}
+  .code-block{white-space:pre-wrap;word-break:break-word;overflow:visible;}
+  a{color:inherit;text-decoration:none;}
+  /* Ink-saving (chosen default): print the dark hero on white */
+  .hero{overflow:visible;background:#fff;color:var(--ink);}
+  .hero::before,.hero::after{display:none;}
+  .hero h1{color:var(--ink);} .hero-sub,.hero-meta{color:var(--muted);} .hero-label{color:var(--link);}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ HERO ══ -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">// Retrieval-Augmented Generation · Technical Guide · 2026</div>
+    <h1>RAG 檢索增強生成<br>完整技術指南</h1>
+    <p class="hero-sub">RAG 是一套「先找資料、再讓模型回答」的系統工程——不只是把文件塞進提示詞，而是涵蓋切塊、嵌入、檢索、生成、評估與治理的完整管線。本指南以原始論文與官方文件為權威骨幹，系統化梳理概念、管線與架構。</p>
+    <div class="hero-badges">
+      <span class="badge badge-t1">Chunking</span>
+      <span class="badge badge-t2">Embedding</span>
+      <span class="badge badge-t3">Retrieval</span>
+      <span class="badge badge-t4">Generation</span>
+      <span class="badge badge-t5">Evaluation</span>
+      <span class="badge badge-t6">Agentic / Graph</span>
+    </div>
+    <div class="hero-meta"><span>Naive → Advanced → Modular</span><span>CRAG · Self-RAG · GraphRAG</span><span>RAGAS · ARES</span><span>繁體中文</span></div>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ══ ACTIONS BAR — PDF export + Save-to-NotebookLM ══ -->
+<div class="actions-bar no-print">
+  <div class="actions-row">
+    <button class="act-btn" onclick="window.print()" title="開啟列印視窗 → 目的地選「另存為 PDF」→ 儲存">⬇ PDF</button>
+    <a class="act-btn" href="https://notebooklm.google.com/" target="_blank" rel="noopener">↗ NotebookLM</a>
+    <button class="act-btn" id="copyUrlBtn" onclick="copyPageURL(this)">⧉ Copy Link</button>
+  </div>
+  <span class="act-hint">① 點 <strong>PDF</strong> 匯出檔案，或 <strong>Copy Link</strong> 複製網址　② 開 <strong>NotebookLM</strong> →「新增來源 → 網站」貼上，加入你的筆記本</span>
+</div>
+
+<!-- ══ TOC ══ -->
+<div class="toc">
+  <div class="toc-title">// 目錄</div>
+  <ol>
+    <li><a href="#overview">RAG 是什麼 · 五階段管線</a></li>
+    <li><a href="#pipeline">核心 Pipeline 全景圖</a></li>
+    <li><a href="#chunking">Stage 1 — Chunking 切塊</a></li>
+    <li><a href="#embedding">Stage 2 — Embedding 向量化</a></li>
+    <li><a href="#retrieval">Stage 3 — Retrieval 檢索</a></li>
+    <li><a href="#generation">Stage 4 — Generation 生成</a></li>
+    <li><a href="#evaluation">Stage 5 — Evaluation 評估</a></li>
+    <li><a href="#evolution">架構演進：Naive → Advanced → Modular</a></li>
+    <li><a href="#advanced">進階架構：CRAG · Self-RAG · GraphRAG · Agentic</a></li>
+    <li><a href="#failures">常見失敗模式與對策</a></li>
+    <li><a href="#security">安全風險與治理</a></li>
+    <li><a href="#longcontext">RAG vs. Long Context LLM</a></li>
+    <li><a href="#start">決策樹 · 立刻上手 Checklist</a></li>
+    <li><a href="#sources">資料來源 · 詞彙表 · 資料邊界</a></li>
+  </ol>
+</div>
+
+<!-- ══ §01 OVERVIEW ══ -->
+<div class="section" id="overview">
+  <div class="section-number">// 01</div>
+  <h2>RAG 是什麼？為什麼需要它？</h2>
+  <p class="intro">LLM 訓練完成後知識就被「凍結」在參數裡，帶來三個根本問題：知識截止、幻覺、私有知識盲區。RAG 的解法很直覺——<strong>在模型生成答案之前，先去「查資料」</strong>，讓 LLM 從「閉卷考」變成「開卷考」。</p>
+</div>
+<div class="fact-grid">
+  <div class="fact-label">一句話</div><div class="fact-value">使用者提問 → 從知識庫撈出相關段落 → 把段落 + 問題一起送給 LLM → 生成有依據的答案。核心價值不是讓模型「變聰明」，而是讓它參照<strong>外部、可更新、可追溯</strong>的知識。</div>
+  <div class="fact-label">名稱由來</div><div class="fact-value">2020 年 Meta AI（時為 FAIR）論文 <em>Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks</em>（Lewis et al.）正式提出，結合<strong>參數式記憶</strong>（模型權重）與<strong>非參數式記憶</strong>（外部索引）。</div>
+  <div class="fact-label">不等於</div><div class="fact-value"><strong>≠ 搜尋</strong>（只找文件、不生成可讀答案）；<strong>≠ 微調</strong>（改風格與任務能力，不適合頻繁更新事實知識）。RAG 是用外部知識「支援生成」。</div>
+  <div class="fact-label">關鍵認知</div><div class="fact-value">RAG 是<strong>系統工程</strong>，不是單一向量資料庫功能。Chunking、metadata、retrieval、reranking、prompt、citation、evaluation 每一環都會影響品質。</div>
+  <div class="fact-label">為何重要</div><div class="fact-value">正確實施可將幻覺率最高降低約 <strong>71%</strong>；但評估不足時，即便取得正確源文件仍可能在約 <strong>40%</strong> 回應中幻覺（Stanford AI Lab）。47% 企業使用者曾基於幻覺內容做出重大決策（Suprmind, 2025）。</div>
+</div>
+
+<!-- ══ §02 PIPELINE ══ -->
+<div class="section" id="pipeline">
+  <div class="section-number">// 02</div>
+  <h2>核心 Pipeline 全景圖</h2>
+  <p class="intro">RAG 並非單一步驟，而是一條多階段管線：知識庫建立（離線）→ 查詢處理（線上）→ 生成 → 持續評估。本指南的 Stage 1–5 對應下圖五個核心環節。</p>
+</div>
+<div class="code-block"><span class="comment">┌──────────────── 知識庫建立（離線）────────────────┐</span>
+  原始文件        <span class="comment">│</span>
+  (PDF/MD/HTML)  ─►  擷取清理 ─► <span class="kw">Chunking</span> ─► <span class="kw">Embedding</span> ─► <span class="kw">Vector / Hybrid / Graph 索引</span>
+<span class="comment">└────────────────────────────────────────────────────┘</span>
+                                                  <span class="comment">│ 預建索引</span>
+<span class="comment">┌──────────────── 查詢處理（線上）──────────────────┐</span> <span class="comment">▼</span>
+  使用者問題 ─► 查詢理解/改寫 ─► <span class="kw">Retrieval</span>（相似度搜索）─► <span class="kw">Rerank</span>（重排序/過濾）
+<span class="comment">└────────────────────────────────────────────────────┘</span>
+                                                  <span class="comment">▼</span>
+  上下文組裝 ─► <span class="kw">Generation</span>（LLM + 引用）─► 拒答/Guardrail ─► <span class="cmd">Answer</span>
+                                                  <span class="comment">▼</span>
+  <span class="kw">Evaluation</span>（持續監控）：Faithfulness / Precision / Recall</div>
+<div class="mode-overview">
+  <div class="mode-card t1"><div class="mode-icon icon-t1">✂️</div><h3>1 · Chunking</h3><p>把文件切成可檢索、可理解、可放入上下文的單位。</p></div>
+  <div class="mode-card t2"><div class="mode-icon icon-t2">🧮</div><h3>2 · Embedding</h3><p>把文字轉成高維向量，讓語意相似者距離接近。</p></div>
+  <div class="mode-card t3"><div class="mode-icon icon-t3">🔍</div><h3>3 · Retrieval</h3><p>找到「能回答問題的證據」，而不只是「最像的片段」。</p></div>
+  <div class="mode-card t4"><div class="mode-icon icon-t4">✍️</div><h3>4 · Generation</h3><p>讓模型只在證據範圍內回答，並附引用、不足時拒答。</p></div>
+  <div class="mode-card t5"><div class="mode-icon icon-t5">📊</div><h3>5 · Evaluation</h3><p>分層測量檢索與生成品質，是品質保障的基礎設施。</p></div>
+  <div class="mode-card t6"><div class="mode-icon icon-t6">🤖</div><h3>+ · Advanced</h3><p>CRAG / Self-RAG / GraphRAG / Agentic 自主決策迴圈。</p></div>
+</div>
+
+<!-- ══ §03 CHUNKING ══ -->
+<div class="section" id="chunking"><div class="section-number">// 03</div><h2>Stage 1 — Chunking（切塊策略）</h2></div>
+<div class="mode-section">
+  <div class="mode-header t1-h"><span style="font-size:20px">✂️</span><h3>切塊 — 最被低估、影響卻最大的環節</h3><span class="mode-tag">STAGE 1</span></div>
+  <div class="mode-body">
+    <p>把大型文件切割成小單元（chunks），各自向量化並建立索引。即使模型支援長上下文，過長內容仍會提高成本、延遲並稀釋信號。</p>
+    <div class="tip-box"><span class="tip-icon">🧪</span><p><strong>實驗結果：</strong>Vectara 在 NAACL 2025 跨 25 種 chunking 配置 × 48 個 embedding 模型的研究發現，<strong>chunking 配置對檢索品質的影響不亞於 embedding 模型本身的選擇</strong>。</p></div>
+    <h4 class="sub">六種策略（由簡到繁）</h4>
+    <table class="plan-table">
+      <thead><tr><th>策略</th><th>方法</th><th>適用 / 風險</th></tr></thead>
+      <tbody>
+        <tr><td><strong>① 固定大小</strong></td><td>按固定 token 數切，前後重疊（overlap）</td><td>最快；可能切斷句子破壞語意</td></tr>
+        <tr><td><strong>② 遞迴字元</strong></td><td>段落 → 句子 → 字元優先序遞迴切（LangChain 預設）</td><td><strong>通用 first-choice</strong>，兼顧自然邊界</td></tr>
+        <tr><td><strong>③ 結構感知</strong></td><td>用 Markdown 標題 / HTML 標籤 / 頁碼作邊界</td><td>技術文件、法務、規格書；依賴解析器品質</td></tr>
+        <tr><td><strong>④ 語意切割</strong></td><td>相鄰句子 embedding 距離 &gt; 閾值處切</td><td>結構不清晰時；計算成本高，效益不一定穩定</td></tr>
+        <tr><td><strong>⑤ Parent-Child</strong></td><td>小 chunk 做精準檢索、大 chunk 提供完整上下文</td><td>解決「精準 vs. 上下文完整」矛盾</td></tr>
+        <tr><td><strong>⑥ 情境化 / Contextual</strong></td><td>每個 chunk 前加文件標題、章節路徑等 metadata 再嵌入</td><td>每個 chunk「知道自己在哪裡」，低成本高回報</td></tr>
+      </tbody>
+    </table>
+    <div class="tip-box"><span class="tip-icon">📈</span><p><strong>Contextual Chunking 數據（Microsoft Azure 2025）：</strong>在每個 chunk 前補上文件層級定位後，QA 準確率可從 ~55% 提升到 ~73%（+15–25 個百分點），且<strong>無需改動任何檢索架構</strong>。</p></div>
+    <h4 class="sub">2026 基準推薦與決策樹</h4>
+    <div class="code-block"><span class="comment"># 通用 default：recursive 512-token + 10–20% overlap（業界最廣泛驗證）</span>
+有明確結構（標題/章節）？
+├─ 是 ─► 結構感知切割（Markdown/HTML）
+└─ 否 ─► 語意連續複雜？
+         ├─ 是 ─► 語意切割 or Parent-Child
+         └─ 否 ─► 預算 / 延遲敏感？
+                  ├─ 是 ─► Recursive 512-token（default）
+                  └─ 否 ─► 加 Contextual 前綴（低成本高回報）</div>
+    <h4 class="sub">常見錯誤</h4>
+    <ul class="uc">
+      <li><strong>太小（&lt; 50 tokens）</strong>：頻繁撈回碎片、context 不連貫 → 增大或用 Parent-Child。</li>
+      <li><strong>太大（&gt; 1000 tokens）</strong>：embedding 語意被稀釋、噪音混入 → 縮小 + 加 overlap。</li>
+      <li><strong>忽略 overlap</strong>：跨邊界資訊永遠撈不全 → 設 10–20% overlap。</li>
+      <li><strong>切斷表格</strong>：數字對不上 → 表格專用解析、轉 Markdown 或結構化儲存。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══ §04 EMBEDDING ══ -->
+<div class="section" id="embedding"><div class="section-number">// 04</div><h2>Stage 2 — Embedding（向量化）</h2></div>
+<div class="mode-section">
+  <div class="mode-header t2-h"><span style="font-size:20px">🧮</span><h3>把文字轉成可比較的向量</h3><span class="mode-tag">STAGE 2</span></div>
+  <div class="mode-body">
+    <div class="code-block"><span class="str">"貓咪喜歡喝水"</span>   ─► [0.23, -0.87, 0.11, ...]  <span class="comment">← 向量表示</span>
+<span class="str">"我的寵物愛喝水"</span> ─► [0.25, -0.85, 0.09, ...]  <span class="comment">← 距離近 = 語意相似</span>
+<span class="str">"量子力學公式"</span>   ─► [-0.91, 0.43, -0.72, ...] <span class="comment">← 距離遠 = 語意不同</span></div>
+    <h4 class="sub">Sparse vs. Dense vs. Hybrid</h4>
+    <table class="plan-table">
+      <thead><tr><th>類型</th><th>代表</th><th>優勢 / 劣勢</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Dense 稠密</strong></td><td>text-embedding-3, BGE, voyage</td><td>語意理解強、同義詞佳／可能忽略精確詞、數字、稀有名詞</td></tr>
+        <tr><td><strong>Sparse 稀疏</strong></td><td>BM25, TF-IDF, SPLADE</td><td>精確詞彙匹配、可解釋、穩健基線／語意理解弱</td></tr>
+        <tr><td><strong>Late interaction</strong></td><td>ColBERT 類</td><td>排序品質常更好／成本高、索引大</td></tr>
+        <tr><td><strong>Hybrid 混合</strong></td><td>Dense + BM25 融合</td><td>兼顧語意與精確匹配／需調融合比例</td></tr>
+      </tbody>
+    </table>
+    <h4 class="sub">主流模型（2025–2026）</h4>
+    <table class="plan-table">
+      <thead><tr><th>模型</th><th>提供方 · 維度</th><th>特色</th></tr></thead>
+      <tbody>
+        <tr><td><code>text-embedding-3-large / small</code></td><td>OpenAI · 3072 / 1536</td><td>高品質通用 / 低成本，API 方便</td></tr>
+        <tr><td><code>voyage-3</code></td><td>Voyage AI · 1024</td><td>RAG 特化，MTEB 表現優異</td></tr>
+        <tr><td><code>jina-embeddings-v3</code></td><td>Jina AI · 1024</td><td>多語言強（含中文），開源</td></tr>
+        <tr><td><code>bge-m3</code></td><td>BAAI · 1024</td><td>中文最強開源選項之一</td></tr>
+      </tbody>
+    </table>
+    <div class="tip-box warn"><span class="tip-icon">⚠️</span><p><strong>MTEB 分數不能預測特定領域的實際表現。</strong>DPR 論文顯示 dense 可勝過強 BM25 基線，但 BEIR 也指出 BM25 是穩健基線——<strong>不要預設「向量搜尋必然優於 BM25」</strong>。永遠要在你自己的資料上 benchmark 再決定。查詢與文件務必用同一模型，並做版本管理。</p></div>
+  </div>
+</div>
+
+<!-- ══ §05 RETRIEVAL ══ -->
+<div class="section" id="retrieval"><div class="section-number">// 05</div><h2>Stage 3 — Retrieval（檢索）</h2></div>
+<div class="mode-section">
+  <div class="mode-header t3-h"><span style="font-size:20px">🔍</span><h3>找到「能回答問題的證據」，而非「最像的片段」</h3><span class="mode-tag">STAGE 3</span></div>
+  <div class="mode-body">
+    <p>向量相似度高 ≠ 證據充分。檢索目標是找到能支援回答的定義、規則、例外條款、數字、表格欄位與跨文件關聯。</p>
+    <h4 class="sub">Hybrid Search + RRF 融合</h4>
+    <div class="code-block">BM25 檢索 top 50  ─┐
+                    ├─ <span class="kw">RRF 融合</span> ─► cross-encoder reranker 重排 top 20 ─► 過濾取 top 5–10
+向量檢索 top 50  ─┘
+<span class="comment"># RRF 公式：score(d) = Σ 1 / (k + rankᵢ(d))，k 通常取 60</span></div>
+    <div class="tip-box"><span class="tip-icon">📈</span><p><strong>研究數據（arXiv 2604.01733, 2026）：</strong>兩階段 Hybrid RRF + 神經 reranker 達 <strong>Recall@5 = 0.816</strong>，對比純 Dense（0.587，+39%）、純 BM25（0.644，+27%）。<strong>Hybrid + Reranking 是 2025 年後的生產系統 baseline，純向量只適合 demo。</strong></p></div>
+    <h4 class="sub">Reranking — 兩階段架構</h4>
+    <p><strong>階段一</strong>高召回初步檢索（撈 Top-50）→ <strong>階段二</strong>高精度 cross-encoder 對每個候選單獨評分重排（取 Top-5）。Bi-encoder 把 query 與文件分開編碼算距離；cross-encoder 把 <code>[query, document]</code> 一起輸入做深度交互，更準但更慢（不能預計算）。主流：Cohere Rerank v4、<code>ms-marco-MiniLM</code>、BGE Reranker v2。</p>
+    <h4 class="sub">Query Transformation</h4>
+    <table class="plan-table">
+      <thead><tr><th>技術</th><th>做法</th></tr></thead>
+      <tbody>
+        <tr><td><strong>查詢改寫</strong></td><td>把口語、代詞、省略語轉成完整查詢（多輪對話必備）</td></tr>
+        <tr><td><strong>HyDE</strong></td><td>先用 LLM 生成「假設答案文件」，用其 embedding 檢索真實文件——更貼近文件語言風格；精確數字場景效果有限</td></tr>
+        <tr><td><strong>Multi-Query</strong></td><td>生成 3–5 個同義不同表述的問題，分別檢索後去重合併，提高召回</td></tr>
+        <tr><td><strong>Query Decomposition</strong></td><td>複雜問題拆成子問題分別檢索再彙整，適合 multi-hop 推理</td></tr>
+        <tr><td><strong>Routing</strong></td><td>判斷該查向量庫 / SQL / API / 網路，或直接回答</td></tr>
+      </tbody>
+    </table>
+    <div class="tip-box"><span class="tip-icon">🔑</span><p><strong>Metadata Filtering 常比換 embedding 模型更有效。</strong>在檢索前後用 <code>date ≥ 2025-01-01</code>、<code>department = HR</code>、<code>version = latest</code>、<code>permission_group</code> 等過濾，可排除過期、無權限、錯版本或不適用地區的資料。沒有 metadata 的 RAG 很容易把錯誤資料送進 LLM。</p></div>
+  </div>
+</div>
+
+<!-- ══ §06 GENERATION ══ -->
+<div class="section" id="generation"><div class="section-number">// 06</div><h2>Stage 4 — Generation（生成）</h2></div>
+<div class="mode-section">
+  <div class="mode-header t4-h"><span style="font-size:20px">✍️</span><h3>讓模型只在證據範圍內回答</h3><span class="mode-tag">STAGE 4</span></div>
+  <div class="mode-body">
+    <h4 class="sub">上下文組裝（Context Assembly）</h4>
+    <div class="code-block"><span class="cmd">System</span>: 只根據以下提供的資訊回答；若資訊不足，請說「無法從提供資料中找到答案」。
+<span class="cmd">Context</span>:
+  [來源：policy_v3.pdf p.12]  {chunk_1_text}
+  [來源：meeting_2025Q3.md]   {chunk_2_text}
+<span class="cmd">Question</span>: {user_query}
+<span class="cmd">Output</span>: 結論 → 依據 → 限制 → 來源（逐句引用）</div>
+    <h4 class="sub">關鍵設計決策</h4>
+    <ul class="uc">
+      <li><strong>Answer only from context</strong>：限制模型只能根據檢索內容回答。</li>
+      <li><strong>Cite every claim</strong>：每個主要聲明附來源，便於驗證。</li>
+      <li><strong>Refuse when insufficient</strong>：明確指示「資料不足請拒答」，顯著減少幻覺。</li>
+      <li><strong>分離證據與推論</strong>：把 evidence / inference / conclusion 分開，避免過度推論。</li>
+    </ul>
+    <div class="tip-box warn"><span class="tip-icon">📉</span><p><strong>「Lost in the Middle」效應（TACL 2023）：</strong>LLM 對上下文的記憶呈 <strong>U 形曲線</strong>——開頭與結尾最易記住，中間最易被忽略。<strong>對策：最相關的 chunk 放 context 最前或最後，並減少 Top-K 數量。</strong></p></div>
+    <div class="tip-box warn"><span class="tip-icon">🧹</span><p><strong>Context Rot（Chroma 2025）：</strong>測試 18 個模型（GPT-4.1、Claude 4、Gemini 2.5）發現，即便支援超長 context，隨長度增加檢索效能仍持續下降。<strong>對策：用 reranking 只保留少量最相關 chunk，不要塞入大量冗餘。</strong></p></div>
+    <p style="font-size:12.5px;color:var(--muted);"><strong>RAG 降低幻覺，但不消除幻覺。</strong>常見殘留原因：檢索結果錯誤/矛盾、模型忽略 context、過度推論、引用看似存在但不支援對應句子、未要求「資料不足時拒答」。</p>
+  </div>
+</div>
+
+<!-- ══ §07 EVALUATION ══ -->
+<div class="section" id="evaluation"><div class="section-number">// 07</div><h2>Stage 5 — Evaluation（評估）</h2></div>
+<div class="mode-section">
+  <div class="mode-header t5-h"><span style="font-size:20px">📊</span><h3>RAG 必須分層測量，不能只看最終答案</h3><span class="mode-tag">STAGE 5</span></div>
+  <div class="mode-body">
+    <p>RAG 可能「答案對但檢索錯」，也可能「檢索對但生成錯」。必須拆成 <strong>Retriever 鏈</strong> + <strong>Generator 鏈</strong> + <strong>端到端任務</strong>分別評估。核心是「RAG 三元組」：Context Relevance、Faithfulness、Answer Relevancy。</p>
+    <h4 class="sub">檢索指標（Retriever）</h4>
+    <table class="plan-table">
+      <thead><tr><th>指標</th><th>意義</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Context Precision</strong></td><td>撈回 Top-K 中真正相關的比例。低 = 噪音污染 LLM</td></tr>
+        <tr><td><strong>Context Recall</strong></td><td>回答所需資訊是否都被撈到。低 = 資訊遺漏，模型只能猜</td></tr>
+        <tr><td><strong>MRR / nDCG / Hit@k</strong></td><td>排名相關性；nDCG 與端到端 RAG 品質相關性最強</td></tr>
+      </tbody>
+    </table>
+    <h4 class="sub">生成指標（Generator）</h4>
+    <table class="plan-table">
+      <thead><tr><th>指標</th><th>意義</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Faithfulness 忠實度</strong></td><td>回答陳述是否都能在 context 找到根據。核心抗幻覺指標，&lt; 0.8 即有問題</td></tr>
+        <tr><td><strong>Answer Relevancy</strong></td><td>是否真的回答了問題，有無答非所問</td></tr>
+        <tr><td><strong>Citation Accuracy</strong></td><td>引用是否真的支援對應句子</td></tr>
+        <tr><td><strong>Refusal Accuracy</strong></td><td>資料不足或越權時是否正確拒答</td></tr>
+      </tbody>
+    </table>
+    <div class="tip-box"><span class="tip-icon">✅</span><p><strong>生產就緒標準（RAGAS Docs 2025）：</strong>Faithfulness &gt; 0.8、Context Precision &gt; 0.8。框架選擇：<strong>RAGAS</strong>（reference-free 快速探索）、<strong>ARES</strong>（context/faithfulness/answer 三維）、<strong>DeepEval</strong>（CI/CD 品質 Gate）、<strong>TruLens</strong>（實驗 Dashboard）、<strong>Arize Phoenix / LangSmith</strong>（生產監控與 tracing）。</p></div>
+    <div class="tip-box warn"><span class="tip-icon">⚠️</span><p><strong>評估陷阱：</strong>① RAGAS 在複雜場景失效率高——Cleanlab 發現其 Faithfulness 在 FinanceBench 有 <strong>83.5%</strong> 案例無法生成分數。② <strong>Retriever-Generator 對齊問題</strong>：研究顯示 <strong>47.4–66.7%</strong> 查詢中 Generator 忽略了 Retriever 排名第一的文件，故必須評估「兩者對齊程度」，不能只看單邊。</p></div>
+    <p style="font-size:12.5px;color:var(--muted);"><strong>評估集務必涵蓋：</strong>單文件 / 多文件 / 多跳 / 表格數字 / 時效性 / 權限 / 無答案 / 錯誤前提 / 同義改寫 / 長文件定位問題。每個主要任務至少 50–200 題，並標註 gold evidence。</p>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- ══ §08 EVOLUTION (COMPARE TABLE) ══ -->
+<div class="section" id="evolution"><div class="section-number">// 08</div><h2>架構演進：Naive → Advanced → Modular → Agentic</h2>
+  <p class="intro">RAG 綜述論文常將發展劃分為 Naive / Advanced / Modular 三類；2026 年主流再往 Agentic 推進。Modular RAG 把每個元件（Retriever、Reranker、Generator、Memory）都做成可獨立替換的模組。</p>
+</div>
+<div class="table-scroll">
+<table class="compare-table">
+  <thead><tr><th>面向</th><th>Naive RAG</th><th>Advanced RAG</th><th>Modular RAG</th></tr></thead>
+  <tbody>
+    <tr><td>核心流程</td><td>索引 → 檢索 → 生成</td><td>預檢索優化 → 檢索 → 後檢索優化</td><td>可插拔模組 + 動態路由迴圈</td></tr>
+    <tr><td>主要解決</td><td>知識過時、幻覺</td><td>檢索噪音、Lost in the Middle</td><td>多步推理、跨源知識調度</td></tr>
+    <tr><td>核心技術</td><td>單純向量相似度</td><td>查詢改寫、Hybrid、Reranking、壓縮</td><td>智能路由、反思、動態迭代檢索</td></tr>
+    <tr><td>查詢理解</td><td><span class="no">弱</span></td><td><span class="partial">中</span></td><td><span class="yes">強</span></td></tr>
+    <tr><td>適用</td><td>PoC、小型 FAQ（&lt; 1000 件）</td><td>企業知識庫、客服、法務、金融</td><td>大型系統、生產環境、多資料源</td></tr>
+  </tbody>
+</table>
+</div>
+<div class="tip-box"><span class="tip-icon">🧱</span><p><strong>生產 baseline：</strong>不做 Hybrid Search + Reranking 就等於沒做 Advanced RAG。Advanced RAG 在 Naive 基礎上加入：查詢改寫（HyDE / Multi-Query）→ Hybrid Retrieval → Cross-encoder Reranking → Context Compression → 帶引用的生成。</p></div>
+
+<!-- ══ §09 ADVANCED ARCHITECTURES ══ -->
+<div class="section" id="advanced"><div class="section-number">// 09</div><h2>進階架構：CRAG · Self-RAG · GraphRAG · Agentic</h2></div>
+<div class="mode-section">
+  <div class="mode-header t6-h"><span style="font-size:20px">🤖</span><h3>自我校正、自主決策與知識圖譜</h3><span class="mode-tag">ADVANCED</span></div>
+  <div class="mode-body">
+    <h4 class="sub">Corrective RAG（CRAG）— 檢索後先自我評估</h4>
+    <p>撈回文件後先評估相關性：相關度 OK → 直接生成；不足 → 觸發重新檢索（如 Web Search）+ 知識精煉。<strong>MDPI 2025（250 臨床病例）：</strong>CRAG Precision@5 = 0.69、幻覺率 10.5%、延遲 240ms——進入進階架構成本最低的第一步。</p>
+    <h4 class="sub">Self-RAG — 模型自主決定何時檢索並自我反思</h4>
+    <p>引入反思 token：<code>[Retrieve]</code>（要不要檢索）、<code>[ISREL]</code>（文件相關嗎）、<code>[ISSUP]</code>（生成有文件支撐嗎）、<code>[ISUSE]</code>（對回答有幫助嗎）。<strong>同批臨床實驗：Self-RAG 幻覺率 5.8%，為 12 種變體中最低。</strong></p>
+    <h4 class="sub">GraphRAG — 知識圖譜補足向量搜索盲區</h4>
+    <p>向量搜索只能說「這些 chunk 語意相似」，無法回答「實體間是什麼因果關係」或「整個資料集有哪些主要主題」。Microsoft GraphRAG 透過建立<strong>實體知識圖譜 + 社群摘要</strong>改善 query-focused summarization。兩種模式：<strong>Local Search</strong>（特定實體圖遍歷，精確問題）、<strong>Global Search</strong>（全圖摘要，全域性問題）。</p>
+    <h4 class="sub">Agentic RAG — 2026 的主流方向</h4>
+    <div class="code-block">傳統 RAG：  Query → Retrieve-once → Generate
+Agentic RAG：
+  Query ─► [<span class="kw">Planner</span>] 需要哪些資訊？用什麼工具？
+        ─► [<span class="kw">Tool Calls</span>] 向量DB / Web / SQL / API / 計算
+        ─► [<span class="kw">Reflection</span>] 資訊夠了嗎？（不夠 → 返回 Planner）
+        ─► [<span class="kw">Generator</span>] 生成最終答案</div>
+    <div class="tip-box"><span class="tip-icon">🚀</span><p><strong>性能躍升（arXiv 2506.10408）：</strong>HotpotQA 多跳推理——靜態 RAG <strong>34%</strong> vs Agentic RAG <strong>89%</strong>（+55 個百分點）；2WikiMultiHop <strong>89.7%</strong>。這不是邊際改善，而是<strong>能力等級的跨越</strong>。實作工具：LangGraph（帶 checkpointing）、LlamaIndex Workflows、AutoGen。</p></div>
+  </div>
+</div>
+
+<!-- ══ §10 FAILURE MODES ══ -->
+<div class="section" id="failures"><div class="section-number">// 10</div><h2>常見失敗模式與對策</h2>
+  <p class="intro">RAG 的失敗分三層：索引層（Indexing）、檢索層（Retrieval）、生成層（Generation）。以下整合學術界與工業界公認的失敗模式。</p>
+</div>
+<table class="plan-table">
+  <thead><tr><th>失敗類型</th><th>現象 / 根因</th><th>對策</th></tr></thead>
+  <tbody>
+    <tr><td><strong>資料缺失</strong></td><td>知識庫根本沒有答案，卻勉強生成</td><td>數據治理；強制「找不到請說不知道」</td></tr>
+    <tr><td><strong>Retrieval Miss</strong></td><td>答案存在但相似度誤差未進 Top-K</td><td>HyDE / Multi-Query；Hybrid + 強制 Reranking</td></tr>
+    <tr><td><strong>Lost in the Middle</strong></td><td>答案在 Top-K 但排序居中被忽略</td><td>減少注入數量；關鍵 chunk 置於首尾</td></tr>
+    <tr><td><strong>Not Extracted</strong></td><td>答案在 Prompt 中但噪音過多未被抽出</td><td>Prompt Compression；升級 in-context 能力更強的模型</td></tr>
+    <tr><td><strong>格式錯誤</strong></td><td>過度關注檢索文本而忽略 JSON/表格指令</td><td>結構化輸出工具（Pydantic）、Schema 強制約束</td></tr>
+    <tr><td><strong>粒度不匹配</strong></td><td>要全局概述卻撈回碎片細節（或反之）</td><td>Parent-Child 檢索：匹配子塊、提供父塊</td></tr>
+    <tr><td><strong>合成不完整</strong></td><td>答案散在多個分塊，只取其一導致片面</td><td>Query Decomposition（multi-hop）依序檢索再彙整</td></tr>
+    <tr><td><strong>上下文矛盾</strong></td><td>新舊版法規並存，模型無法判斷</td><td>時序 metadata 標記 + 檢索階段過濾過期資料</td></tr>
+    <tr><td><strong>Context Leak</strong></td><td>模型用訓練知識覆蓋 context</td><td>強化 grounding instruction、加 citation 要求</td></tr>
+    <tr><td><strong>Generation Drift</strong></td><td>context 正確但改寫扭曲原意</td><td>Faithfulness 監控、要求逐句 quote</td></tr>
+    <tr><td><strong>指代消解失敗</strong></td><td>「那它的價格呢？」丟失第一輪主體</td><td>History-aware 對話歷史重寫</td></tr>
+    <tr><td><strong>Stale Knowledge</strong></td><td>回答基於過時資訊</td><td>定期 re-index、日期 filter、CRAG + Web fallback</td></tr>
+  </tbody>
+</table>
+
+<!-- ══ §11 SECURITY ══ -->
+<div class="section" id="security"><div class="section-number">// 11</div><h2>安全風險與治理</h2>
+  <p class="intro">OWASP 2025 LLM Top 10 將 prompt injection 與 vector / embedding weaknesses 列為重要風險，並指出 <strong>RAG 與 fine-tuning 都不能完全緩解 prompt injection</strong>。NIST 生成式 AI 風險框架強調需要治理、測量與管理控制。</p>
+</div>
+<table class="plan-table">
+  <thead><tr><th>風險</th><th>說明</th><th>防護</th></tr></thead>
+  <tbody>
+    <tr><td><strong>間接 Prompt Injection</strong></td><td>惡意指令藏在被檢索的文件中</td><td>文件清洗、指令/資料隔離、輸出限制</td></tr>
+    <tr><td><strong>Retrieval Poisoning</strong></td><td>攻擊者放入高相似度的惡意文件</td><td>來源信任分級、索引審核</td></tr>
+    <tr><td><strong>Data Leakage</strong></td><td>檢索到無權限內容</td><td>檢索階段 ACL filter、tenant isolation</td></tr>
+    <tr><td><strong>Vector Inversion</strong></td><td>embedding / 索引暴露敏感資料</td><td>加密、存取控管、資料最小化</td></tr>
+    <tr><td><strong>Hallucinated Citation</strong></td><td>看似引用但無支援</td><td>引用驗證、逐句支持檢查</td></tr>
+    <tr><td><strong>Tool Overreach</strong></td><td>RAG agent 誤呼叫高權限工具</td><td>工具權限最小化、人審閘門</td></tr>
+  </tbody>
+</table>
+<div class="tip-box warn"><span class="tip-icon">🔐</span><p><strong>權限必須在「檢索階段」執行</strong>——不能只靠 prompt 指示。私有資料系統需要 retrieval-time ACL 過濾、租戶隔離與審計日誌。對醫療、法律、金融等高風險領域，RAG 必須搭配人審、引用驗證、拒答策略與資料治理。</p></div>
+
+<!-- ══ §12 RAG vs LONG CONTEXT (COMPARE TABLE) ══ -->
+<div class="section" id="longcontext"><div class="section-number">// 12</div><h2>RAG vs. Long Context LLM：如何選擇？</h2>
+  <p class="intro">2025 後 GPT-4.1、Claude 4、Gemini 2.5 的 context window 已超過 100 萬 token，有人質疑 RAG 是否還需要。多項研究（arXiv 2501.01880、2407.16833、LaRA 2025）的共同結論：<strong>沒有萬用解——取決於任務、資料特性與成本。</strong></p>
+</div>
+<div class="table-scroll">
+<table class="compare-table">
+  <thead><tr><th>維度</th><th>RAG 勝出</th><th>Long Context 勝出</th></tr></thead>
+  <tbody>
+    <tr><td>成本</td><td><span class="yes">✓ 低得多</span>（只傳相關 chunks）</td><td><span class="no">1M token 約 1250× 費用</span></td></tr>
+    <tr><td>延遲</td><td><span class="yes">✓ 秒級</span></td><td><span class="no">1M token 慢 30–60 倍</span></td></tr>
+    <tr><td>動態資料</td><td><span class="yes">✓ 即時更新索引</span></td><td><span class="no">需重組整個上下文</span></td></tr>
+    <tr><td>精確事實 + 引用</td><td><span class="yes">✓ 可追溯來源</span></td><td><span class="partial">多事實 recall 約 60%</span></td></tr>
+    <tr><td>全文件 / 多跳推理</td><td><span class="no">chunk 可能遺漏脈絡</span></td><td><span class="yes">✓ 一次讀完更自然</span></td></tr>
+    <tr><td>權限 / 治理</td><td><span class="yes">✓ 檢索階段過濾</span></td><td><span class="no">難做細粒度控管</span></td></tr>
+  </tbody>
+</table>
+</div>
+<div class="tip-box"><span class="tip-icon">🧭</span><p><strong>Self-Route（EMNLP 2024）：</strong>讓模型自行判斷——簡單事實查找路由到 RAG，需全域理解的複雜問題路由到 Long Context。在維持高準確率的同時顯著降低整體計算成本。長上下文不會完全取代 RAG：成本、權限、更新、引用與可治理性仍讓 RAG 有價值。</p></div>
+
+<!-- ══ §13 DECISION TREE + GETTING STARTED ══ -->
+<div class="section" id="start"><div class="section-number">// 13</div><h2>決策樹 · 立刻上手 Checklist</h2></div>
+<div class="decision">
+  <h3>🌿 我該用哪種 RAG？</h3>
+  <div class="decision-item"><div class="decision-q">小型 FAQ / 內部文件 / 低風險原型</div><div class="decision-arrow">→</div><div class="decision-a a-t1">Naive RAG（先跑通）</div></div>
+  <div class="decision-item"><div class="decision-q">企業知識庫 / 客服 / 一般生產系統</div><div class="decision-arrow">→</div><div class="decision-a a-t2">Advanced：Hybrid + Rerank + Metadata</div></div>
+  <div class="decision-item"><div class="decision-q">回答需最高事實準確度（醫療/法律/財務）</div><div class="decision-arrow">→</div><div class="decision-a a-t3">CRAG / Self-RAG</div></div>
+  <div class="decision-item"><div class="decision-q">知識庫有豐富實體關係需要推理</div><div class="decision-arrow">→</div><div class="decision-a a-t6">GraphRAG</div></div>
+  <div class="decision-item"><div class="decision-q">需跨多資料源做多步綜合推理</div><div class="decision-arrow">→</div><div class="decision-a a-t4">Agentic RAG</div></div>
+  <div class="decision-item"><div class="decision-q">文字 + 圖表混合文件（含圖 PDF）</div><div class="decision-arrow">→</div><div class="decision-a a-t5">Multimodal RAG（ColPali）</div></div>
+</div>
+<div class="steps">
+  <div class="step t1-step"><div class="step-num">01</div><div class="step-content"><h4>建第一個 Naive Pipeline</h4><p>RecursiveCharacterTextSplitter 512 tokens → text-embedding-3-small → pgvector/Chroma/Qdrant → Cosine Top-5 → 帶「不知道請說不知道」的 Prompt → 跑 5–10 題人工評分。</p></div></div>
+  <div class="step t2-step"><div class="step-num">02</div><div class="step-content"><h4>升級到 Advanced（生產 baseline）</h4><p>加 BM25 + RRF Hybrid → Cross-encoder Reranking → chunk metadata + filter → 整合 RAGAS（Faithfulness/Precision/Recall）→ 設 &gt; 0.8 門檻 → 最相關 chunk 放首尾。</p></div></div>
+  <div class="step t5-step"><div class="step-num">03</div><div class="step-content"><h4>生產化與治理</h4><p>權限檢索（ACL）→ 資料同步與索引監控 → 評估儀表板 → prompt injection 防護 → 失敗案例回流 → 成本/延遲監控 → 週期性 re-index 與合規審計。</p></div></div>
+</div>
+<div class="paths">
+  <div class="path-card p1"><div class="path-label">PATH A — 初學者 FAQ 機器人</div><ol><li>靜態 PDF/Word，固定 500 tokens + 100 overlap</li><li>標準 dense embedding、Top-K = 3</li><li>用 5–10 個真實問題人工驗收</li></ol></div>
+  <div class="path-card p2"><div class="path-label">PATH B — 中階客服 / 知識庫</div><ol><li>Hybrid Search + Reranker + metadata filter</li><li>判斷需即時資料 → 接訂單/物流 API（tool use）</li><li>導入 RAGAS 離線測試集 + 拒答策略</li></ol></div>
+  <div class="path-card p3"><div class="path-label">PATH C — 進階金融 / 法務分析</div><ol><li>Layout-aware 解析、表格轉 Markdown、語意切塊</li><li>Query Decomposition 拆多步子任務</li><li>Agentic RAG + 嚴謹 citation + 人審閘門</li></ol></div>
+</div>
+
+<!-- ══ §N+5 SOURCES (multi-source merge → included) ══ -->
+<div class="section" id="sources"><div class="section-number">// 附錄</div><h2>資料來源 · 詞彙表 · 資料邊界</h2>
+  <p class="intro">本指南以原始論文與官方文件為權威骨幹彙整，內容反映截至 2026 年 5 月。</p>
+  <div class="sources">
+    <h4>原始與綜述論文 / Primary</h4>
+    Lewis et al. (2020), <em>Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks</em>：<a href="https://arxiv.org/abs/2005.11401">arxiv.org/abs/2005.11401</a><br>
+    Gao et al. (2023), <em>RAG for LLMs: A Survey</em>：<a href="https://arxiv.org/abs/2312.10997">arxiv.org/abs/2312.10997</a><br>
+    Fan et al. (2024), <em>A Survey on RAG Meeting LLMs</em>：<a href="https://arxiv.org/abs/2405.06211">arxiv.org/abs/2405.06211</a>
+    <h4>檢索 · 切塊 · 進階架構</h4>
+    Karpukhin et al. (2020), <em>Dense Passage Retrieval</em>：<a href="https://aclanthology.org/2020.emnlp-main.550/">aclanthology.org/2020.emnlp-main.550</a><br>
+    Thakur et al. (2021), <em>BEIR Benchmark</em>：<a href="https://arxiv.org/abs/2104.08663">arxiv.org/abs/2104.08663</a><br>
+    Gao et al. (2022), <em>HyDE</em>：<a href="https://arxiv.org/abs/2212.10496">arxiv.org/abs/2212.10496</a><br>
+    Yan et al. (2024), <em>Corrective RAG (CRAG)</em>：<a href="https://arxiv.org/abs/2401.15884">arxiv.org/abs/2401.15884</a><br>
+    Asai et al. (2023), <em>Self-RAG</em>：<a href="https://arxiv.org/abs/2310.11511">arxiv.org/abs/2310.11511</a><br>
+    Microsoft Research, <em>From Local to Global: A Graph RAG Approach</em>：<a href="https://www.microsoft.com/en-us/research/publication/from-local-to-global-a-graph-rag-approach-to-query-focused-summarization/">microsoft.com/research · GraphRAG</a><br>
+    <em>Is Semantic Chunking Worth the Computational Cost?</em>：<a href="https://arxiv.org/abs/2410.13070">arxiv.org/abs/2410.13070</a><br>
+    Liu et al. (2023), <em>Lost in the Middle</em>：<a href="https://arxiv.org/abs/2307.03172">arxiv.org/abs/2307.03172</a><br>
+    Li et al. (2024), <em>RAG or Long-Context LLMs? (Self-Route)</em>：<a href="https://aclanthology.org/2024.emnlp-industry.66/">aclanthology.org/2024.emnlp-industry.66</a>
+    <h4>評估與風險</h4>
+    Es et al. (2023), <em>RAGAS</em>：<a href="https://arxiv.org/abs/2309.15217">arxiv.org/abs/2309.15217</a><br>
+    Saad-Falcon et al. (2023), <em>ARES</em>：<a href="https://arxiv.org/abs/2311.09476">arxiv.org/abs/2311.09476</a><br>
+    OWASP, <em>Top 10 for LLM Applications 2025</em>：<a href="https://owasp.org/www-project-top-10-for-large-language-model-applications/">owasp.org · LLM Top 10</a><br>
+    NIST, <em>AI RMF: Generative AI Profile</em>：<a href="https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf">NIST.AI.600-1</a>
+    <h4>業界文件 / Secondary</h4>
+    Google Cloud RAG Engine / Grounding API · Azure AI Search RAG overview · Vectara / NAACL 2025 Chunking 配置矩陣 · Cleanlab（RAGAS 失敗率）· RAGFlow 2025 年終回顧 · Chroma（Context Rot）
+    <h4>詞彙表 / Glossary</h4>
+    <strong>Chunk</strong>＝被索引與檢索的文本片段；<strong>Embedding</strong>＝文字的數值向量表示；<strong>BM25</strong>＝常見 keyword 檢索基線；<strong>Hybrid search</strong>＝BM25 + 向量；<strong>Reranker</strong>＝對候選片段重排序的 cross-encoder；<strong>RRF</strong>＝Reciprocal Rank Fusion 排名融合；<strong>Grounding</strong>＝讓輸出連回可驗證來源；<strong>Faithfulness</strong>＝答案是否被上下文支持；<strong>GraphRAG</strong>＝用知識圖譜支援檢索；<strong>Agentic RAG</strong>＝由代理規劃檢索、工具與生成的迴圈。
+    <h4>未能驗證 / Caveats</h4>
+    • 部分量化數據（如 ↓71% 幻覺、Recall@5 0.816、CRAG/Self-RAG 臨床數字）來自個別研究與業界報告，<strong>適用範圍與測試集各異</strong>；各來源偶有出入時以原始論文 / 第一手來源為準，請以你自己資料的 benchmark 驗證。<br>
+    • Embedding 模型維度、reranker 版本、各雲端平台能力與限制會隨時間變動，請以官方文件為準。<br>
+    • 本指南聚焦概念與架構；正式落地前務必在你自己的語料上做評估與安全測試。
+  </div>
+</div>
+
+<!-- ══ FOOTER ══ -->
+<div class="footer">
+  <span>RAG 檢索增強生成 技術指南 · 2026-05-29</span>
+  <a href="https://arxiv.org/abs/2312.10997" target="_blank" rel="noopener">arxiv.org/abs/2312.10997 (RAG Survey) →</a>
+</div>
+
+</div><!-- /container -->
+
+<a class="back-home" href="../index.html" title="回到首頁" aria-label="回到首頁"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10.5V20h14v-9.5"/></svg></a>
+<button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+
+<script>
+/* Minimal inline JS (no external deps). Powers: PDF export uses native window.print();
+   copy-URL for NotebookLM; back-to-top fade. */
+(function(){
+  var top=document.getElementById('backToTop');
+  if(top){
+    window.addEventListener('scroll',function(){top.classList.toggle('visible',window.scrollY>400);},{passive:true});
+    top.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+  }
+})();
+function copyPageURL(btn){
+  var orig=btn.textContent;
+  var flash=function(msg){btn.textContent=msg;setTimeout(function(){btn.textContent=orig;},1800);};
+  var ok=function(){flash('✓ 已複製');};
+  var fail=function(){flash('複製失敗，請手動複製');};
+  // file:// URLs can be copied but NotebookLM (website source) needs a public https URL.
+  if(location.protocol==='file:'){
+    alert('您正在以本機檔案 (file://) 開啟。\nNotebookLM 的「網站來源」需要可公開存取的 https 網址，無法讀取本機路徑。\n請先部署到 GitHub Pages 等，或改用旁邊的「⬇ PDF」上傳。');
+    return;
+  }
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(location.href).then(ok).catch(fail);
+  }else{
+    var ta=document.createElement('textarea');ta.value=location.href;ta.setAttribute('readonly','');
+    ta.style.position='fixed';ta.style.top='-9999px';document.body.appendChild(ta);ta.select();
+    var done=false;try{done=document.execCommand('copy');}catch(e){done=false;}
+    document.body.removeChild(ta);done?ok():fail();
+  }
+}
+</script>
+</body>
+</html>

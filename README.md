@@ -1,6 +1,6 @@
 # AI Beginner Guide 2026
 
-> 2026 年 AI 工具入門指南集：從核心概念到實戰操作，10 篇完整指南幫助初學者快速上手主流 AI 工具。
+> 2026 年 AI 工具入門指南集：從核心概念到實戰操作，11 篇完整指南幫助初學者快速上手主流 AI 工具。
 
 **線上閱讀**：[Bond901.github.io/ai-beginner-guide-2026](https://Bond901.github.io/ai-beginner-guide-2026)
 
@@ -29,6 +29,7 @@
 | [AI 時代軟體開發流程](guides/ai-sdlc-guide-2026.html) | 從需求分析到部署維運——AI 如何重塑 SDLC 每個階段的角色分工與工作流程 |
 | [Claude Opus 4.8 技術指南](guides/claude-opus-4-8-guide.html) | Anthropic 對外最強模型的五大功能（Effort Control、Dynamic Workflows、Fast Mode、Mid-conv System、Adaptive Thinking）與 4.7→4.8 API 遷移實務 |
 | [Claude Code Skills 技術指南](guides/claude-code-skills-guide.html) | 把重複流程封裝成可重用的 SKILL.md——三層漸進式載入、frontmatter、叫用控制、腳本與 subagent，以及最佳實務與安全 |
+| [RAG 檢索增強生成 完整指南](guides/rag-guide-2026.html) | 讓 AI 參照外部知識回答——Chunking、Embedding、Retrieval、Generation、Evaluation 五階段管線，到 CRAG / Self-RAG / GraphRAG / Agentic 進階架構、失敗模式與評估方法 |
 
 ## 推薦閱讀順序
 
@@ -39,7 +40,8 @@
 5. **Claude Opus 4.8 技術指南** — 想深入 Anthropic 旗艦模型的功能與 API 實務時閱讀
 6. **AI Agent 擴充機制** — 理解 Skill / MCP / Plugin 三層架構
 7. **Claude Code Skills 技術指南** — 動手把重複流程封裝成 skill
-8. **AI 時代軟體開發流程** — 了解 AI 如何改變開發全流程
+8. **RAG 檢索增強生成 完整指南** — 讓 AI 參照外部知識回答的系統工程
+9. **AI 時代軟體開發流程** — 了解 AI 如何改變開發全流程
 
 每篇也可以獨立閱讀，不一定要按順序。
 
