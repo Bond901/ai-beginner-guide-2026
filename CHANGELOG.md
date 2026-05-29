@@ -8,6 +8,19 @@
 
 （尚無未發布變更）
 
+## [1.6.0] - 2026-05-30
+
+### Added
+
+- **站內搜尋**：整合 Pagefind（純靜態、無後端、支援中文分詞）。首頁內嵌搜尋框、各指南頁可開搜尋彈窗；搜尋索引（`pagefind/`）隨站一同部署。
+- **隱私友善訪客統計**：加入 GoatCounter（無 cookie、不收集個資、無需同意條），用於了解哪些指南較常被閱讀，作為後續更新優先序的依據。
+- **內容新鮮度機制**：每篇指南顯示「最後更新／最後驗證」日期（由 `<meta>` 單一來源驅動）；當最後驗證距今超過 180 天，自動顯示「內容可能已變動」提示條。首頁各卡片標示驗證日期。
+- `MAINTENANCE.md`：季度刷新檢查清單（模型版本／價格／功能／連結失效等），維持內容準確與時效。
+
+### Changed
+
+- 統一所有頁面 `<html lang>` 為 `zh-Hant`，改善中文搜尋分詞與語意正確性。
+
 ## [1.5.0] - 2026-05-30
 
 ### Added
@@ -90,7 +103,8 @@
 - 每篇 guide 右下角「回到頂部」懸浮按鈕。
 - MIT License。
 
-[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.5.0...HEAD
+[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.0...HEAD
+[1.6.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.3.1...v1.4.0
 [1.3.1]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.3.0...v1.3.1
