@@ -8,6 +8,20 @@
 
 （尚無未發布變更）
 
+## [1.5.0] - 2026-05-30
+
+### Added
+
+- 首頁 hero 下方新增 **NotebookLM 公開筆記本** banner：一鍵開啟以本站內容建立的公開 NotebookLM 筆記本，可互動問答、找重點、生成 Audio Overview（語音導覽）。
+- 首頁新增「依程度／目的」路徑導引（path strip）：完全新手／想用某個平台／想做 agent·自動化 三條入口，點擊直接跳至對應分類。
+- `README.md` 新增「用 NotebookLM 互動學習」段落與公開筆記本連結。
+
+### Changed
+
+- 首頁指南區改為**四大主題分類**呈現（基礎觀念／平台工具／進階·Agent 擴充／流程·應用），每類獨立標題與配色，解決課程增加後版面凌亂的問題。
+- 移除每張卡片的全站連續序號（原 Guide 01–11），改以「類別＋難度（入門／工具／進階）」標示，日後新增課程不必重新編號。
+- 以精簡的「怎麼開始（依程度／目的）」取代原本冗長的九項「推薦閱讀順序」（`index.html` 與 `README.md` 同步）。
+
 ## [1.4.0] - 2026-05-29
 
 ### Added
@@ -76,7 +90,8 @@
 - 每篇 guide 右下角「回到頂部」懸浮按鈕。
 - MIT License。
 
-[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.5.0...HEAD
+[1.5.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.3.1...v1.4.0
 [1.3.1]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.2.0...v1.3.0

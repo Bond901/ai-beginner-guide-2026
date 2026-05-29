@@ -256,6 +256,52 @@ body {
 .back-to-top.visible { opacity:1; transform:translateY(0); }
 .back-to-top:hover { background:var(--hero-accent); border-color:var(--hero-accent); }
 
+/* ── NOTEBOOKLM BANNER ── */
+.nlm-banner {
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  background:var(--warm-mid); border:1px solid var(--border);
+  border-left:3px solid var(--hero-accent); padding:14px 18px; margin:24px 0 0;
+}
+.nlm-banner .nlm-ico { font-size:22px; line-height:1; }
+.nlm-banner .nlm-txt { flex:1; min-width:200px; }
+.nlm-banner .nlm-txt b { font-size:14px; font-weight:700; display:block; }
+.nlm-banner .nlm-txt span { font-size:12px; color:var(--muted); line-height:1.5; }
+.nlm-banner a.nlm-btn {
+  font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600;
+  color:#fff; background:var(--hero-accent); border:1px solid var(--hero-accent);
+  border-radius:2px; padding:8px 16px; text-decoration:none; white-space:nowrap;
+  transition:opacity .15s ease;
+}
+.nlm-banner a.nlm-btn:hover { opacity:.88; }
+
+/* ── PATH STRIP（依程度/目的） ── */
+.path-strip { border:1px solid var(--border); padding:14px 18px; margin:16px 0 0; }
+.path-strip h4 {
+  font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--muted); margin-bottom:10px;
+}
+.path-strip .paths { display:flex; gap:10px; flex-wrap:wrap; }
+.path-strip a.path-chip {
+  flex:1; min-width:200px; border:1px solid var(--border); border-radius:4px;
+  padding:10px 14px; text-decoration:none; color:inherit; font-size:13px; line-height:1.5;
+  transition:border-color .15s ease, transform .1s ease;
+}
+.path-strip a.path-chip:hover { border-color:var(--ink); transform:translateY(-1px); }
+.path-strip a.path-chip b { color:var(--hero-accent); }
+
+/* ── CATEGORY HEADER ── */
+.cat-head { display:flex; align-items:center; gap:10px; margin:34px 0 14px; }
+.cat-head .cat-dot { width:11px; height:11px; border-radius:2px; flex-shrink:0; }
+.cat-head h3 { font-family:'Noto Serif TC',serif; font-size:1.25rem; font-weight:900; }
+.cat-head .cat-meta { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); margin-left:auto; letter-spacing:.05em; }
+
+/* ── CATEGORY CARD COLORS ── */
+.guide-card.cat-base  { background:#faf0e8; } .guide-card.cat-base  .card-num { color:#8c3d1a; } .guide-card.cat-base  .tag { background:#8c3d1a; color:#fff; }
+.guide-card.cat-tools { background:#e8f5f3; } .guide-card.cat-tools .card-num { color:#0f6e56; } .guide-card.cat-tools .tag { background:#1a7a6e; color:#fff; }
+.guide-card.cat-adv   { background:#eef0fa; } .guide-card.cat-adv   .card-num { color:#2d3a8c; } .guide-card.cat-adv   .tag { background:#2d3a8c; color:#fff; }
+.guide-card.cat-flow  { background:#e8f5ee; } .guide-card.cat-flow  .card-num { color:#1a6b4a; } .guide-card.cat-flow  .tag { background:#1a6b4a; color:#fff; }
+.cat-dot.d-base { background:#8c3d1a; } .cat-dot.d-tools { background:#1a7a6e; } .cat-dot.d-adv { background:#2d3a8c; } .cat-dot.d-flow { background:#1a6b4a; }
+
 /* ── RESPONSIVE ── */
 @media(max-width:640px){
   .hero { padding:40px 20px 36px; }
@@ -275,7 +321,7 @@ body {
   <div class="hero-inner">
     <div class="hero-label">// AI Beginner Guide · 2026</div>
     <h1>AI 工具入門<br>指南集</h1>
-    <p class="hero-sub">從核心概念到實戰操作，11 篇完整指南帶你快速上手 2026 年主流 AI 工具。每篇獨立閱讀，也可依推薦順序從基礎讀起。</p>
+    <p class="hero-sub">從核心概念到實戰操作，11 篇完整指南帶你快速上手 2026 年主流 AI 工具。每篇獨立閱讀，也可依分類或自身程度挑選。</p>
     <div class="hero-meta">
       <span>11 Guides</span>
       <span>繁體中文</span>
@@ -291,160 +337,141 @@ body {
 <div class="section" id="guides">
   <div class="section-number">// 01</div>
   <h2>指南總覽</h2>
-  <p class="intro">點選任一指南開始閱讀。建議從「核心概念」與「Prompt 演進」建立基礎，再依需求挑選工具指南。</p>
+  <p class="intro">11 篇指南，依主題分成四類。不知道從哪開始？看下方「依程度／目的」挑一條路徑，或直接選你需要的類別。</p>
 </div>
 
+<!-- ══ NotebookLM 互動學習 ══ -->
+<div class="nlm-banner">
+  <span class="nlm-ico">🎧</span>
+  <div class="nlm-txt">
+    <b>用 NotebookLM 互動學習整個網站</b>
+    <span>把這些指南當成一個可對話的筆記本——問答、找重點、生成 Audio Overview（語音導覽）。</span>
+  </div>
+  <a class="nlm-btn" href="https://notebooklm.google.com/notebook/d6cb048a-d648-4f7d-ae1f-d3f613962634" target="_blank" rel="noopener">↗ 開啟公開筆記本</a>
+</div>
+
+<!-- ══ 依程度/目的 ══ -->
+<div class="path-strip">
+  <h4>// 不知從哪開始？</h4>
+  <div class="paths">
+    <a class="path-chip" href="#cat-base"><b>完全新手</b> → 先讀「基礎觀念」建立底層理解</a>
+    <a class="path-chip" href="#cat-tools"><b>想用某個平台</b> → 直接挑「平台工具」</a>
+    <a class="path-chip" href="#cat-adv"><b>想做 agent／自動化</b> → 進「進階 · Agent」</a>
+  </div>
+</div>
+
+<!-- ── 基礎觀念 ── -->
+<div class="cat-head" id="cat-base"><span class="cat-dot d-base"></span><h3>基礎觀念</h3><span class="cat-meta">3 篇 · 從這開始</span></div>
 <div class="guide-grid">
 
-  <a href="guides/llm-core-concepts-guide-2026.html" class="guide-card c1">
+  <a href="guides/llm-core-concepts-guide-2026.html" class="guide-card cat-base">
     <span class="card-arrow">→</span>
-    <div class="card-num">Guide 01 · 基礎</div>
+    <div class="card-num">入門</div>
     <h3>LLM 核心概念 2026</h3>
     <p class="card-desc">Token、Context Window、Temperature、Attention 機制——理解 AI 工具前必備的底層知識。</p>
-    <div class="card-tags">
-      <span class="tag">Token</span>
-      <span class="tag">Context</span>
-      <span class="tag">RLHF</span>
-    </div>
+    <div class="card-tags"><span class="tag">Token</span><span class="tag">Context</span><span class="tag">RLHF</span></div>
   </a>
 
-  <a href="guides/prompt-engineering-evolution-guide.html" class="guide-card c2">
+  <a href="guides/prompt-engineering-evolution-guide.html" class="guide-card cat-base">
     <span class="card-arrow">→</span>
-    <div class="card-num">Guide 02 · 基礎</div>
+    <div class="card-num">入門</div>
     <h3>Prompt Engineering 演進史</h3>
     <p class="card-desc">從 Zero-shot 到 Agentic Prompt——2026 年 prompting 技術的完整演進脈絡與實踐指引。</p>
-    <div class="card-tags">
-      <span class="tag">CoT</span>
-      <span class="tag">Few-shot</span>
-      <span class="tag">Agentic</span>
-    </div>
+    <div class="card-tags"><span class="tag">CoT</span><span class="tag">Few-shot</span><span class="tag">Agentic</span></div>
   </a>
 
-  <a href="guides/ai-instruction-guide-2026.html" class="guide-card c3">
+  <a href="guides/ai-instruction-guide-2026.html" class="guide-card cat-base">
     <span class="card-arrow">→</span>
-    <div class="card-num">Guide 03 · 進階</div>
+    <div class="card-num">進階</div>
     <h3>AI 個人化設定精煉</h3>
     <p class="card-desc">Claude Preferences / CLAUDE.md、Antigravity GEMINI.md、Codex agents.md——三大平台的指令與個人化系統深度拆解。</p>
-    <div class="card-tags">
-      <span class="tag">Claude</span>
-      <span class="tag">Antigravity</span>
-      <span class="tag">Codex</span>
-    </div>
+    <div class="card-tags"><span class="tag">Claude</span><span class="tag">Antigravity</span><span class="tag">Codex</span></div>
   </a>
 
-  <a href="guides/claude-desktop-guide.html" class="guide-card c4">
+</div>
+
+<!-- ── 平台工具 ── -->
+<div class="cat-head" id="cat-tools"><span class="cat-dot d-tools"></span><h3>平台工具</h3><span class="cat-meta">3 篇 · 選你要用的</span></div>
+<div class="guide-grid">
+
+  <a href="guides/claude-desktop-guide.html" class="guide-card cat-tools">
     <span class="card-arrow">→</span>
-    <div class="card-num">Guide 04 · 工具</div>
+    <div class="card-num">工具</div>
     <h3>Claude Desktop 入門</h3>
     <p class="card-desc">Chat 對話、Cowork 桌面自動化、Claude Code 終端開發——Anthropic 三模式完整教學。</p>
-    <div class="card-tags">
-      <span class="tag">Chat</span>
-      <span class="tag">Cowork</span>
-      <span class="tag">Code</span>
-    </div>
+    <div class="card-tags"><span class="tag">Chat</span><span class="tag">Cowork</span><span class="tag">Code</span></div>
   </a>
 
-  <a href="guides/openai-tools-guide.html" class="guide-card c5">
+  <a href="guides/openai-tools-guide.html" class="guide-card cat-tools">
     <span class="card-arrow">→</span>
-    <div class="card-num">Guide 05 · 工具</div>
+    <div class="card-num">工具</div>
     <h3>OpenAI 三工具入門</h3>
     <p class="card-desc">ChatGPT 萬用助手、Codex 雲端代理、Codex CLI 本機開發——三者定位與選擇策略。</p>
-    <div class="card-tags">
-      <span class="tag">ChatGPT</span>
-      <span class="tag">Codex</span>
-      <span class="tag">CLI</span>
-    </div>
+    <div class="card-tags"><span class="tag">ChatGPT</span><span class="tag">Codex</span><span class="tag">CLI</span></div>
   </a>
 
-  <a href="guides/gemini-tools-guide.html" class="guide-card c6">
+  <a href="guides/gemini-tools-guide.html" class="guide-card cat-tools">
     <span class="card-arrow">→</span>
-    <div class="card-num">Guide 06 · 工具</div>
+    <div class="card-num">工具</div>
     <h3>Google Gemini 生態系</h3>
     <p class="card-desc">Gemini App、AI Studio、NotebookLM、Gemini CLI——Google AI 四大工具的使用場景與比較。</p>
-    <div class="card-tags">
-      <span class="tag">Gemini</span>
-      <span class="tag">AI Studio</span>
-      <span class="tag">NLM</span>
-    </div>
+    <div class="card-tags"><span class="tag">Gemini</span><span class="tag">AI Studio</span><span class="tag">NLM</span></div>
   </a>
 
-  <a href="guides/ai-extensions-guide-2026.html" class="guide-card c7">
+</div>
+
+<!-- ── 進階 · Agent 擴充 ── -->
+<div class="cat-head" id="cat-adv"><span class="cat-dot d-adv"></span><h3>進階 · Agent 擴充</h3><span class="cat-meta">3 篇 · 進階</span></div>
+<div class="guide-grid">
+
+  <a href="guides/ai-extensions-guide-2026.html" class="guide-card cat-adv">
     <span class="card-arrow">→</span>
-    <div class="card-num">Guide 07 · 進階</div>
+    <div class="card-num">進階</div>
     <h3>AI Agent 擴充機制</h3>
     <p class="card-desc">Skill、MCP、Plugin——三層擴充架構的定位差異、運作原理與實務組裝策略。</p>
-    <div class="card-tags">
-      <span class="tag">Skill</span>
-      <span class="tag">MCP</span>
-      <span class="tag">Plugin</span>
-    </div>
+    <div class="card-tags"><span class="tag">Skill</span><span class="tag">MCP</span><span class="tag">Plugin</span></div>
   </a>
 
-  <a href="guides/ai-sdlc-guide-2026.html" class="guide-card c8">
+  <a href="guides/claude-code-skills-guide.html" class="guide-card cat-adv">
     <span class="card-arrow">→</span>
-    <div class="card-num">Guide 08 · 進階</div>
-    <h3>AI 時代軟體開發流程</h3>
-    <p class="card-desc">從需求分析到部署維運——AI 如何重塑 SDLC 每個階段的角色分工與工作流程。</p>
-    <div class="card-tags">
-      <span class="tag">SDLC</span>
-      <span class="tag">Agentic</span>
-      <span class="tag">Workflow</span>
-    </div>
-  </a>
-
-  <a href="guides/claude-opus-4-8-guide.html" class="guide-card c9">
-    <span class="card-arrow">→</span>
-    <div class="card-num">Guide 09 · 進階</div>
-    <h3>Claude Opus 4.8 技術指南</h3>
-    <p class="card-desc">Anthropic 對外最強模型——Effort Control、Dynamic Workflows、Fast Mode、Mid-conv System 五大功能與 4.7→4.8 API 遷移實務。</p>
-    <div class="card-tags">
-      <span class="tag">Opus 4.8</span>
-      <span class="tag">Effort</span>
-      <span class="tag">API</span>
-    </div>
-  </a>
-
-  <a href="guides/claude-code-skills-guide.html" class="guide-card c10">
-    <span class="card-arrow">→</span>
-    <div class="card-num">Guide 10 · 進階</div>
+    <div class="card-num">進階</div>
     <h3>Claude Code Skills 技術指南</h3>
     <p class="card-desc">把重複流程封裝成可重用的 SKILL.md——三層漸進式載入、frontmatter、叫用控制、腳本與 subagent，及最佳實務與安全。</p>
-    <div class="card-tags">
-      <span class="tag">SKILL.md</span>
-      <span class="tag">Frontmatter</span>
-      <span class="tag">Subagent</span>
-    </div>
+    <div class="card-tags"><span class="tag">SKILL.md</span><span class="tag">Frontmatter</span><span class="tag">Subagent</span></div>
   </a>
 
-  <a href="guides/rag-guide-2026.html" class="guide-card c11">
+  <a href="guides/claude-opus-4-8-guide.html" class="guide-card cat-adv">
     <span class="card-arrow">→</span>
-    <div class="card-num">Guide 11 · 進階</div>
+    <div class="card-num">進階</div>
+    <h3>Claude Opus 4.8 技術指南</h3>
+    <p class="card-desc">Anthropic 對外最強模型——Effort Control、Dynamic Workflows、Fast Mode、Mid-conv System 五大功能與 4.7→4.8 API 遷移實務。</p>
+    <div class="card-tags"><span class="tag">Opus 4.8</span><span class="tag">Effort</span><span class="tag">API</span></div>
+  </a>
+
+</div>
+
+<!-- ── 流程 · 應用 ── -->
+<div class="cat-head" id="cat-flow"><span class="cat-dot d-flow"></span><h3>流程 · 應用</h3><span class="cat-meta">2 篇 · 實戰</span></div>
+<div class="guide-grid">
+
+  <a href="guides/rag-guide-2026.html" class="guide-card cat-flow">
+    <span class="card-arrow">→</span>
+    <div class="card-num">進階</div>
     <h3>RAG 檢索增強生成 完整指南</h3>
     <p class="card-desc">先找資料再讓模型回答——Chunking、Embedding、Retrieval、Generation、Evaluation 五階段管線，到 CRAG / Self-RAG / GraphRAG / Agentic 進階架構、失敗模式與評估。</p>
-    <div class="card-tags">
-      <span class="tag">Pipeline</span>
-      <span class="tag">Hybrid</span>
-      <span class="tag">Agentic</span>
-    </div>
+    <div class="card-tags"><span class="tag">Pipeline</span><span class="tag">Hybrid</span><span class="tag">Agentic</span></div>
+  </a>
+
+  <a href="guides/ai-sdlc-guide-2026.html" class="guide-card cat-flow">
+    <span class="card-arrow">→</span>
+    <div class="card-num">進階</div>
+    <h3>AI 時代軟體開發流程</h3>
+    <p class="card-desc">從需求分析到部署維運——AI 如何重塑 SDLC 每個階段的角色分工與工作流程。</p>
+    <div class="card-tags"><span class="tag">SDLC</span><span class="tag">Agentic</span><span class="tag">Workflow</span></div>
   </a>
 
 </div>
 
-<!-- ══ 推薦閱讀順序 ══ -->
-<div class="reading-order">
-  <h4>// 推薦閱讀順序</h4>
-  <ol>
-    <li><a href="guides/llm-core-concepts-guide-2026.html">LLM 核心概念</a> — 先建立底層理解</li>
-    <li><a href="guides/prompt-engineering-evolution-guide.html">Prompt Engineering 演進</a> — 掌握與 AI 溝通的方法論</li>
-    <li><a href="guides/ai-instruction-guide-2026.html">AI 個人化設定精煉</a> — 學會客製化你的 AI 工具</li>
-    <li>挑選一個工具指南開始實作 → <a href="guides/claude-desktop-guide.html">Claude</a> · <a href="guides/openai-tools-guide.html">OpenAI</a> · <a href="guides/gemini-tools-guide.html">Gemini</a></li>
-    <li><a href="guides/claude-opus-4-8-guide.html">Claude Opus 4.8 技術指南</a> — 深入 Anthropic 旗艦模型的功能與 API 實務</li>
-    <li><a href="guides/ai-extensions-guide-2026.html">AI Agent 擴充機制</a> — 理解 Skill / MCP / Plugin 三層架構</li>
-    <li><a href="guides/claude-code-skills-guide.html">Claude Code Skills 技術指南</a> — 動手把重複流程封裝成 skill</li>
-    <li><a href="guides/rag-guide-2026.html">RAG 檢索增強生成 完整指南</a> — 讓 AI 參照外部知識回答的系統工程</li>
-    <li><a href="guides/ai-sdlc-guide-2026.html">AI 時代軟體開發流程</a> — 了解 AI 如何改變開發全流程</li>
-  </ol>
-</div>
 
 <hr style="border:none; border-top:1px solid var(--border); margin:40px 0;">
 
