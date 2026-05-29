@@ -8,6 +8,13 @@
 
 （尚無未發布變更）
 
+## [1.6.4] - 2026-05-30
+
+### Changed
+
+- 站內搜尋改為自製 **⌘K 指令面板**（取代 Pagefind 內建 Default UI）：彈窗式、鍵盤導航（`⌘K`／`/` 開啟、`↑↓` 瀏覽、`Enter` 開啟、`Esc` 關閉），每筆結果以「圖示＋標題＋分類標籤」精簡呈現，套用站體暖色系與四大分類配色。
+- 改用 Pagefind **JS Search API** 自行渲染結果，並以**絕對 URL** 解析 bundle 與結果連結，徹底解決 GitHub Pages 專案頁子路徑問題。
+
 ## [1.6.3] - 2026-05-30
 
 ### Fixed
@@ -127,7 +134,9 @@
 - 每篇 guide 右下角「回到頂部」懸浮按鈕。
 - MIT License。
 
-[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.2...HEAD
+[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.4...HEAD
+[1.6.4]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.3...v1.6.4
+[1.6.3]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.2...v1.6.3
 [1.6.2]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.1...v1.6.2
 [1.6.1]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.5.0...v1.6.0

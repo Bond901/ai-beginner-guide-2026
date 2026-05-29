@@ -313,22 +313,35 @@ body {
   .back-to-top { bottom:20px; right:20px; }
 }
 /* injected:w123 */
-.pf-wrap{margin:28px 0 18px;max-width:600px;}
-pagefind-searchbox{display:block;}
-pagefind-modal-trigger{display:inline-block;margin:24px 0 6px;}
 .card-verified{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--muted);margin-top:10px;letter-spacing:.03em;}
 @media print{.pf-wrap,.no-print{display:none !important;}}
-/* injected:search-style */
-#search{--pagefind-ui-scale:0.9;}
-#search .pagefind-ui__result{padding:12px 0;margin:0;border:none;border-top:1px solid var(--border);}
-#search .pagefind-ui__result-title{font-size:1rem;}
-#search .pagefind-ui__result-excerpt{margin-top:3px;font-size:12.5px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+/* injected:palette */
+.search-trigger{display:inline-flex;align-items:center;gap:8px;width:100%;max-width:360px;margin:24px 0 8px;padding:9px 12px;background:#fff;border:1px solid var(--border);border-radius:4px;color:var(--muted);font-family:inherit;font-size:13px;cursor:pointer;text-align:left;}
+.search-trigger:hover{border-color:var(--ink);color:var(--ink);}
+.search-trigger .st-text{flex:1;}
+.search-trigger .st-kbd{font-family:'JetBrains Mono',monospace;font-size:10px;border:1px solid var(--border);border-radius:3px;padding:1px 5px;}
+.search-modal{position:fixed;inset:0;z-index:1000;display:flex;align-items:flex-start;justify-content:center;}
+.search-modal[hidden]{display:none;}
+.sm-backdrop{position:absolute;inset:0;background:rgba(15,14,13,.45);}
+.sm-panel{position:relative;margin-top:12vh;width:92%;max-width:560px;background:var(--paper);border:1px solid var(--border);border-radius:8px;box-shadow:0 16px 50px rgba(0,0,0,.28);overflow:hidden;}
+.sm-input-row{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border);}
+.sm-input-row input{flex:1;border:0;background:transparent;font-size:15px;color:var(--ink);outline:none;font-family:inherit;}
+.sm-esc{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);border:1px solid var(--border);border-radius:3px;padding:2px 6px;background:transparent;cursor:pointer;}
+.sm-results{max-height:52vh;overflow-y:auto;padding:6px;}
+.sm-msg{padding:18px 12px;color:var(--muted);font-size:13px;text-align:center;}
+.sm-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:4px;text-decoration:none;color:var(--ink);}
+.sm-item .sm-i{color:var(--muted);flex-shrink:0;}
+.sm-item .sm-title{flex:1;font-size:13.5px;line-height:1.45;}
+.sm-item.active,.sm-item:hover{background:var(--warm-mid);}
+.sm-item.active .sm-i{color:var(--hero-accent);}
+.sm-footer{display:flex;gap:16px;padding:9px 14px;border-top:1px solid var(--border);color:var(--muted);font-size:11px;}
+.sm-footer span{display:inline-flex;align-items:center;gap:5px;}
+.sm-footer kbd{font-family:'JetBrains Mono',monospace;font-size:10px;border:1px solid var(--border);border-radius:3px;padding:1px 5px;}
+.chip{font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:2px 7px;border-radius:4px;white-space:nowrap;}
+.chip.cb{background:#faf0e8;color:#8c3d1a;}.chip.ct{background:#e8f5f3;color:#0f6e56;}.chip.ca{background:#eef0fa;color:#2d3a8c;}.chip.cf{background:#e8f5ee;color:#1a6b4a;}.chip.cg{background:#f0ece2;color:#5a5346;}
 </style>
 <!-- analytics:goatcounter -->
 <script data-goatcounter="https://bond901.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
-<!-- search:pagefind -->
-<link href="pagefind/pagefind-ui.css" rel="stylesheet">
-<script src="pagefind/pagefind-ui.js"></script>
 <meta name="last-updated" content="2026-05-30">
 <meta name="last-verified" content="2026-05-30">
 </head>
@@ -352,7 +365,7 @@ pagefind-modal-trigger{display:inline-block;margin:24px 0 6px;}
 <div class="container" data-pagefind-ignore>
 
 <!-- ══ 指南總覽 ══ -->
-<div id="search" class="pf-wrap no-print" data-pagefind-ignore></div>
+<button type="button" id="searchTrigger" class="search-trigger no-print" data-pagefind-ignore aria-label="搜尋指南（Cmd K）"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><span class="st-text">搜尋指南…</span><span class="st-kbd">⌘K</span></button>
 <div class="section" id="guides">
   <div class="section-number">// 01</div>
   <h2>指南總覽</h2>
@@ -544,7 +557,35 @@ pagefind-modal-trigger{display:inline-block;margin:24px 0 6px;}
   });
 })();
 </script>
-<!-- search:init -->
-<script>window.addEventListener('DOMContentLoaded',function(){if(!window.PagefindUI)return;var s=document.querySelector('script[src$="pagefind-ui.js"]');var bp=s?s.src.replace(/pagefind-ui\.js.*$/,''):undefined;new PagefindUI({element:'#search',bundlePath:bp,showImages:false,showSubResults:false,processResult:function(r){var m=r.meta||{};if(m.tag){r.excerpt=m.tag;}return r;},translations:{placeholder:'搜尋指南…',clear_search:'清除',load_more:'載入更多結果',search_label:'搜尋本站',filters_label:'篩選',zero_results:'找不到「[SEARCH_TERM]」的結果',many_results:'找到 [COUNT] 個「[SEARCH_TERM]」的相關結果',one_result:'找到 [COUNT] 個「[SEARCH_TERM]」的相關結果',total_zero_results:'沒有結果',total_one_result:'[COUNT] 個結果',total_many_results:'[COUNT] 個結果',alt_search:'找不到「[SEARCH_TERM]」的結果，改顯示「[DIFFERENT_TERM]」的結果',search_suggestion:'找不到「[SEARCH_TERM]」的結果，試試以下搜尋：',searching:'正在搜尋「[SEARCH_TERM]」…',results_label:'搜尋結果',keyboard_navigate:'瀏覽',keyboard_select:'選擇',keyboard_clear:'清除',keyboard_close:'關閉',keyboard_search:'搜尋',error_search:'搜尋失敗',input_hint:'輸入時即時顯示結果',loading:'載入中'}});});</script>
+<!-- search:modal -->
+<div id="searchModal" class="search-modal no-print" data-pagefind-ignore hidden role="dialog" aria-modal="true" aria-label="搜尋指南">
+<div class="sm-backdrop"></div>
+<div class="sm-panel">
+<div class="sm-input-row"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:var(--muted)"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input id="searchInput" type="text" placeholder="搜尋指南…" autocomplete="off" spellcheck="false" aria-label="搜尋指南"><button type="button" id="searchClose" class="sm-esc">esc</button></div>
+<div id="searchResults" class="sm-results" role="listbox" aria-label="搜尋結果"></div>
+<div class="sm-footer"><span><kbd>↑↓</kbd> 瀏覽</span><span><kbd>↵</kbd> 開啟</span><span><kbd>esc</kbd> 關閉</span></div>
+</div>
+</div>
+<!-- search:palette -->
+<script>(function(){
+var PFURL=new URL('pagefind/pagefind.js',document.baseURI).href;
+var ROOT=new URL('',document.baseURI).href;
+var CAT={'基礎觀念':'cb','平台工具':'ct','進階·Agent':'ca','流程·應用':'cf'};
+var modal=document.getElementById('searchModal'),input=document.getElementById('searchInput'),box=document.getElementById('searchResults'),trig=document.getElementById('searchTrigger');
+if(!modal||!input||!box)return;
+var pf=null,items=[],act=-1,seq=0,tmr;
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c];});}
+function hint(){box.innerHTML='<div class="sm-msg">輸入關鍵字，搜尋 11 篇指南…</div>';items=[];act=-1;}
+function open(){modal.hidden=false;document.documentElement.style.overflow='hidden';if(!input.value)hint();setTimeout(function(){input.focus();},20);}
+function close(){modal.hidden=true;document.documentElement.style.overflow='';act=-1;}
+function setAct(i){if(!items.length)return;act=(i+items.length)%items.length;items.forEach(function(el,k){el.classList.toggle('active',k===act);if(k===act)el.scrollIntoView({block:'nearest'});});}
+async function ensure(){if(!pf){pf=await import(PFURL);}return pf;}
+async function run(q){var my=++seq;if(!q){hint();return;}box.innerHTML='<div class="sm-msg">正在搜尋「'+esc(q)+'」…</div>';try{var p=await ensure();var s=await p.search(q);if(my!==seq)return;var d=await Promise.all(s.results.slice(0,8).map(function(r){return r.data();}));if(my!==seq)return;draw(q,d);}catch(e){box.innerHTML='<div class="sm-msg">搜尋失敗</div>';}}
+function draw(q,d){if(!d.length){box.innerHTML='<div class="sm-msg">找不到「'+esc(q)+'」的結果</div>';items=[];act=-1;return;}var h='';d.forEach(function(x,i){var tag=(x.meta&&x.meta.tag)||'';var cat=tag.split(' · ')[0]||'';var cls=CAT[cat]||'cg';var href=new URL(String(x.url).replace(/^\//,''),ROOT).href;var ti=(x.meta&&x.meta.title)||x.url;h+='<a class="sm-item'+(i===0?' active':'')+'" role="option" href="'+href+'"><svg class="sm-i" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M5 8V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-3"/></svg><span class="sm-title">'+esc(ti)+'</span>'+(cat?'<span class="chip '+cls+'">'+esc(cat)+'</span>':'')+'</a>';});box.innerHTML=h;items=Array.prototype.slice.call(box.querySelectorAll('.sm-item'));act=items.length?0:-1;}
+input.addEventListener('input',function(){clearTimeout(tmr);var q=input.value.trim();tmr=setTimeout(function(){run(q);},170);});
+if(trig)trig.addEventListener('click',open);
+modal.addEventListener('click',function(e){if(e.target===modal||(e.target.classList&&e.target.classList.contains('sm-backdrop'))||e.target.id==='searchClose')close();});
+document.addEventListener('keydown',function(e){var k=e.key;if((e.metaKey||e.ctrlKey)&&(k==='k'||k==='K')){e.preventDefault();modal.hidden?open():close();return;}if(modal.hidden){if(k==='/'){var tn=(e.target&&e.target.tagName)||'';if(tn!=='INPUT'&&tn!=='TEXTAREA'&&!(e.target&&e.target.isContentEditable)){e.preventDefault();open();}}return;}if(k==='Escape'){close();}else if(k==='ArrowDown'){e.preventDefault();setAct(act+1);}else if(k==='ArrowUp'){e.preventDefault();setAct(act-1);}else if(k==='Enter'){if(act>=0&&items[act]){window.location.href=items[act].getAttribute('href');}}});
+})();</script>
 </body>
 </html>
