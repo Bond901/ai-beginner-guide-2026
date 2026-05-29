@@ -24,6 +24,7 @@
   --c7-color: #8c6b1a;  --c7-bg: #faf5e8;
   --c8-color: #5a3d70;  --c8-bg: #f3eef9;
   --c9-color: #8c1a1a;  --c9-bg: #f9eaea;
+  --c10-color: #3d4a6b;  --c10-bg: #eef0f9;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -186,6 +187,10 @@ body {
 .guide-card.c9 .card-num { color:var(--c9-color); }
 .guide-card.c9 .tag { background:var(--c9-color); color:#fff; }
 
+.guide-card.c10 { background:var(--c10-bg); }
+.guide-card.c10 .card-num { color:var(--c10-color); }
+.guide-card.c10 .tag { background:var(--c10-color); color:#fff; }
+
 /* ── READING ORDER ── */
 .reading-order {
   border:1px solid var(--border); padding:22px 26px;
@@ -265,9 +270,9 @@ body {
   <div class="hero-inner">
     <div class="hero-label">// AI Beginner Guide · 2026</div>
     <h1>AI 工具入門<br>指南集</h1>
-    <p class="hero-sub">從核心概念到實戰操作，9 篇完整指南帶你快速上手 2026 年主流 AI 工具。每篇獨立閱讀，也可依推薦順序從基礎讀起。</p>
+    <p class="hero-sub">從核心概念到實戰操作，10 篇完整指南帶你快速上手 2026 年主流 AI 工具。每篇獨立閱讀，也可依推薦順序從基礎讀起。</p>
     <div class="hero-meta">
-      <span>9 Guides</span>
+      <span>10 Guides</span>
       <span>繁體中文</span>
       <span>MIT License</span>
       <span>2026-05-29</span>
@@ -394,6 +399,18 @@ body {
     </div>
   </a>
 
+  <a href="guides/claude-code-skills-guide.html" class="guide-card c10">
+    <span class="card-arrow">→</span>
+    <div class="card-num">Guide 10 · 進階</div>
+    <h3>Claude Code Skills 技術指南</h3>
+    <p class="card-desc">把重複流程封裝成可重用的 SKILL.md——三層漸進式載入、frontmatter、叫用控制、腳本與 subagent，及最佳實務與安全。</p>
+    <div class="card-tags">
+      <span class="tag">SKILL.md</span>
+      <span class="tag">Frontmatter</span>
+      <span class="tag">Subagent</span>
+    </div>
+  </a>
+
 </div>
 
 <!-- ══ 推薦閱讀順序 ══ -->
@@ -406,6 +423,7 @@ body {
     <li>挑選一個工具指南開始實作 → <a href="guides/claude-desktop-guide.html">Claude</a> · <a href="guides/openai-tools-guide.html">OpenAI</a> · <a href="guides/gemini-tools-guide.html">Gemini</a></li>
     <li><a href="guides/claude-opus-4-8-guide.html">Claude Opus 4.8 技術指南</a> — 深入 Anthropic 旗艦模型的功能與 API 實務</li>
     <li><a href="guides/ai-extensions-guide-2026.html">AI Agent 擴充機制</a> — 理解 Skill / MCP / Plugin 三層架構</li>
+    <li><a href="guides/claude-code-skills-guide.html">Claude Code Skills 技術指南</a> — 動手把重複流程封裝成 skill</li>
     <li><a href="guides/ai-sdlc-guide-2026.html">AI 時代軟體開發流程</a> — 了解 AI 如何改變開發全流程</li>
   </ol>
 </div>

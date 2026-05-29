@@ -8,6 +8,17 @@
 
 （尚無未發布變更）
 
+## [1.3.0] - 2026-05-29
+
+### Added
+
+- 新增 **Guide 10：Claude Code Skills 技術指南**（`guides/claude-code-skills-guide.html`）。以官方文件為權威骨幹，涵蓋三層漸進式載入、SKILL.md 結構與 frontmatter、存放位置與叫用控制、字串替換／動態上下文／subagent、Skill vs CLAUDE.md vs Prompt 比較、內建 bundled skills 與各平台差異、最佳實務、安全性、決策樹與起步範例。
+
+### Changed
+
+- `index.html`：新增第 10 張 guide 卡片（slate `c10` 配色）、hero 改為「10 Guides」、推薦閱讀順序加入 Claude Code Skills。
+- `README.md`：指南列表新增 Claude Code Skills 一列、推薦閱讀順序加入並重新編號（1–8）、總述改為「10 篇」。
+
 ## [1.2.0] - 2026-05-29
 
 ### Added
@@ -43,7 +54,8 @@
 - 每篇 guide 右下角「回到頂部」懸浮按鈕。
 - MIT License。
 
-[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/Bond901/ai-beginner-guide-2026/releases/tag/v1.0.0

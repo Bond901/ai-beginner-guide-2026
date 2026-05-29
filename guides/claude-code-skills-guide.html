@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code Skills — 完整技術指南</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;900&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Base palette — always present */
+  --ink:#0f0e0d; --paper:#f5f0e8; --warm-mid:#e8e0d0; --border:#c8bfa8;
+  --muted:#6b6353;            /* WCAG AA: 5.24:1 on --paper, 4.53:1 on --warm-mid */
+  --hero-accent:#d4541a;      /* CONFIG: brand color of the product family */
+
+  /* Tool accents t1..t6 — define as many as you have tools (2–6). Pick distinct hues. */
+  --t1-color:#2d3a8c; --t1-bg:#eef0fa;   /* indigo  */
+  --t2-color:#1a7a6e; --t2-bg:#e8f5f3;   /* teal    */
+  --t3-color:#8c3d1a; --t3-bg:#faf0e8;   /* amber   */
+  --t4-color:#6b3db8; --t4-bg:#f0eaf9;   /* purple  */
+  --t5-color:#1a6b4a; --t5-bg:#e8f5ee;   /* forest  */
+  --t6-color:#8c1a1a; --t6-bg:#f9eaea;   /* red     */
+
+  /* On-dark variants of each accent — used by the decision tree (dark bg).
+     If you reassign a tool hue, also set its --tN-on-dark (a lightened version). */
+  --t1-on-dark:#8baee0; --t2-on-dark:#6aad8e; --t3-on-dark:#e8904a;
+  --t4-on-dark:#c0a8e8; --t5-on-dark:#7ec79f; --t6-on-dark:#d99a9e;
+
+  /* AA-safe orange for small text (links / code keyword / button hover).
+     Color blocks, badges and the hero label keep the brand --hero-accent. */
+  --link:#b8460f;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans TC',sans-serif;font-size:15px;line-height:1.75;color:var(--ink);background:var(--paper);}
+
+/* ── HERO ── */
+.hero{background:var(--ink);color:var(--paper);padding:56px 48px 48px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-60px;right:-60px;width:280px;height:280px;border:1px solid rgba(245,240,232,.12);border-radius:50%;}
+.hero::after{content:'';position:absolute;bottom:-80px;left:20%;width:200px;height:200px;border:1px solid rgba(245,240,232,.08);border-radius:50%;}
+.hero-inner{max-width:820px;margin:0 auto;position:relative;z-index:1;}
+.hero-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--hero-accent);margin-bottom:16px;}
+.hero h1{font-family:'Noto Serif TC',serif;font-weight:900;font-size:2.4rem;line-height:1.25;margin-bottom:16px;max-width:620px;}
+.hero-sub{font-size:14px;color:rgba(245,240,232,.65);max-width:560px;font-weight:300;line-height:1.8;}
+.hero-badges{display:flex;gap:8px;margin-top:28px;flex-wrap:wrap;}
+.badge{padding:5px 14px;border-radius:2px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.05em;color:#fff;}
+.badge-t1{background:var(--t1-color);} .badge-t2{background:var(--t2-color);} .badge-t3{background:var(--t3-color);}
+.badge-t4{background:var(--t4-color);} .badge-t5{background:var(--t5-color);} .badge-t6{background:var(--t6-color);}
+.hero-meta{margin-top:24px;display:flex;gap:22px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;color:rgba(245,240,232,.4);}
+
+/* ── LAYOUT ── */
+.container{max-width:820px;margin:0 auto;padding:0 32px;}
+hr.rule{border:none;border-top:1px solid var(--border);margin:40px 0;}
+.section{padding:48px 0 0;}
+.section-number{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.15em;color:var(--muted);margin-bottom:6px;}
+.section h2{font-family:'Noto Serif TC',serif;font-weight:900;font-size:1.7rem;margin-bottom:18px;line-height:1.3;}
+.section>p.intro{font-size:14px;color:var(--muted);margin-bottom:22px;max-width:680px;}
+
+/* ── ACTIONS BAR (PDF export + NotebookLM helper) ── */
+/* row 1 = three buttons horizontally; row 2 = a two-step hint */
+.actions-bar{display:flex;flex-direction:column;gap:10px;border:1px solid var(--border);background:var(--warm-mid);padding:12px 16px;margin:24px 0 0;}
+.actions-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;}
+.act-btn{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--ink);background:var(--paper);border:1px solid var(--border);border-radius:2px;padding:7px 14px;cursor:pointer;text-decoration:none;transition:background .15s ease,border-color .15s ease,color .15s ease;}
+.act-btn:hover{background:var(--link);border-color:var(--link);color:#fff;}  /* white on --link = 5.36:1 */
+.act-hint{font-size:11.5px;color:var(--muted);line-height:1.6;}
+
+/* ── TOC ── */
+.toc{background:var(--warm-mid);border-left:3px solid var(--hero-accent);padding:24px 28px;margin:24px 0 0;}
+.toc-title{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.toc ol{padding-left:20px;font-size:13px;color:var(--muted);line-height:2;}
+.toc a{color:inherit;text-decoration:none;} .toc a:hover{color:var(--link);}
+
+/* ── OVERVIEW CARDS ── */
+.mode-overview{display:grid;grid-template-columns:repeat(3,1fr);/* CONFIG: cols = min(N_TOOLS,4); 5–6 tools → 3 */ border:1px solid var(--border);overflow:hidden;margin:24px 0;}
+.mode-card{padding:22px 18px;border-right:1px solid var(--border);}
+.mode-card:last-child{border-right:none;}
+.mode-card.t1{background:var(--t1-bg);} .mode-card.t2{background:var(--t2-bg);} .mode-card.t3{background:var(--t3-bg);}
+.mode-card.t4{background:var(--t4-bg);} .mode-card.t5{background:var(--t5-bg);} .mode-card.t6{background:var(--t6-bg);}
+.mode-icon{width:36px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:12px;color:#fff;}
+.icon-t1{background:var(--t1-color);} .icon-t2{background:var(--t2-color);} .icon-t3{background:var(--t3-color);}
+.icon-t4{background:var(--t4-color);} .icon-t5{background:var(--t5-color);} .icon-t6{background:var(--t6-color);}
+.mode-card h3{font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:600;margin-bottom:6px;}
+.mode-card.t1 h3{color:var(--t1-color);} .mode-card.t2 h3{color:var(--t2-color);} .mode-card.t3 h3{color:var(--t3-color);}
+.mode-card.t4 h3{color:var(--t4-color);} .mode-card.t5 h3{color:var(--t5-color);} .mode-card.t6 h3{color:var(--t6-color);}
+.mode-card p{font-size:11.5px;color:var(--muted);line-height:1.6;margin:0;}
+
+/* ── TOOL SECTION ── */
+.mode-section{border:1px solid var(--border);margin:28px 0;overflow:hidden;}
+.mode-header{padding:18px 24px;display:flex;align-items:center;gap:14px;}
+.mode-header.t1-h{background:var(--t1-color);} .mode-header.t2-h{background:var(--t2-color);} .mode-header.t3-h{background:var(--t3-color);}
+.mode-header.t4-h{background:var(--t4-color);} .mode-header.t5-h{background:var(--t5-color);} .mode-header.t6-h{background:var(--t6-color);}
+.mode-header h3{font-family:'Noto Serif TC',serif;font-size:1.15rem;font-weight:900;color:#fff;}
+.mode-header .mode-tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.15em;color:rgba(255,255,255,.65);margin-left:auto;white-space:nowrap;}
+.mode-body{padding:24px;background:var(--paper);}
+.mode-body h4.sub{font-weight:700;font-size:13.5px;margin:20px 0 8px;}
+.mode-body p{font-size:13.5px;margin:8px 0;}
+.mode-body ul.uc{list-style:none;margin:10px 0;}
+.mode-body ul.uc li{font-size:13px;padding:4px 0 4px 18px;position:relative;}
+.mode-body ul.uc li::before{content:'▸';position:absolute;left:0;color:var(--muted);}
+
+/* ── FACT GRID ── */
+.fact-grid{display:grid;grid-template-columns:120px 1fr;border:1px solid var(--border);font-size:13px;overflow:hidden;margin:16px 0;}
+.fact-label{background:var(--warm-mid);padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.08em;display:flex;align-items:flex-start;border-bottom:1px solid var(--border);}
+.fact-label:last-of-type{border-bottom:none;}
+.fact-value{padding:12px 16px;border-bottom:1px solid var(--border);line-height:1.65;}
+.fact-value:last-child{border-bottom:none;}
+.fact-value code,.mode-body code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--warm-mid);padding:1px 5px;border-radius:2px;}
+
+/* ── STEPS ── */
+.steps{margin:20px 0;}
+.step{display:flex;gap:16px;margin-bottom:14px;padding:16px;background:var(--warm-mid);border-left:3px solid transparent;}
+.step.t1-step{border-left-color:var(--t1-color);} .step.t2-step{border-left-color:var(--t2-color);} .step.t3-step{border-left-color:var(--t3-color);}
+.step.t4-step{border-left-color:var(--t4-color);} .step.t5-step{border-left-color:var(--t5-color);} .step.t6-step{border-left-color:var(--t6-color);}
+.step-num{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;min-width:28px;line-height:1.4;}
+.step.t1-step .step-num{color:var(--t1-color);} .step.t2-step .step-num{color:var(--t2-color);} .step.t3-step .step-num{color:var(--t3-color);}
+.step.t4-step .step-num{color:var(--t4-color);} .step.t5-step .step-num{color:var(--t5-color);} .step.t6-step .step-num{color:var(--t6-color);}
+.step-content h4{font-size:13px;font-weight:700;margin-bottom:4px;}
+.step-content p{font-size:13px;color:var(--muted);margin:0;line-height:1.55;}
+
+/* ── CODE BLOCK ── */
+.code-block{background:#1a1814;border-radius:4px;padding:14px 18px;margin:12px 0;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#d4c9a8;overflow-x:auto;line-height:1.7;white-space:pre;}
+.code-block .comment{color:#9a8f78;} /* 5.55:1 on code bg */
+.code-block .cmd{color:#e8904a;} /* AA 7.2:1 on code bg (brand orange too dark here) */
+.code-block .str{color:#6aad8e;} .code-block .kw{color:#8baee0;}
+
+/* ── COMPARE TABLE ── */
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}  /* wrap wide tables (5–6 tools) so they scroll on mobile */
+.compare-table{width:100%;border-collapse:collapse;font-size:13px;margin:20px 0;}
+.compare-table th{padding:10px 12px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;font-weight:600;text-transform:uppercase;border-bottom:2px solid var(--ink);}
+.compare-table th:nth-child(2){background:var(--t1-bg);color:var(--t1-color);}
+.compare-table th:nth-child(3){background:var(--t2-bg);color:var(--t2-color);}
+.compare-table th:nth-child(4){background:var(--t3-bg);color:var(--t3-color);}
+.compare-table th:nth-child(5){background:var(--t4-bg);color:var(--t4-color);}
+.compare-table th:nth-child(6){background:var(--t5-bg);color:var(--t5-color);}
+.compare-table th:nth-child(7){background:var(--t6-bg);color:var(--t6-color);}
+.compare-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top;}
+.compare-table td:first-child{font-weight:500;color:var(--muted);background:var(--warm-mid);white-space:nowrap;}
+.yes{color:#1a7a6e;font-weight:700;} .no{color:#a3232a;} .partial{color:#7a4a12;}  /* AA on --paper: 6.5 / 6.6 */
+
+/* ── PLAN / PRICING TABLE ── */
+.plan-table{width:100%;border-collapse:collapse;font-size:12.5px;margin:20px 0;}
+.plan-table th{background:var(--warm-mid);padding:9px 12px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;border:1px solid var(--border);}
+.plan-table td{padding:9px 12px;border:1px solid var(--border);vertical-align:top;line-height:1.5;}
+.plan-table td code{font-family:'JetBrains Mono',monospace;font-size:11.5px;}
+
+/* ── DECISION TREE ── */
+.decision{background:var(--ink);color:var(--paper);padding:28px 32px;margin:28px 0;}
+.decision h3{font-family:'Noto Serif TC',serif;font-size:1.1rem;margin-bottom:20px;}
+.decision-item{display:flex;gap:12px;margin-bottom:12px;align-items:flex-start;}
+.decision-q{font-size:13px;color:rgba(245,240,232,.72);min-width:300px;padding-top:2px;}
+.decision-arrow{color:var(--hero-accent);font-size:14px;padding-top:1px;}
+.decision-a{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;}
+/* Driven by --tN-on-dark (set in :root) so they track the tool hues. */
+.a-t1{color:var(--t1-on-dark);} .a-t2{color:var(--t2-on-dark);} .a-t3{color:var(--t3-on-dark);}
+.a-t4{color:var(--t4-on-dark);} .a-t5{color:var(--t5-on-dark);} .a-t6{color:var(--t6-on-dark);}
+
+/* ── TIP BOX ── */
+.tip-box{border:1px solid var(--border);padding:16px 20px;margin:16px 0;display:flex;gap:12px;background:rgba(245,240,232,.6);}
+.tip-box.warn{border-color:#c9a45a;background:#faf3e2;}
+.tip-icon{font-size:18px;flex-shrink:0;}
+.tip-box p{font-size:13px;margin:0;line-height:1.65;}
+
+/* ── GETTING STARTED PATHS ── */
+.paths{display:grid;gap:16px;margin:20px 0;}
+.path-card{border:1px solid var(--border);padding:20px 24px;}
+.path-card.p1{background:var(--t1-bg);} .path-card.p2{background:var(--t2-bg);} .path-card.p3{background:var(--t3-bg);}
+.path-card.p4{background:var(--t4-bg);} .path-card.p5{background:var(--t5-bg);} .path-card.p6{background:var(--t6-bg);}
+.path-label{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.1em;margin-bottom:10px;}
+.path-card.p1 .path-label{color:var(--t1-color);} .path-card.p2 .path-label{color:var(--t2-color);} .path-card.p3 .path-label{color:var(--t3-color);}
+.path-card.p4 .path-label{color:var(--t4-color);} .path-card.p5 .path-label{color:var(--t5-color);} .path-card.p6 .path-label{color:var(--t6-color);}
+.path-card ol{padding-left:18px;font-size:13px;line-height:2;}
+
+/* ── SOURCES (optional) ── */
+.sources{font-size:12px;color:var(--muted);line-height:1.9;margin:14px 0;}
+.sources a{color:var(--link);text-decoration:none;word-break:break-all;}
+.sources h4{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink);margin:18px 0 8px;}
+
+/* ── FOOTER ── */
+.footer{margin:56px 0 0;padding:24px 0 32px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+.footer a{color:inherit;text-decoration:none;} .footer a:hover{color:var(--link);}
+
+/* ── FLOATING BUTTONS ── */
+.back-home{position:fixed;bottom:80px;right:32px;width:40px;height:40px;background:var(--ink);color:var(--paper);border:1px solid var(--border);border-radius:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s ease,border-color .15s ease;z-index:100;text-decoration:none;}
+.back-home:hover{background:var(--hero-accent);border-color:var(--hero-accent);}
+.back-to-top{position:fixed;bottom:32px;right:32px;width:40px;height:40px;background:var(--ink);color:var(--paper);border:1px solid var(--border);border-radius:2px;font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;line-height:1;cursor:pointer;opacity:0;transform:translateY(8px);transition:opacity .2s ease,transform .2s ease,background .15s ease;z-index:100;}
+.back-to-top.visible{opacity:1;transform:translateY(0);}
+.back-to-top:hover{background:var(--hero-accent);border-color:var(--hero-accent);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  .hero{padding:36px 20px 32px;} .hero h1{font-size:1.7rem;}
+  .container{padding:0 16px;}
+  .mode-overview{grid-template-columns:repeat(2,1fr);}
+  .mode-card{border-right:none;border-bottom:1px solid var(--border);}
+  .compare-table,.plan-table{font-size:11px;} .compare-table td,.compare-table th{padding:7px 8px;}
+  .compare-table{min-width:560px;}  /* forces horizontal scroll inside .table-scroll for 4+ tool tables */
+  .fact-grid{grid-template-columns:90px 1fr;}
+  .decision-item{flex-direction:column;gap:4px;} .decision-q{min-width:unset;}
+  .footer{flex-direction:column;gap:8px;text-align:center;}
+  .back-home{bottom:68px;right:20px;} .back-to-top{bottom:20px;right:20px;}
+}
+
+/* ── PRINT (one-click PDF via window.print) ── */
+@media print{
+  @page{margin:14mm;}
+  body{background:#fff;}
+  /* best-effort color retention; some browsers/user print settings can still override */
+  *{-webkit-print-color-adjust:exact;color-adjust:exact;print-color-adjust:exact;}
+  .no-print,.actions-bar,.back-to-top,.back-home{display:none !important;}
+  /* Keep ONLY small atomic blocks whole. Large containers (mode-section, decision,
+     steps) must flow across pages — break-inside:avoid on a block taller than one
+     page makes browsers clip/truncate it (the reported PDF cut-off). */
+  .mode-card,.fact-grid,.tip-box,.path-card,.step{break-inside:avoid;}
+  .compare-table tr,.plan-table tr{break-inside:avoid;}
+  .compare-table thead,.plan-table thead{display:table-header-group;}
+  /* never clip at a page edge: drop overflow:hidden/auto so tall/wide content flows */
+  .mode-section,.decision,.steps,.table-scroll{overflow:visible;}
+  .code-block{white-space:pre-wrap;word-break:break-word;overflow:visible;}
+  a{color:inherit;text-decoration:none;}
+  /* Ink-saving (chosen default): print the dark hero on white */
+  .hero{overflow:visible;background:#fff;color:var(--ink);}
+  .hero::before,.hero::after{display:none;}
+  .hero h1{color:var(--ink);} .hero-sub,.hero-meta{color:var(--muted);} .hero-label{color:var(--link);}
+}
+</style>
+</head>
+<body>
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">// Claude Code Skills · Technical Guide · 2026</div>
+    <h1>Claude Code Skills<br>完整技術指南</h1>
+    <p class="hero-sub">Skills 是「需要時才載入」的模組化能力包：一個含 SKILL.md 的資料夾，封裝可重複使用的指令、流程、參考資料與可執行腳本。本指南彙整三份獨立草稿（by Claude / GPT / Gemini），以官方文件為權威骨幹。</p>
+    <div class="hero-badges">
+      <span class="badge badge-t1">SKILL.md</span>
+      <span class="badge badge-t2">Progressive Disclosure</span>
+      <span class="badge badge-t3">Frontmatter</span>
+      <span class="badge badge-t4">Invocation Control</span>
+      <span class="badge badge-t5">Scripts · Subagents</span>
+    </div>
+    <div class="hero-meta"><span>Claude Code</span><span>Claude API</span><span>claude.ai</span><span>繁體中文</span></div>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ACTIONS BAR -->
+<div class="actions-bar no-print">
+  <div class="actions-row">
+    <button class="act-btn" onclick="window.print()" title="開啟列印視窗 → 目的地選「另存為 PDF」→ 儲存">⬇ PDF</button>
+    <a class="act-btn" href="https://notebooklm.google.com/" target="_blank" rel="noopener">↗ NotebookLM</a>
+    <button class="act-btn" id="copyUrlBtn" onclick="copyPageURL(this)">⧉ Copy Link</button>
+  </div>
+  <span class="act-hint">① 點 <strong>PDF</strong> 匯出檔案，或 <strong>Copy Link</strong> 複製網址　② 開 <strong>NotebookLM</strong> →「新增來源 → 網站」貼上，加入你的筆記本</span>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <div class="toc-title">// 目錄</div>
+  <ol>
+    <li><a href="#overview">什麼是 Skill · 五大支柱</a></li>
+    <li><a href="#disclosure">三層漸進式載入</a></li>
+    <li><a href="#structure">SKILL.md 結構與 Frontmatter</a></li>
+    <li><a href="#storage">存放位置與叫用控制</a></li>
+    <li><a href="#advanced">進階：參數 · 動態上下文 · subagent</a></li>
+    <li><a href="#compare">Skill vs CLAUDE.md vs Prompt</a></li>
+    <li><a href="#bundled">內建 bundled skills · 各平台</a></li>
+    <li><a href="#best">最佳實務</a></li>
+    <li><a href="#security">安全性</a></li>
+    <li><a href="#choose">我該不該做成 Skill？</a></li>
+    <li><a href="#start">立刻開始：建第一個 Skill</a></li>
+    <li><a href="#sources">資料來源 · 資料邊界</a></li>
+  </ol>
+</div>
+
+<!-- §01 OVERVIEW -->
+<div class="section" id="overview">
+  <div class="section-number">// 01</div>
+  <h2>什麼是 Skill 與五大支柱</h2>
+  <p class="intro">不同於把所有內容塞進 system prompt，skill 的內容是<strong>按需載入</strong>：常駐 context 的只有 metadata（<code>name</code> + <code>description</code>，每個約 100 tokens），主體只在被觸發時才載入。</p>
+</div>
+<div class="fact-grid">
+  <div class="fact-label">本質</div><div class="fact-value">一個含 <code>SKILL.md</code> 的資料夾，外加選用的 scripts／templates／參考文件。</div>
+  <div class="fact-label">何時建立</div><div class="fact-value">同一套多步驟劇本反覆貼進 chat；<code>CLAUDE.md</code> 某段已變成「程序」而非「事實」；想跨 session 重用領域知識；需要可執行腳本綁定能力。</div>
+  <div class="fact-label">三個平台</div><div class="fact-value">Claude Code（檔案系統）、claude.ai（上傳 .zip）、Claude API（<code>/v1/skills</code> 或 pre-built skill_id）。<strong>不跨平台同步</strong>。</div>
+  <div class="fact-label">核心精神</div><div class="fact-value">progressive disclosure（漸進式揭露）+ 第三人稱 description 驅動 auto-discovery。</div>
+</div>
+<div class="mode-overview">
+  <div class="mode-card t1"><div class="mode-icon icon-t1">📄</div><h3>SKILL.md</h3><p>必需入口檔：YAML frontmatter + 主體指令。</p></div>
+  <div class="mode-card t2"><div class="mode-icon icon-t2">🪜</div><h3>三層載入</h3><p>metadata 常駐、主體觸發才載、資源用到才讀。</p></div>
+  <div class="mode-card t3"><div class="mode-icon icon-t3">⚙️</div><h3>Frontmatter</h3><p>name/description/allowed-tools/context… 控制行為。</p></div>
+  <div class="mode-card t4"><div class="mode-icon icon-t4">🎛️</div><h3>叫用控制</h3><p>自動觸發 vs <code>/name</code> 手動；可關自動、限工具。</p></div>
+  <div class="mode-card t5"><div class="mode-icon icon-t5">🧩</div><h3>腳本 · subagent</h3><p>綁可執行腳本、<code>!`cmd`</code> 動態上下文、<code>context:fork</code>。</p></div>
+</div>
+<div class="code-block"><span class="comment"># 一個 skill 的典型目錄</span>
+my-skill/
+├── SKILL.md          <span class="comment"># 必需 — 主要指令 + frontmatter</span>
+├── reference.md      <span class="comment"># 選用 — 詳細參考</span>
+└── scripts/
+    └── validate.py   <span class="comment"># 選用 — 可執行腳本（只有輸出進 context）</span></div>
+
+<!-- §02 PROGRESSIVE DISCLOSURE -->
+<div class="section" id="disclosure"><div class="section-number">// 02</div><h2>三層漸進式載入</h2></div>
+<div class="mode-section">
+  <div class="mode-header t2-h"><span style="font-size:20px">🪜</span><h3>Progressive Disclosure — 資訊按需逐層載入</h3><span class="mode-tag">ARCHITECTURE</span></div>
+  <div class="mode-body">
+    <table class="plan-table">
+      <thead><tr><th>層級</th><th>內容</th><th>何時載入</th><th>Token 成本</th></tr></thead>
+      <tbody>
+        <tr><td><strong>L1 Metadata</strong></td><td><code>name</code> + <code>description</code></td><td>啟動時，常駐 system prompt</td><td>每個 skill ~100 tokens</td></tr>
+        <tr><td><strong>L2 SKILL.md 主體</strong></td><td>主要指令、流程、quick-start</td><td>skill 被觸發時</td><td>建議 &lt; 5k tokens / &lt; 500 行</td></tr>
+        <tr><td><strong>L3 Bundled 資源</strong></td><td>reference.md、scripts/、examples/</td><td>被引用 / 用到時</td><td>讀取前不佔 context（無上限）</td></tr>
+      </tbody>
+    </table>
+    <h4 class="sub">Claude 如何存取一個 skill</h4>
+    <div class="steps">
+      <div class="step t2-step"><div class="step-num">01</div><div class="step-content"><h4>啟動</h4><p>system prompt 含所有 skills 的 name + description。</p></div></div>
+      <div class="step t2-step"><div class="step-num">02</div><div class="step-content"><h4>比對 description</h4><p>使用者需求相關 → Claude 執行 <code>cat skill-dir/SKILL.md</code> 載入主體。</p></div></div>
+      <div class="step t2-step"><div class="step-num">03</div><div class="step-content"><h4>按需讀參考</h4><p>SKILL.md 指到 <code>forms.md</code> → 只有需要時才 <code>cat forms.md</code>。</p></div></div>
+      <div class="step t2-step"><div class="step-num">04</div><div class="step-content"><h4>執行腳本</h4><p>跑 <code>python scripts/validate.py</code>——<strong>只有輸出進 context</strong>，原始碼不進。</p></div></div>
+    </div>
+    <div class="tip-box"><span class="tip-icon">🔑</span><p><strong>壓縮後行為：</strong>SKILL.md 被叫用後以單一訊息進入對話並留在 session（不會每回合重讀）。auto-compaction 後，每個 skill 只重新附加前 <strong>5,000 tokens</strong>、所有 skill 共享 <strong>25,000 tokens</strong> 預算，最近叫用者優先；若 skill 失效就用 <code>/name</code> 重新叫用。</p></div>
+  </div>
+</div>
+
+<!-- §03 STRUCTURE + FRONTMATTER -->
+<div class="section" id="structure"><div class="section-number">// 03</div><h2>SKILL.md 結構與 Frontmatter</h2></div>
+<div class="mode-section">
+  <div class="mode-header t3-h"><span style="font-size:20px">⚙️</span><h3>SKILL.md — YAML frontmatter + Markdown 主體</h3><span class="mode-tag">STRUCTURE</span></div>
+  <div class="mode-body">
+    <div class="code-block"><span class="kw">---</span>
+<span class="cmd">name</span>: pdf-processing
+<span class="cmd">description</span>: Extract text and tables from PDF files, fill forms, merge
+             documents. Use when working with PDF files or when the user
+             mentions PDFs, forms, or document extraction.
+<span class="kw">---</span>
+
+<span class="comment"># PDF Processing</span>
+## Quick start
+import pdfplumber
+with pdfplumber.open(<span class="str">"file.pdf"</span>) as pdf:
+    text = pdf.pages[0].extract_text()
+
+## Advanced
+- Form filling: see [FORMS.md](FORMS.md)</div>
+    <h4 class="sub">name / description 驗證規則</h4>
+    <div class="fact-grid">
+      <div class="fact-label">name</div><div class="fact-value">≤ 64 字元；僅小寫字母、數字、連字號；不可含 XML tag；<strong>不可包含 "anthropic" 或 "claude"</strong>。Claude Code 中可省略（預設用目錄名）。</div>
+      <div class="fact-label">description</div><div class="fact-value">非空、≤ 1024 字元；無 XML tag；<strong>同時寫「做什麼 what」+「何時用 when」</strong>，第三人稱。驅動 auto-discovery。</div>
+    </div>
+    <h4 class="sub">Frontmatter 欄位參考（Claude Code）</h4>
+    <table class="plan-table">
+      <thead><tr><th>欄位</th><th>用途</th></tr></thead>
+      <tbody>
+        <tr><td><code>description</code></td><td>什麼 + 何時用；自動發現的依據（強烈建議）</td></tr>
+        <tr><td><code>name</code></td><td>清單顯示名；預設目錄名（通常不決定 <code>/command</code> 名）</td></tr>
+        <tr><td><code>when_to_use</code></td><td>補充觸發語；與 description 合併（上限 1,536 字元）</td></tr>
+        <tr><td><code>argument-hint</code></td><td>autocomplete 提示，如 <code>[issue-number]</code></td></tr>
+        <tr><td><code>arguments</code></td><td>具名位置參數，供 <code>$name</code> 替換</td></tr>
+        <tr><td><code>disable-model-invocation</code></td><td><code>true</code> → 只能你手動叫用；對 Claude 隱藏 description</td></tr>
+        <tr><td><code>user-invocable</code></td><td><code>false</code> → 從 <code>/</code> 選單隱藏；只有 Claude 能用</td></tr>
+        <tr><td><code>allowed-tools</code> / <code>disallowed-tools</code></td><td>skill 啟用時預先核准／封鎖的工具</td></tr>
+        <tr><td><code>model</code> / <code>effort</code></td><td>本回合覆寫模型／effort（<code>low…max</code>）</td></tr>
+        <tr><td><code>context</code> / <code>agent</code></td><td><code>fork</code> → 隔離 subagent 執行；指定 agent 類型</td></tr>
+        <tr><td><code>paths</code></td><td>glob；只在處理符合路徑檔案時自動啟用</td></tr>
+        <tr><td><code>hooks</code> / <code>shell</code></td><td>skill 生命週期 hooks；<code>!</code> 命令的 shell（bash/powershell）</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- §04 STORAGE + INVOCATION -->
+<div class="section" id="storage"><div class="section-number">// 04</div><h2>存放位置與叫用控制</h2></div>
+<div class="mode-section">
+  <div class="mode-header t4-h"><span style="font-size:20px">🎛️</span><h3>Skills 住在哪 · 誰能叫用</h3><span class="mode-tag">SCOPE · INVOCATION</span></div>
+  <div class="mode-body">
+    <h4 class="sub">存放位置（Claude Code，優先序：企業 &gt; 個人 &gt; 專案）</h4>
+    <table class="plan-table">
+      <thead><tr><th>範疇</th><th>路徑</th><th>適用</th></tr></thead>
+      <tbody>
+        <tr><td>個人</td><td><code>~/.claude/skills/&lt;name&gt;/SKILL.md</code></td><td>你所有專案</td></tr>
+        <tr><td>專案</td><td><code>.claude/skills/&lt;name&gt;/SKILL.md</code></td><td>本專案（隨 git 共享）</td></tr>
+        <tr><td>Plugin</td><td><code>&lt;plugin&gt;/skills/&lt;name&gt;/SKILL.md</code></td><td>啟用該 plugin 處；用 <code>plugin:skill</code> 命名空間，不衝突</td></tr>
+        <tr><td>企業</td><td>由 managed settings 部署</td><td>全組織</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:12.5px;color:var(--muted);">Claude Code 監看 skill 目錄：新增/改/刪即時生效；新增「最上層 skills 目錄」需重啟 session（或用 <code>/reload-skills</code> 重新掃描）。</p>
+    <h4 class="sub">叫用控制矩陣</h4>
+    <table class="compare-table">
+      <thead><tr><th>Frontmatter</th><th>你叫用</th><th>Claude 叫用</th><th>對 Claude 可見</th></tr></thead>
+      <tbody>
+        <tr><td>（預設）</td><td><span class="yes">✓</span></td><td><span class="yes">✓</span></td><td>name + description</td></tr>
+        <tr><td><code>disable-model-invocation: true</code></td><td><span class="yes">✓</span></td><td><span class="no">✗</span></td><td>隱藏</td></tr>
+        <tr><td><code>user-invocable: false</code></td><td><span class="no">✗</span></td><td><span class="yes">✓</span></td><td>name + description</td></tr>
+      </tbody>
+    </table>
+    <div class="tip-box warn"><span class="tip-icon">⚠️</span><p><strong>有副作用一定關自動：</strong>deploy、commit、發訊息、刪資料等 → <code>disable-model-invocation: true</code>，只由你手動 <code>/name</code> 觸發。背景知識型（如遺留系統說明）→ <code>user-invocable: false</code>，讓 Claude 靜默套用。</p></div>
+    <p style="font-size:12.5px;color:var(--muted);">也可用權限規則控制：<code>Skill(commit)</code>（精確）、<code>Skill(review-pr *)</code>（前綴）允許；單獨 <code>Skill</code> 拒絕全部。</p>
+  </div>
+</div>
+
+<!-- §05 ADVANCED -->
+<div class="section" id="advanced"><div class="section-number">// 05</div><h2>進階：參數 · 動態上下文 · subagent</h2></div>
+<div class="mode-section">
+  <div class="mode-header t5-h"><span style="font-size:20px">🧩</span><h3>字串替換 · `!` 注入 · context:fork · allowed-tools</h3><span class="mode-tag">ADVANCED</span></div>
+  <div class="mode-body">
+    <h4 class="sub">字串替換（載入時展開）</h4>
+    <table class="plan-table">
+      <thead><tr><th>變數</th><th>展開為</th></tr></thead>
+      <tbody>
+        <tr><td><code>$ARGUMENTS</code> / <code>$ARGUMENTS[N]</code> / <code>$N</code></td><td><code>/skill</code> 後的完整參數字串 / 第 N 個（0-based）</td></tr>
+        <tr><td><code>$name</code></td><td><code>arguments</code> frontmatter 宣告的具名參數</td></tr>
+        <tr><td><code>${CLAUDE_SESSION_ID}</code> / <code>${CLAUDE_EFFORT}</code></td><td>目前 session ID / effort 字串</td></tr>
+        <tr><td><code>${CLAUDE_SKILL_DIR}</code></td><td>此 skill 目錄絕對路徑（引用隨附腳本必用）</td></tr>
+      </tbody>
+    </table>
+    <h4 class="sub">動態上下文注入：<code>!`cmd`</code>（Claude 看到前先執行）</h4>
+    <div class="code-block"><span class="kw">---</span>
+<span class="cmd">description</span>: Summarize uncommitted changes and flag risks.
+<span class="kw">---</span>
+## Current changes
+!`git diff HEAD`
+## Instructions
+Summarize the changes above in 2-3 bullets, then list risks.</div>
+    <p style="font-size:12.5px;color:var(--muted);"><code>!</code> 須在行首或空白後；輸出只替換一次（不再掃描）；可用 <code>"disableSkillShellExecution": true</code> 全域停用。</p>
+    <h4 class="sub"><code>context: fork</code> — 隔離 subagent 執行</h4>
+    <div class="code-block"><span class="kw">---</span>
+<span class="cmd">name</span>: pr-review
+<span class="cmd">description</span>: Review a PR for bugs, style, missing tests.
+<span class="cmd">context</span>: fork
+<span class="cmd">agent</span>: Explore     <span class="comment"># Explore(唯讀) / Plan / general-purpose / 自訂</span>
+<span class="cmd">allowed-tools</span>: Bash(gh *)
+<span class="kw">---</span>
+!`gh pr diff`</div>
+    <div class="tip-box"><span class="tip-icon">⚠️</span><p><strong>fork 警告：</strong>只對「有明確可執行指令」的 skill 有意義。只含準則（如 API 慣例）的 skill 丟給 subagent 會空手而回。<code>allowed-tools</code> 只是預先核准、<strong>不是 sandbox</strong>——其他工具仍可呼叫，要擋請用 deny 規則。</p></div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- §06 COMPARE -->
+<div class="section" id="compare"><div class="section-number">// 06</div><h2>Skill vs CLAUDE.md vs Prompt</h2>
+  <p class="intro">口訣：<strong>事實 → CLAUDE.md；一次性任務 → prompt；可重複的程序 + 上下文 → skill</strong>。</p>
+</div>
+<div class="table-scroll">
+<table class="compare-table">
+  <thead><tr><th>面向</th><th>CLAUDE.md</th><th>Prompt</th><th>Skill</th></tr></thead>
+  <tbody>
+    <tr><td>載入</td><td>永遠在 context</td><td>每回合</td><td>按需（觸發時）</td></tr>
+    <tr><td>Token 成本</td><td>持續</td><td>每回合</td><td>~100 metadata；主體用到才算</td></tr>
+    <tr><td>範疇</td><td>專案/全域事實</td><td>一次性指令</td><td>可重用領域能力</td></tr>
+    <tr><td>可分享</td><td>per-project</td><td>不持久</td><td>Plugins、VCS、managed settings</td></tr>
+    <tr><td>可執行碼</td><td><span class="no">✗</span></td><td><span class="no">✗</span></td><td><span class="yes">✓</span>（隨附腳本）</td></tr>
+    <tr><td>叫用</td><td>隱含</td><td>隱含</td><td>顯式 <code>/name</code> 或自動觸發</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- §07 BUNDLED + PLATFORMS -->
+<div class="section" id="bundled"><div class="section-number">// 07</div><h2>內建 bundled skills 與各平台</h2></div>
+<table class="plan-table">
+  <thead><tr><th>Claude Code 內建（prompt-based，<code>/</code> 叫用）</th><th>用途</th></tr></thead>
+  <tbody>
+    <tr><td><code>/code-review</code></td><td>審 bug、可讀性、慣例（<code>--fix</code>／<code>--comment</code>／雲端深審）</td></tr>
+    <tr><td><code>/debug</code></td><td>工具輔助的系統化除錯</td></tr>
+    <tr><td><code>/batch</code> · <code>/loop</code></td><td>跨多檔/輸入批次；重複跑到條件達成</td></tr>
+    <tr><td><code>/claude-api</code></td><td>最新 Claude API 參考 + 8 語言 SDK</td></tr>
+    <tr><td><code>/run</code> · <code>/verify</code> · <code>/run-skill-generator</code></td><td>啟動/驗證 app 確認變更（需 v2.1.145+）</td></tr>
+  </tbody>
+</table>
+<table class="plan-table">
+  <thead><tr><th>平台</th><th>安裝/分享</th><th>網路 · 套件</th></tr></thead>
+  <tbody>
+    <tr><td>Claude Code</td><td>檔案系統（個人/專案/plugin）</td><td>完整網路（同本機程式）；建議 local 安裝套件</td></tr>
+    <tr><td>claude.ai</td><td>上傳 .zip（Settings → Features，需開 code execution）</td><td>依設定；可 runtime 裝 npm/PyPI</td></tr>
+    <tr><td>Claude API</td><td><code>/v1/skills</code> 或 pre-built <code>skill_id</code>（workspace 共享，需 3 個 beta header）</td><td><strong>無網路</strong>；僅預裝套件</td></tr>
+  </tbody>
+</table>
+<p style="font-size:12.5px;color:var(--muted);">pre-built skill_id：<code>pptx</code> / <code>xlsx</code> / <code>docx</code> / <code>pdf</code>。官方範例庫：<code>github.com/anthropics/skills</code>（可 <code>/plugin marketplace add anthropics/skills</code> 安裝 document-skills / example-skills）。</p>
+
+<!-- §08 BEST PRACTICES -->
+<div class="section" id="best"><div class="section-number">// 08</div><h2>最佳實務</h2></div>
+<div class="mode-section">
+  <div class="mode-header t1-h"><span style="font-size:20px">✅</span><h3>寫出有效的 Skill</h3><span class="mode-tag">BEST PRACTICES</span></div>
+  <div class="mode-body">
+    <ul class="uc">
+      <li><strong>簡潔優先</strong>：context 是共享資源，挑戰每個 token；別塞 Claude 已知的常識，只加你流程真正需要的（公司規則、資料表欄位、內部工具）。</li>
+      <li><strong>description 品質</strong>：同時寫 what + when、第三人稱。<em>「Helps with commits」</em>✗；<em>「Generates commit messages by analysing staged diffs. Use when…」</em>✓。</li>
+      <li><strong>自由度對應脆弱度</strong>：多解法 → 純文字指引；偏好模式 → pseudocode/腳本；脆弱必須精確 → 指定確切命令、禁改。</li>
+      <li><strong>命名</strong>：動名詞、小寫、連字號（<code>processing-pdfs</code>）；避免 <code>helper</code>/<code>utils</code>/含 anthropic/claude。</li>
+      <li><strong>一致術語</strong>：一個概念一個詞，never 混用。</li>
+      <li><strong>避免時效性內容</strong>：用「Current / Old patterns」區塊，別寫「2025 年 8 月前…」。</li>
+      <li><strong>不要過多選項</strong>：給 default path，例外才給 escape hatch。</li>
+      <li><strong>漸進式揭露</strong>：SKILL.md &lt; 500 行，細節拆到 <strong>一層深</strong>的 reference 檔；用 <code>${CLAUDE_SKILL_DIR}</code> 引腳本。</li>
+      <li><strong>eval 驅動開發</strong>：先在無 skill 下跑代表性任務記錄失敗 → 建 3+ 測試場景 → 寫最小 SKILL.md 通過 → Haiku/Sonnet/Opus 都測。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- §09 SECURITY -->
+<div class="section" id="security"><div class="section-number">// 09</div><h2>安全性</h2></div>
+<div class="tip-box warn"><span class="tip-icon">⚠️</span><p><strong>只用可信來源的 skill。</strong>Skill 同時提供「指令 + 可執行碼」，惡意 skill 可引導 Claude 呼叫任何可用工具。把 skill 當軟體套件審查。</p></div>
+<table class="plan-table">
+  <thead><tr><th>風險</th><th>說明</th></tr></thead>
+  <tbody>
+    <tr><td>資料外洩</td><td>非預期網路呼叫洩漏資料</td></tr>
+    <tr><td>工具濫用</td><td>Bash/檔案工具被用於宣稱用途之外</td></tr>
+    <tr><td>外部依賴汙染</td><td>抓外部 URL 的 skill 可能被換內容毒化</td></tr>
+    <tr><td>Prompt injection</td><td>外部內容夾帶惡意指令</td></tr>
+  </tbody>
+</table>
+<p style="font-size:12.5px;color:var(--muted);">緩解：審查 skill 目錄所有檔案（SKILL.md、scripts、images）；專案 <code>.claude/skills/</code> 在接受 workspace trust 前先看過；對有敏感資料的 production 格外小心。<strong>Claude API runtime 無網路</strong>；Claude Code 有完整網路（同本機程式）。</p>
+
+<!-- §10 DECISION -->
+<div class="section" id="choose"><div class="section-number">// 10</div><h2>我該不該做成 Skill？</h2></div>
+<div class="decision">
+  <h3>🌿 決策樹</h3>
+  <div class="decision-item"><div class="decision-q">這是專案常駐事實（架構、慣例、測試命令）</div><div class="decision-arrow">→</div><div class="decision-a a-t1">放 CLAUDE.md</div></div>
+  <div class="decision-item"><div class="decision-q">只用一次的臨時任務</div><div class="decision-arrow">→</div><div class="decision-a a-t2">直接 prompt</div></div>
+  <div class="decision-item"><div class="decision-q">反覆貼同一套多步驟劇本／清單</div><div class="decision-arrow">→</div><div class="decision-a a-t3">做成 Skill</div></div>
+  <div class="decision-item"><div class="decision-q">需要綁可執行腳本（確定性處理）</div><div class="decision-arrow">→</div><div class="decision-a a-t4">Skill + scripts/</div></div>
+  <div class="decision-item"><div class="decision-q">有副作用（deploy/commit/刪資料）</div><div class="decision-arrow">→</div><div class="decision-a a-t5">Skill + disable-model-invocation</div></div>
+  <div class="decision-item"><div class="decision-q">大型探索不該污染主對話</div><div class="decision-arrow">→</div><div class="decision-a a-t2">Skill + context:fork</div></div>
+</div>
+
+<!-- §11 GETTING STARTED -->
+<div class="section" id="start"><div class="section-number">// 11</div><h2>立刻開始：建第一個 Skill</h2>
+  <p class="intro">以 Claude Code 的 <code>summarize-changes</code> 為例（摘要未提交變更並標風險）。</p>
+</div>
+<div class="steps">
+  <div class="step t1-step"><div class="step-num">01</div><div class="step-content"><h4>建目錄</h4><p><code>mkdir -p ~/.claude/skills/summarize-changes</code></p></div></div>
+  <div class="step t1-step"><div class="step-num">02</div><div class="step-content"><h4>寫 SKILL.md</h4><p>frontmatter 給 <code>description</code>（what+when），主體用 <code>!`git diff HEAD`</code> 注入即時 diff + 摘要指令。</p></div></div>
+  <div class="step t1-step"><div class="step-num">03</div><div class="step-content"><h4>觸發</h4><p>在 git repo 開 <code>claude</code>，輸入 <code>/summarize-changes</code>，或自然語言「What did I change?」。</p></div></div>
+  <div class="step t1-step"><div class="step-num">04</div><div class="step-content"><h4>迭代</h4><p><code>/skills</code> 確認可見、<code>/reload-skills</code> 套用變更、<code>/doctor</code> 檢查 description 預算。</p></div></div>
+</div>
+<div class="paths">
+  <div class="path-card p1"><div class="path-label">PATH A — 初學者</div><ol><li>把重複 prompt（commit 訊息、PR 檢查）變 skill</li><li>只寫 <code>description</code> + 最小主體</li><li>3 個真實任務測試後微調</li></ol></div>
+  <div class="path-card p2"><div class="path-label">PATH B — 中階（專案命令）</div><ol><li><code>/fix-issue 123</code> 帶 <code>$ARGUMENTS</code></li><li>加 <code>argument-hint</code>、拆 <code>reference.md</code></li><li>副作用流程加 <code>disable-model-invocation</code></li></ol></div>
+  <div class="path-card p3"><div class="path-label">PATH C — 進階</div><ol><li>用 scripts 處理確定性工作（<code>${CLAUDE_SKILL_DIR}</code>）</li><li><code>!</code> 注入即時上下文、<code>context:fork</code> 隔離</li><li><code>paths</code> 限定自動啟用；最小化 <code>allowed-tools</code></li></ol></div>
+</div>
+
+<!-- §12 SOURCES -->
+<div class="section" id="sources"><div class="section-number">// 附錄</div><h2>資料來源與資料邊界</h2>
+  <p class="intro">彙整三份獨立草稿（by Claude / GPT / Gemini），以官方文件為權威骨幹。</p>
+  <div class="sources">
+    <h4>官方第一手 / Primary</h4>
+    Agent Skills Overview：<a href="https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview">platform.claude.com/docs/.../agent-skills/overview</a><br>
+    Skill Authoring Best Practices：<a href="https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices">.../agent-skills/best-practices</a><br>
+    Use Skills in Claude Code：<a href="https://code.claude.com/docs/en/skills">code.claude.com/docs/en/skills</a><br>
+    Skills in the API：<a href="https://platform.claude.com/docs/en/build-with-claude/skills-guide">platform.claude.com/docs/.../skills-guide</a><br>
+    開源範例庫：<a href="https://github.com/anthropics/skills">github.com/anthropics/skills</a>
+    <h4>未能驗證 / Caveats</h4>
+    • 本指南<strong>聚焦 Skills</strong>；某草稿提及的部分 Claude Code CLI 指令（如 <code>/simplify</code>、<code>claude project purge</code> 等）未在官方 Skills 文件佐證，故從略，請以官方 <code>/help</code> 與文件為準。<br>
+    • <code>/run</code>、<code>/verify</code>、<code>/run-skill-generator</code> 需 Claude Code v2.1.145+。<br>
+    • 各平台（Claude Code / claude.ai / API）的網路與套件限制不同，跨平台不同步，請勿混用。
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <span>Claude Code Skills 技術指南 · 2026-05-29</span>
+  <a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">code.claude.com/docs/en/skills →</a>
+</div>
+
+</div><!-- /container -->
+
+<a class="back-home" href="../index.html" title="回到首頁" aria-label="回到首頁"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10.5V20h14v-9.5"/></svg></a>
+<button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+
+<script>
+/* Minimal inline JS (no external deps). Powers: PDF export uses native window.print();
+   copy-URL for NotebookLM; back-to-top fade. */
+(function(){
+  var top=document.getElementById('backToTop');
+  if(top){
+    window.addEventListener('scroll',function(){top.classList.toggle('visible',window.scrollY>400);},{passive:true});
+    top.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+  }
+})();
+function copyPageURL(btn){
+  var orig=btn.textContent;
+  var flash=function(msg){btn.textContent=msg;setTimeout(function(){btn.textContent=orig;},1800);};
+  var ok=function(){flash('✓ 已複製');};
+  var fail=function(){flash('複製失敗，請手動複製');};
+  // file:// URLs can be copied but NotebookLM (website source) needs a public https URL.
+  if(location.protocol==='file:'){
+    alert('您正在以本機檔案 (file://) 開啟。\nNotebookLM 的「網站來源」需要可公開存取的 https 網址，無法讀取本機路徑。\n請先部署到 GitHub Pages 等，或改用旁邊的「⬇ 匯出 PDF」上傳。');
+    return;
+  }
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(location.href).then(ok).catch(fail);
+  }else{
+    var ta=document.createElement('textarea');ta.value=location.href;ta.setAttribute('readonly','');
+    ta.style.position='fixed';ta.style.top='-9999px';document.body.appendChild(ta);ta.select();
+    var done=false;try{done=document.execCommand('copy');}catch(e){done=false;}
+    document.body.removeChild(ta);done?ok():fail();
+  }
+}
+</script>
+</body>
+</html>
