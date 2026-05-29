@@ -322,8 +322,8 @@ pagefind-modal-trigger{display:inline-block;margin:24px 0 6px;}
 <!-- analytics:goatcounter -->
 <script data-goatcounter="https://bond901.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 <!-- search:pagefind -->
-<link href="pagefind/pagefind-component-ui.css" rel="stylesheet">
-<script src="pagefind/pagefind-component-ui.js" type="module"></script>
+<link href="pagefind/pagefind-ui.css" rel="stylesheet">
+<script src="pagefind/pagefind-ui.js"></script>
 <meta name="last-updated" content="2026-05-30">
 <meta name="last-verified" content="2026-05-30">
 </head>
@@ -347,9 +347,7 @@ pagefind-modal-trigger{display:inline-block;margin:24px 0 6px;}
 <div class="container" data-pagefind-ignore>
 
 <!-- ══ 指南總覽 ══ -->
-<div class="pf-wrap no-print" data-pagefind-ignore>
-  <pagefind-searchbox></pagefind-searchbox>
-</div>
+<div id="search" class="pf-wrap no-print" data-pagefind-ignore></div>
 <div class="section" id="guides">
   <div class="section-number">// 01</div>
   <h2>指南總覽</h2>
@@ -386,7 +384,7 @@ pagefind-modal-trigger{display:inline-block;margin:24px 0 6px;}
     <h3>LLM 核心概念 2026</h3>
     <p class="card-desc">Token、Context Window、Temperature、Attention 機制——理解 AI 工具前必備的底層知識。</p>
     <div class="card-tags"><span class="tag">Token</span><span class="tag">Context</span><span class="tag">RLHF</span></div>
-    <div class="card-verified">✓ 驗證 2026-05-30</div>
+    <div class="card-verified">✓ 驗證 2026-05-29</div>
   </a>
 
   <a href="guides/prompt-engineering-evolution-guide.html" class="guide-card cat-base">
@@ -395,7 +393,7 @@ pagefind-modal-trigger{display:inline-block;margin:24px 0 6px;}
     <h3>Prompt Engineering 演進史</h3>
     <p class="card-desc">從 Zero-shot 到 Agentic Prompt——2026 年 prompting 技術的完整演進脈絡與實踐指引。</p>
     <div class="card-tags"><span class="tag">CoT</span><span class="tag">Few-shot</span><span class="tag">Agentic</span></div>
-    <div class="card-verified">✓ 驗證 2026-05-30</div>
+    <div class="card-verified">✓ 驗證 2026-05-29</div>
   </a>
 
   <a href="guides/ai-instruction-guide-2026.html" class="guide-card cat-base">
@@ -404,7 +402,7 @@ pagefind-modal-trigger{display:inline-block;margin:24px 0 6px;}
     <h3>AI 個人化設定精煉</h3>
     <p class="card-desc">Claude Preferences / CLAUDE.md、Antigravity GEMINI.md、Codex agents.md——三大平台的指令與個人化系統深度拆解。</p>
     <div class="card-tags"><span class="tag">Claude</span><span class="tag">Antigravity</span><span class="tag">Codex</span></div>
-    <div class="card-verified">✓ 驗證 2026-05-30</div>
+    <div class="card-verified">✓ 驗證 2026-05-29</div>
   </a>
 
 </div>
@@ -419,7 +417,7 @@ pagefind-modal-trigger{display:inline-block;margin:24px 0 6px;}
     <h3>Claude Desktop 入門</h3>
     <p class="card-desc">Chat 對話、Cowork 桌面自動化、Claude Code 終端開發——Anthropic 三模式完整教學。</p>
     <div class="card-tags"><span class="tag">Chat</span><span class="tag">Cowork</span><span class="tag">Code</span></div>
-    <div class="card-verified">✓ 驗證 2026-05-30</div>
+    <div class="card-verified">✓ 驗證 2026-05-29</div>
   </a>
 
   <a href="guides/openai-tools-guide.html" class="guide-card cat-tools">
@@ -428,7 +426,7 @@ pagefind-modal-trigger{display:inline-block;margin:24px 0 6px;}
     <h3>OpenAI 三工具入門</h3>
     <p class="card-desc">ChatGPT 萬用助手、Codex 雲端代理、Codex CLI 本機開發——三者定位與選擇策略。</p>
     <div class="card-tags"><span class="tag">ChatGPT</span><span class="tag">Codex</span><span class="tag">CLI</span></div>
-    <div class="card-verified">✓ 驗證 2026-05-30</div>
+    <div class="card-verified">✓ 驗證 2026-05-29</div>
   </a>
 
   <a href="guides/gemini-tools-guide.html" class="guide-card cat-tools">
@@ -437,7 +435,7 @@ pagefind-modal-trigger{display:inline-block;margin:24px 0 6px;}
     <h3>Google Gemini 生態系</h3>
     <p class="card-desc">Gemini App、AI Studio、NotebookLM、Gemini CLI——Google AI 四大工具的使用場景與比較。</p>
     <div class="card-tags"><span class="tag">Gemini</span><span class="tag">AI Studio</span><span class="tag">NLM</span></div>
-    <div class="card-verified">✓ 驗證 2026-05-30</div>
+    <div class="card-verified">✓ 驗證 2026-05-29</div>
   </a>
 
 </div>
@@ -452,7 +450,7 @@ pagefind-modal-trigger{display:inline-block;margin:24px 0 6px;}
     <h3>AI Agent 擴充機制</h3>
     <p class="card-desc">Skill、MCP、Plugin——三層擴充架構的定位差異、運作原理與實務組裝策略。</p>
     <div class="card-tags"><span class="tag">Skill</span><span class="tag">MCP</span><span class="tag">Plugin</span></div>
-    <div class="card-verified">✓ 驗證 2026-05-30</div>
+    <div class="card-verified">✓ 驗證 2026-05-29</div>
   </a>
 
   <a href="guides/claude-code-skills-guide.html" class="guide-card cat-adv">
@@ -461,7 +459,7 @@ pagefind-modal-trigger{display:inline-block;margin:24px 0 6px;}
     <h3>Claude Code Skills 技術指南</h3>
     <p class="card-desc">把重複流程封裝成可重用的 SKILL.md——三層漸進式載入、frontmatter、叫用控制、腳本與 subagent，及最佳實務與安全。</p>
     <div class="card-tags"><span class="tag">SKILL.md</span><span class="tag">Frontmatter</span><span class="tag">Subagent</span></div>
-    <div class="card-verified">✓ 驗證 2026-05-30</div>
+    <div class="card-verified">✓ 驗證 2026-05-29</div>
   </a>
 
   <a href="guides/claude-opus-4-8-guide.html" class="guide-card cat-adv">
@@ -470,7 +468,7 @@ pagefind-modal-trigger{display:inline-block;margin:24px 0 6px;}
     <h3>Claude Opus 4.8 技術指南</h3>
     <p class="card-desc">Anthropic 對外最強模型——Effort Control、Dynamic Workflows、Fast Mode、Mid-conv System 五大功能與 4.7→4.8 API 遷移實務。</p>
     <div class="card-tags"><span class="tag">Opus 4.8</span><span class="tag">Effort</span><span class="tag">API</span></div>
-    <div class="card-verified">✓ 驗證 2026-05-30</div>
+    <div class="card-verified">✓ 驗證 2026-05-29</div>
   </a>
 
 </div>
@@ -485,7 +483,7 @@ pagefind-modal-trigger{display:inline-block;margin:24px 0 6px;}
     <h3>RAG 檢索增強生成 完整指南</h3>
     <p class="card-desc">先找資料再讓模型回答——Chunking、Embedding、Retrieval、Generation、Evaluation 五階段管線，到 CRAG / Self-RAG / GraphRAG / Agentic 進階架構、失敗模式與評估。</p>
     <div class="card-tags"><span class="tag">Pipeline</span><span class="tag">Hybrid</span><span class="tag">Agentic</span></div>
-    <div class="card-verified">✓ 驗證 2026-05-30</div>
+    <div class="card-verified">✓ 驗證 2026-05-29</div>
   </a>
 
   <a href="guides/ai-sdlc-guide-2026.html" class="guide-card cat-flow">
@@ -494,7 +492,7 @@ pagefind-modal-trigger{display:inline-block;margin:24px 0 6px;}
     <h3>AI 時代軟體開發流程</h3>
     <p class="card-desc">從需求分析到部署維運——AI 如何重塑 SDLC 每個階段的角色分工與工作流程。</p>
     <div class="card-tags"><span class="tag">SDLC</span><span class="tag">Agentic</span><span class="tag">Workflow</span></div>
-    <div class="card-verified">✓ 驗證 2026-05-30</div>
+    <div class="card-verified">✓ 驗證 2026-05-29</div>
   </a>
 
 </div>
@@ -541,5 +539,7 @@ pagefind-modal-trigger{display:inline-block;margin:24px 0 6px;}
   });
 })();
 </script>
+<!-- search:init -->
+<script>window.addEventListener('DOMContentLoaded',function(){if(window.PagefindUI){new PagefindUI({element:'#search',bundlePath:'pagefind/',showSubResults:true,translations:{placeholder:'搜尋指南…'}});}});</script>
 </body>
 </html>

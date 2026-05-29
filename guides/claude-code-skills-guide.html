@@ -233,10 +233,10 @@ pagefind-modal-trigger{display:inline-block;margin:24px 0 6px;}
 <!-- analytics:goatcounter -->
 <script data-goatcounter="https://bond901.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 <!-- search:pagefind -->
-<link href="../pagefind/pagefind-component-ui.css" rel="stylesheet">
-<script src="../pagefind/pagefind-component-ui.js" type="module"></script>
-<meta name="last-updated" content="2026-05-30">
-<meta name="last-verified" content="2026-05-30">
+<link href="../pagefind/pagefind-ui.css" rel="stylesheet">
+<script src="../pagefind/pagefind-ui.js"></script>
+<meta name="last-updated" content="2026-05-29">
+<meta name="last-verified" content="2026-05-29">
 </head>
 <body>
 <!-- HERO -->
@@ -259,7 +259,7 @@ pagefind-modal-trigger{display:inline-block;margin:24px 0 6px;}
 <div class="container" data-pagefind-body>
 
 <!-- ACTIONS BAR -->
-<pagefind-modal-trigger class="no-print" data-pagefind-ignore></pagefind-modal-trigger>
+<div id="search" class="pf-wrap no-print" data-pagefind-ignore></div>
 <div class="freshness no-print" data-pagefind-ignore>最後更新 <span class="lu">2026-05-30</span>　·　最後驗證 <span class="lv">2026-05-30</span></div>
 <div class="stale-warn no-print" data-pagefind-ignore hidden>⚠ <span></span></div>
 <div class="actions-bar no-print" data-pagefind-ignore>
@@ -615,7 +615,8 @@ function copyPageURL(btn){
 }
 </script>
 <!-- freshness:js -->
-<pagefind-modal data-pagefind-ignore></pagefind-modal>
 <script>(function(){var lu=document.querySelector('meta[name=last-updated]'),lv=document.querySelector('meta[name=last-verified]');if(lu)document.querySelectorAll('.lu').forEach(function(e){e.textContent=lu.content;});if(lv){document.querySelectorAll('.lv').forEach(function(e){e.textContent=lv.content;});var d=(Date.now()-new Date(lv.content).getTime())/86400000;if(d>180){var w=document.querySelector('.stale-warn');if(w){w.classList.add('show');w.hidden=false;w.querySelector('span').textContent='本篇最後驗證於 '+lv.content+'，AI 工具更新快，部分資訊可能已變動。';}}}})();</script>
+<!-- search:init -->
+<script>window.addEventListener('DOMContentLoaded',function(){if(window.PagefindUI){new PagefindUI({element:'#search',bundlePath:'../pagefind/',showSubResults:true,translations:{placeholder:'搜尋指南…'}});}});</script>
 </body>
 </html>

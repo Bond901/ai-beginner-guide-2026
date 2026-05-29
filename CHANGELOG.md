@@ -8,6 +8,13 @@
 
 （尚無未發布變更）
 
+## [1.6.1] - 2026-05-30
+
+### Fixed
+
+- 站內搜尋在 GitHub Pages 專案頁（子路徑）無法載入（`Could not load search bundle: /pagefind/`）：由 Pagefind 元件式 UI 改為 Default UI 並指定相對 `bundlePath`，修正絕對路徑（root `/pagefind/`）解析錯誤；搜尋框尺寸一併校正。
+- 各指南「最後更新／最後驗證」誤顯示為發布當日：改採 git 歷史的真實最後變更日（2026-05-29），首頁卡片同步。
+
 ## [1.6.0] - 2026-05-30
 
 ### Added
@@ -103,7 +110,8 @@
 - 每篇 guide 右下角「回到頂部」懸浮按鈕。
 - MIT License。
 
-[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.0...HEAD
+[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.1...HEAD
+[1.6.1]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.3.1...v1.4.0
