@@ -8,6 +8,16 @@
 
 （尚無未發布變更）
 
+## [1.3.1] - 2026-05-29
+
+### Fixed
+
+- 修正 Guide 03（AI 個人化設定）在首頁卡片與 `README.md` 的平台標示：「Gemini」更正為 **Antigravity**（該課程內容為 Antigravity 的 `GEMINI.md` 設定檔，非 Gemini App）。
+
+### Added
+
+- Guide 01（LLM 核心概念）Token 段補充 tokenizer 演進說明（ConvexTok，arXiv:2605.22821），並標明為漸進式改良、非革命性。
+
 ## [1.3.0] - 2026-05-29
 
 ### Added

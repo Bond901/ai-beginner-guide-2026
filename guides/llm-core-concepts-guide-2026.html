@@ -356,6 +356,7 @@ hr.rule{border:none;border-top:1px solid var(--border);margin:40px 0;}
         <div class="flow-step t1-s"><div class="flow-step-num">③ TRANSFORM</div><h4>模型處理</h4><p>Attention 建模脈絡</p></div>
         <div class="flow-step t1-s"><div class="flow-step-num">④ PREDICT</div><h4>預測下一 Token</h4><p>機率分佈取樣</p></div>
       </div>
+      <div class="tip-box"><span class="tip-icon">🔬</span><p><strong>Tokenizer 仍在演進：</strong>BPE / Unigram 屬貪婪演算法；2026 年的 <a href="https://arxiv.org/abs/2605.22821" target="_blank" rel="noopener" style="color:var(--link);">ConvexTok（arXiv:2605.22821）</a> 改用凸優化建構詞彙表，改善 bits-per-byte 等指標——可逐步提升 embedding 與檢索效能，但下游任務增益不一致、<strong>非革命性</strong>，現有 tokenizer 與 RAG 架構仍為主流。</p></div>
     </div>
   </div>
 </div>

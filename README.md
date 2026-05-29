@@ -21,7 +21,7 @@
 |------|-------------|
 | [LLM 核心概念](guides/llm-core-concepts-guide-2026.html) | Token 是什麼、Context Window 怎麼影響對話、Temperature 怎麼調——用 AI 工具前必備的底層知識 |
 | [Prompt Engineering 演進](guides/prompt-engineering-evolution-guide.html) | 從最基本的提問技巧，到 2026 年最新的 agentic prompt 架構，一次看完完整演進脈絡 |
-| [AI 個人化設定精煉](guides/ai-instruction-guide-2026.html) | Claude、Gemini、Codex 三大平台各自的個人化設定怎麼寫，讓 AI 記住你的工作習慣 |
+| [AI 個人化設定精煉](guides/ai-instruction-guide-2026.html) | Claude、Antigravity、Codex 三大平台各自的個人化設定怎麼寫（CLAUDE.md / GEMINI.md / agents.md），讓 AI 記住你的工作習慣 |
 | [Claude Desktop 入門](guides/claude-desktop-guide.html) | Anthropic 的 Chat 對話、Cowork 桌面自動化、Claude Code 終端開發——三種模式怎麼選、怎麼用 |
 | [OpenAI 三工具入門](guides/openai-tools-guide.html) | ChatGPT、Codex、Codex CLI 各自的定位與適用場景，幫你選對工具 |
 | [Google Gemini 生態系](guides/gemini-tools-guide.html) | Gemini App、AI Studio、NotebookLM、Gemini CLI——Google 四大 AI 工具的使用場景比較 |
