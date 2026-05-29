@@ -8,6 +8,12 @@
 
 （尚無未發布變更）
 
+## [1.6.2] - 2026-05-30
+
+### Fixed
+
+- 站內搜尋仍無法載入（`Module name 'pagefind/pagefind.js' does not resolve to a valid URL`）：v1.6.1 改用的相對 `bundlePath` 在動態 `import()` 中被視為無效的 bare module specifier。本版改為在執行時從已載入的 `pagefind-ui.js` 之 `src` 推導**絕對** bundle 路徑（`new PagefindUI` 之前計算），於 GitHub Pages 子路徑、`localhost` 與自訂網域皆適用。
+
 ## [1.6.1] - 2026-05-30
 
 ### Fixed
@@ -110,7 +116,8 @@
 - 每篇 guide 右下角「回到頂部」懸浮按鈕。
 - MIT License。
 
-[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.1...HEAD
+[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.2...HEAD
+[1.6.2]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.1...v1.6.2
 [1.6.1]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.4.0...v1.5.0

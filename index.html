@@ -540,6 +540,6 @@ pagefind-modal-trigger{display:inline-block;margin:24px 0 6px;}
 })();
 </script>
 <!-- search:init -->
-<script>window.addEventListener('DOMContentLoaded',function(){if(window.PagefindUI){new PagefindUI({element:'#search',bundlePath:'pagefind/',showSubResults:true,translations:{placeholder:'搜尋指南…'}});}});</script>
+<script>window.addEventListener('DOMContentLoaded',function(){if(!window.PagefindUI)return;var s=document.querySelector('script[src$="pagefind-ui.js"]');var bp=s?s.src.replace(/pagefind-ui\.js.*$/,''):undefined;new PagefindUI({element:'#search',bundlePath:bp,showSubResults:true,translations:{placeholder:'搜尋指南…'}});});</script>
 </body>
 </html>

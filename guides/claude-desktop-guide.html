@@ -1132,6 +1132,6 @@ function copyPageURL(btn){
 <!-- freshness:js -->
 <script>(function(){var lu=document.querySelector('meta[name=last-updated]'),lv=document.querySelector('meta[name=last-verified]');if(lu)document.querySelectorAll('.lu').forEach(function(e){e.textContent=lu.content;});if(lv){document.querySelectorAll('.lv').forEach(function(e){e.textContent=lv.content;});var d=(Date.now()-new Date(lv.content).getTime())/86400000;if(d>180){var w=document.querySelector('.stale-warn');if(w){w.classList.add('show');w.hidden=false;w.querySelector('span').textContent='本篇最後驗證於 '+lv.content+'，AI 工具更新快，部分資訊可能已變動。';}}}})();</script>
 <!-- search:init -->
-<script>window.addEventListener('DOMContentLoaded',function(){if(window.PagefindUI){new PagefindUI({element:'#search',bundlePath:'../pagefind/',showSubResults:true,translations:{placeholder:'搜尋指南…'}});}});</script>
+<script>window.addEventListener('DOMContentLoaded',function(){if(!window.PagefindUI)return;var s=document.querySelector('script[src$="pagefind-ui.js"]');var bp=s?s.src.replace(/pagefind-ui\.js.*$/,''):undefined;new PagefindUI({element:'#search',bundlePath:bp,showSubResults:true,translations:{placeholder:'搜尋指南…'}});});</script>
 </body>
 </html>
