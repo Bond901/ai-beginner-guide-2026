@@ -8,6 +8,12 @@
 
 （尚無未發布變更）
 
+## [1.9.0] - 2026-05-30
+
+### Added
+
+- **SEO 基礎**：12 頁 `<head>` 加入 `meta description`、`canonical`、Open Graph（og:type/site_name/locale/title/description/url/image）與 Twitter Card（`summary_large_image`）；新增 `robots.txt` 與 `sitemap.xml`（12 URL，`lastmod` 取自各頁最後驗證日），以及 `scripts/gen_sitemap.py`（加課程後重跑即自動更新 sitemap）。社群分享縮圖 `assets/og.png` 另行產出。
+
 ## [1.8.1] - 2026-05-30
 
 ### Changed
@@ -171,7 +177,8 @@
 - 每篇 guide 右下角「回到頂部」懸浮按鈕。
 - MIT License。
 
-[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.8.1...HEAD
+[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.9.0...HEAD
+[1.9.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.8.1...v1.9.0
 [1.8.1]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.8.0...v1.8.1
 [1.8.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.7.2...v1.8.0
 [1.7.2]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.7.1...v1.7.2

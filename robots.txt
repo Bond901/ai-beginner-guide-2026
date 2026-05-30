@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bond901.github.io/ai-beginner-guide-2026/sitemap.xml
