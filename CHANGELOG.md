@@ -8,6 +8,12 @@
 
 （尚無未發布變更）
 
+## [1.7.1] - 2026-05-30
+
+### Fixed
+
+- 搜尋結果點擊後 404：Pagefind 索引回傳的網址已內含專案路徑前綴（`/ai-beginner-guide-2026/…`），原程式又重複套上站台基底造成雙重前綴。改為先偵測網址是否已含基底路徑以避免重複，並相容無前綴的索引格式（兩種皆正確解析）。
+
 ## [1.7.0] - 2026-05-30
 
 ### Added
@@ -147,7 +153,8 @@
 - 每篇 guide 右下角「回到頂部」懸浮按鈕。
 - MIT License。
 
-[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.7.0...HEAD
+[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.7.1...HEAD
+[1.7.1]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.7.0...v1.7.1
 [1.7.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.5...v1.7.0
 [1.6.5]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.4...v1.6.5
 [1.6.4]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.3...v1.6.4
