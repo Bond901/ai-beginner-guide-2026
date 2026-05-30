@@ -8,6 +8,17 @@
 
 （尚無未發布變更）
 
+## [1.13.0] - 2026-05-31
+
+### Added
+
+- 結構化資料 JSON-LD：13 頁 `<head>` 注入 schema.org 結構化資料——首頁 `WebSite`、`about.html` `BreadcrumbList`、11 篇 guide `Article` + `BreadcrumbList`（首頁 → 分類 → 篇名）。協助 Google／AI 搜尋引擎正確理解與顯示（麵包屑路徑、文章作者與日期）。新增 `scripts/inject_jsonld.py`（從既有 meta 衍生、idempotent；FAQ 已於 2026-05 被 Google 停用故未採用）。
+- 入口 ②完成：11 篇 guide 頁尾新增「關於 · 編輯原則與方法論」連結（`no-print`、不入搜尋索引），`about.html` 自此全站每頁可達。
+
+### Changed
+
+- `MAINTENANCE.md`：新增 guide 時補 `CATS` + 重跑 `inject_jsonld.py` 的步驟；標題／日期變動後同步重跑。
+
 ## [1.12.0] - 2026-05-31
 
 ### Added
@@ -224,7 +235,8 @@
 - 每篇 guide 右下角「回到頂部」懸浮按鈕。
 - MIT License。
 
-[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.12.0...HEAD
+[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.13.0...HEAD
+[1.13.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.12.0...v1.13.0
 [1.12.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.11.1...v1.12.0
 [1.11.1]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.11.0...v1.11.1
 [1.11.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.10.0...v1.11.0
