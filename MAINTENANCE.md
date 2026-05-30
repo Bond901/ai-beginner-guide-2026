@@ -17,14 +17,20 @@ AI 工具更新快，本站價值在於「準確 + 夠新」。每季（建議�
 - [ ] 更新該篇 `<meta name="last-verified">` 為今天（即使內容沒改）
 - [ ] 若有實質改動，另更新 `<meta name="last-updated">` + 寫 `CHANGELOG.md`
 - [ ] 同步更新 `index.html` 對應卡片的「驗證日」
-- [ ] 內容有改 → 重跑搜尋索引：`npx -y pagefind --site .` 後 commit `pagefind/`
 - [ ] 若該篇納入 NotebookLM 公開筆記本，重新整理來源
 
-## 搜尋索引（每次內容變動後）
+> 註：搜尋索引（`pagefind/`）與 `sitemap.xml` **已自動化** —— push 到 `main` 後，GitHub Actions（`.github/workflows/reindex.yml`）會自動重建並 commit 回 repo，**不用手動跑**。
+
+## 搜尋索引 / sitemap（已自動化）
+
+正常情況**不用手動執行**：push 後 Actions 會自動重建 `pagefind/` + `sitemap.xml` 並 commit（commit 訊息帶 `[skip ci]`）。
+
+僅在以下情況需手動（例如本機預覽、或 Actions 暫時故障）：
 
 ```bash
-npx -y pagefind --site .      # 重建 ./pagefind/
-git add pagefind && git commit -m "chore: reindex search"
+python3 scripts/gen_sitemap.py        # 更新 sitemap.xml
+npx -y pagefind@1 --site .            # 重建 ./pagefind/（釘 major 版）
+git add pagefind sitemap.xml && git commit -m "chore: reindex search [skip ci]"
 ```
 
 ## 過時警示

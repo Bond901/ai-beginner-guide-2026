@@ -1,0 +1,55 @@
+name: Auto-reindex (pagefind + sitemap)
+
+# 內容 push 到 main 後，自動重建搜尋索引（pagefind）與 sitemap，並 commit 回 repo。
+# 設計：A1 commit-back —— 保持 branch-based GitHub Pages，workflow 失敗時網站仍照常部署（優雅降級）。
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:          # 防迴圈①：只有產物（pagefind/、sitemap.xml）變動時，不觸發自己
+      - 'pagefind/**'
+      - 'sitemap.xml'
+  workflow_dispatch:        # 允許在 Actions 頁手動觸發
+
+permissions:
+  contents: write           # 需要把重建結果 push 回 repo
+
+concurrency:                # 同一時間只跑一個，避免兩次 push 競態
+  group: auto-reindex
+  cancel-in-progress: true
+
+jobs:
+  reindex:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Regenerate sitemap
+        run: python3 scripts/gen_sitemap.py
+
+      - name: Rebuild Pagefind index
+        run: npx -y pagefind@1 --site .     # 釘 major 版，擋未來 2.0 破壞性改版（pagefind 現為 1.x）
+
+      - name: Commit & push if changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pagefind sitemap.xml
+          # 無變動就不 commit（避免空 commit）；commit message 帶 [skip ci] 為防迴圈②
+          if git diff --cached --quiet; then
+            echo "No index/sitemap changes — nothing to commit."
+          else
+            git commit -m "chore: auto-reindex pagefind + sitemap [skip ci]"
+            git push
+          fi

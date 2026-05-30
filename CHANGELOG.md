@@ -8,6 +8,18 @@
 
 （尚無未發布變更）
 
+## [1.11.0] - 2026-05-30
+
+### Added
+
+- CI 自動化：新增 `.github/workflows/reindex.yml`——push 到 `main` 後自動重建 Pagefind 搜尋索引與 `sitemap.xml` 並 commit 回 repo（commit 帶 `[skip ci]`），消除手動維護步驟。採 A1 commit-back（保持 branch-based Pages，workflow 失敗時網站仍照常部署）。
+- 新增 `.nojekyll`：確保 `pagefind/` 等靜態資產不被 GitHub Pages 的 Jekyll 處理（靜態站標準做法）。
+
+### Changed
+
+- `pagefind` 在 CI 釘 major 版 `pagefind@1`，避免未來 2.0 破壞性改版無聲破壞索引流程。
+- 更新 `MAINTENANCE.md` / `CONTRIBUTING.md`：手動 reindex/sitemap 步驟改註明「已自動化」，僅保留為 fallback。
+
 ## [1.10.0] - 2026-05-30
 
 ### Added
