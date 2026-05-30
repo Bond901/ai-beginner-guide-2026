@@ -8,6 +8,12 @@
 
 （尚無未發布變更）
 
+## [1.10.0] - 2026-05-30
+
+### Added
+
+- 社群入口：新增 `CONTRIBUTING.md`（貢獻指南——回報過時／錯誤、內容準確與來源原則、新增指南的格式與維護步驟、範圍與授權）；並於 GitHub 啟用 **Discussions** 討論區，供讀者問答、許願與回報過時內容（近零維護）。
+
 ## [1.9.2] - 2026-05-30
 
 ### Changed
@@ -189,7 +195,8 @@
 - 每篇 guide 右下角「回到頂部」懸浮按鈕。
 - MIT License。
 
-[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.9.2...HEAD
+[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.10.0...HEAD
+[1.10.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.9.2...v1.10.0
 [1.9.2]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.9.1...v1.9.2
 [1.9.1]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.8.1...v1.9.0
