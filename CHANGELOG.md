@@ -8,6 +8,18 @@
 
 （尚無未發布變更）
 
+## [1.9.2] - 2026-05-30
+
+### Changed
+
+- 首頁 `description` / `og:description` 由 87 字補長至 150 字（涵蓋各篇主題與「免費、附原始來源、標註驗證日」），落入社群分享／SEO 建議的最佳長度（110–160 字）。
+
+## [1.9.1] - 2026-05-30
+
+### Added
+
+- 新增 Open Graph 社群分享圖 `assets/og.png`（1200×630 品牌橫幅），與生成用的 `assets/og-banner.html`。`og:image` 自此有縮圖，分享卡完整呈現。
+
 ## [1.9.0] - 2026-05-30
 
 ### Added
@@ -177,7 +189,9 @@
 - 每篇 guide 右下角「回到頂部」懸浮按鈕。
 - MIT License。
 
-[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.9.0...HEAD
+[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.9.2...HEAD
+[1.9.2]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.9.1...v1.9.2
+[1.9.1]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.8.1...v1.9.0
 [1.8.1]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.8.0...v1.8.1
 [1.8.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.7.2...v1.8.0
