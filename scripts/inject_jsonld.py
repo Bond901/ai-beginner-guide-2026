@@ -33,6 +33,11 @@ CATS = {
 GUARD = re.compile(r"[ \t]*<!-- jsonld -->.*?</script>\n?", re.S)
 
 
+def isodate(d):
+    # schema.org datetime prefers full ISO 8601 with timezone; pages store date-only.
+    return d + "T00:00:00+08:00" if d and len(d) == 10 else d
+
+
 def meta(html, pat):
     m = re.search(pat, html)
     return m.group(1) if m else None
@@ -73,8 +78,8 @@ def build(name, html):
         "mainEntityOfPage": {"@type": "WebPage", "@id": canon},
     }
     if lu:
-        article["datePublished"] = lu
-    article["dateModified"] = lv or lu
+        article["datePublished"] = isodate(lu)
+    article["dateModified"] = isodate(lv or lu)
     crumb = {
         "@context": "https://schema.org", "@type": "BreadcrumbList",
         "itemListElement": [

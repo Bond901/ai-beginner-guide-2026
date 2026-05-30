@@ -8,6 +8,12 @@
 
 （尚無未發布變更）
 
+## [1.13.1] - 2026-05-31
+
+### Fixed
+
+- JSON-LD：Article 的 `datePublished`／`dateModified` 由純日期（`2026-05-29`）改為完整 ISO 8601 帶時區（`2026-05-29T00:00:00+08:00`），消除 Google Rich Results Test 的 4 個非致命日期警告（datetime 格式／缺時區）。Rich result 本就判定 valid，此為求 0 警告。
+
 ## [1.13.0] - 2026-05-31
 
 ### Added
@@ -235,7 +241,8 @@
 - 每篇 guide 右下角「回到頂部」懸浮按鈕。
 - MIT License。
 
-[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.13.0...HEAD
+[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.13.1...HEAD
+[1.13.1]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.13.0...v1.13.1
 [1.13.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.12.0...v1.13.0
 [1.12.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.11.1...v1.12.0
 [1.11.1]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.11.0...v1.11.1
