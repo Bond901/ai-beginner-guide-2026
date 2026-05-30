@@ -8,6 +8,12 @@
 
 （尚無未發布變更）
 
+## [1.8.1] - 2026-05-30
+
+### Changed
+
+- **重構（行為不變）**：將各頁**完全相同**的 chrome 樣式（內容新鮮度、⌘K 搜尋面板與結果 chip、主題切換鈕）抽出為共用 `assets/site.css`；各頁的 `:root` tokens、bespoke 樣式、per-file 深色覆蓋與 `search-fab` 位置仍保留 inline（深色覆蓋以選擇器 specificity 勝出，不受 base 移到外部檔影響）。配合 1.8.0 的 `assets/site.js`，搜尋／深色／新鮮度／面板樣式自此皆為單一來源。
+
 ## [1.8.0] - 2026-05-30
 
 ### Changed
@@ -165,7 +171,8 @@
 - 每篇 guide 右下角「回到頂部」懸浮按鈕。
 - MIT License。
 
-[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.8.0...HEAD
+[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.8.1...HEAD
+[1.8.1]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.8.0...v1.8.1
 [1.8.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.7.2...v1.8.0
 [1.7.2]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.7.1...v1.7.2
 [1.7.1]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.7.0...v1.7.1
