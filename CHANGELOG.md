@@ -8,6 +8,17 @@
 
 （尚無未發布變更）
 
+## [1.12.0] - 2026-05-31
+
+### Added
+
+- 新增「關於 · 方法論」頁 `about.html`：說明本站編輯原則（以官方／原始論文為權威骨幹、衝突標分歧、不臆測、每篇標驗證日）、維護與透明（連 CHANGELOG／CONTRIBUTING／Discussions）、維護者簡介。沿用全站設計系統（深色 hero + 暖紙身 + ⌘K 搜尋 + 深色模式 + 完整 SEO meta），建立內容可信度（E-E-A-T）地基。
+- 入口：首頁「關於本站」區塊新增「編輯原則與方法論」連結；首頁頁尾新增「關於 · 方法論」連結。
+
+### Changed
+
+- `scripts/gen_sitemap.py` 納入 `about.html`；`sitemap.xml` 由 12 增為 13 個 URL。
+
 ## [1.11.1] - 2026-05-30
 
 ### Added
@@ -213,7 +224,8 @@
 - 每篇 guide 右下角「回到頂部」懸浮按鈕。
 - MIT License。
 
-[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.11.1...HEAD
+[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.12.0...HEAD
+[1.12.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.11.1...v1.12.0
 [1.11.1]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.11.0...v1.11.1
 [1.11.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.9.2...v1.10.0

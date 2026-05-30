@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
-# Regenerate sitemap.xml by scanning index.html + guides/*.html.
+# Regenerate sitemap.xml by scanning index.html + about.html + guides/*.html.
 # Run after adding/renaming a guide:  python3 scripts/gen_sitemap.py
 import glob, os, re
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE = "https://bond901.github.io/ai-beginner-guide-2026/"
 
-pages = [("", "index.html")] + [("guides/", os.path.basename(f)) for f in sorted(glob.glob(os.path.join(REPO, "guides", "*.html")))]
+root_pages = [("", "index.html")]
+if os.path.exists(os.path.join(REPO, "about.html")):
+    root_pages.append(("", "about.html"))
+pages = root_pages + [("guides/", os.path.basename(f)) for f in sorted(glob.glob(os.path.join(REPO, "guides", "*.html")))]
 rows = []
 for prefix, name in pages:
     h = open(os.path.join(REPO, prefix, name), encoding="utf-8").read()
