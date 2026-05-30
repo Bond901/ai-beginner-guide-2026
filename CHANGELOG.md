@@ -8,6 +8,12 @@
 
 （尚無未發布變更）
 
+## [1.7.2] - 2026-05-30
+
+### Changed
+
+- 指南頁新鮮度標示改為**條件顯示**：永遠顯示「最後更新」，僅當「最後驗證」日期**晚於**「最後更新」時才追加顯示，避免兩者相同時的視覺重複（季度刷新後自然分岔才秀出價值）。內嵌備援日期與 `<meta>` 同步，消除載入時的短暫閃動。
+
 ## [1.7.1] - 2026-05-30
 
 ### Fixed
@@ -153,7 +159,8 @@
 - 每篇 guide 右下角「回到頂部」懸浮按鈕。
 - MIT License。
 
-[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.7.1...HEAD
+[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.7.2...HEAD
+[1.7.2]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.7.1...v1.7.2
 [1.7.1]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.7.0...v1.7.1
 [1.7.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.5...v1.7.0
 [1.6.5]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.4...v1.6.5

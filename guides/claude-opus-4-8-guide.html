@@ -303,7 +303,7 @@ html[data-theme="dark"] .theme-toggle .ic-moon{display:none;}
 
 <!-- ACTIONS BAR -->
 
-<div class="freshness no-print" data-pagefind-ignore>最後更新 <span class="lu">2026-05-30</span>　·　最後驗證 <span class="lv">2026-05-30</span></div>
+<div class="freshness no-print" data-pagefind-ignore>最後更新 <span class="lu">2026-05-29</span><span class="lv-wrap" hidden>　·　最後驗證 <span class="lv"></span></span></div>
 <div class="stale-warn no-print" data-pagefind-ignore hidden>⚠ <span></span></div>
 <div class="actions-bar no-print" data-pagefind-ignore>
   <div class="actions-row">
@@ -669,7 +669,7 @@ function copyPageURL(btn){
 }
 </script>
 <!-- freshness:js -->
-<script>(function(){var lu=document.querySelector('meta[name=last-updated]'),lv=document.querySelector('meta[name=last-verified]');if(lu)document.querySelectorAll('.lu').forEach(function(e){e.textContent=lu.content;});if(lv){document.querySelectorAll('.lv').forEach(function(e){e.textContent=lv.content;});var d=(Date.now()-new Date(lv.content).getTime())/86400000;if(d>180){var w=document.querySelector('.stale-warn');if(w){w.classList.add('show');w.hidden=false;w.querySelector('span').textContent='本篇最後驗證於 '+lv.content+'，AI 工具更新快，部分資訊可能已變動。';}}}})();</script>
+<script>(function(){var lu=document.querySelector('meta[name=last-updated]'),lv=document.querySelector('meta[name=last-verified]');if(lu)document.querySelectorAll('.lu').forEach(function(e){e.textContent=lu.content;});if(lv){if(new Date(lv.content)>new Date(lu?lu.content:0)){document.querySelectorAll('.lv').forEach(function(e){e.textContent=lv.content;});document.querySelectorAll('.lv-wrap').forEach(function(e){e.hidden=false;});}var d=(Date.now()-new Date(lv.content).getTime())/86400000;if(d>180){var w=document.querySelector('.stale-warn');if(w){w.classList.add('show');w.hidden=false;w.querySelector('span').textContent='本篇最後驗證於 '+lv.content+'，AI 工具更新快，部分資訊可能已變動。';}}}})();</script>
 <!-- search:modal -->
 <div id="searchModal" class="search-modal no-print" data-pagefind-ignore hidden role="dialog" aria-modal="true" aria-label="搜尋指南">
 <div class="sm-backdrop"></div>
