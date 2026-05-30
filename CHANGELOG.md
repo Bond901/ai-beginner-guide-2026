@@ -8,6 +8,12 @@
 
 （尚無未發布變更）
 
+## [1.7.0] - 2026-05-30
+
+### Added
+
+- **深色模式**（中性純黑風格）：跟隨系統 `prefers-color-scheme` 自動切換，並於右上角提供手動「日／夜」切換鈕，選擇記憶於 `localStorage`。涵蓋全部 12 頁（hero、分類卡、搜尋面板、程式碼框、表格、callout 等），明暗兩模式文字對比皆達 WCAG AA。深色樣式以 `@media screen` 包裹，**列印一律維持亮色**；並以 head 內早期 inline script 避免切換閃爍（FOUC）。
+
 ## [1.6.5] - 2026-05-30
 
 ### Changed
@@ -141,7 +147,8 @@
 - 每篇 guide 右下角「回到頂部」懸浮按鈕。
 - MIT License。
 
-[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.5...HEAD
+[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.7.0...HEAD
+[1.7.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.5...v1.7.0
 [1.6.5]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.4...v1.6.5
 [1.6.4]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.3...v1.6.4
 [1.6.3]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.2...v1.6.3
