@@ -8,6 +8,12 @@
 
 （尚無未發布變更）
 
+## [1.11.1] - 2026-05-30
+
+### Added
+
+- SEO：`index.html` 加入 Google Search Console 網站驗證 meta（`google-site-verification`），用於驗證 URL-prefix property 並提交 sitemap，以取得實際搜尋字詞與索引狀態。
+
 ## [1.11.0] - 2026-05-30
 
 ### Added
@@ -207,7 +213,9 @@
 - 每篇 guide 右下角「回到頂部」懸浮按鈕。
 - MIT License。
 
-[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.10.0...HEAD
+[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.11.1...HEAD
+[1.11.1]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.11.0...v1.11.1
+[1.11.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.9.2...v1.10.0
 [1.9.2]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.9.1...v1.9.2
 [1.9.1]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.9.0...v1.9.1
