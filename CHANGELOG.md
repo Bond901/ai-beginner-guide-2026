@@ -8,6 +8,12 @@
 
 （尚無未發布變更）
 
+## [1.8.0] - 2026-05-30
+
+### Changed
+
+- **重構（行為不變）**：將各頁**完全相同**的前端腳本（主題切換、內容新鮮度、⌘K 搜尋指令面板）抽出為單一共用檔 `assets/site.js`，並以自身 script URL 推導站台根目錄達成**頁面無關**（同一檔在首頁與 `/guides/` 皆正確運作）；移除 12 頁的重複 inline 腳本。日後維護這些功能只需改 1 個檔案而非 12 個。FOUC 早期主題判斷與 `copyPageURL` 仍保留 inline。
+
 ## [1.7.2] - 2026-05-30
 
 ### Changed
@@ -159,7 +165,8 @@
 - 每篇 guide 右下角「回到頂部」懸浮按鈕。
 - MIT License。
 
-[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.7.2...HEAD
+[Unreleased]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.8.0...HEAD
+[1.8.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.7.2...v1.8.0
 [1.7.2]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.7.1...v1.7.2
 [1.7.1]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.7.0...v1.7.1
 [1.7.0]: https://github.com/Bond901/ai-beginner-guide-2026/compare/v1.6.5...v1.7.0
