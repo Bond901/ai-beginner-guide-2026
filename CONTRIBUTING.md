@@ -34,7 +34,7 @@
 
 ## 改完別忘了（維護步驟）
 
-1. 更新該頁 `<meta name="last-verified">` 為今天；若內容有實質變動，另更新 `last-updated` 並寫 `CHANGELOG.md`。
+1. 更新該頁 `<meta name="last-verified">` 為今天；若內容有實質變動，另更新 `last-updated`，並在 `UPDATES.md` 補一筆給讀者看的白話說明。
 2. **搜尋索引（`pagefind/`）與 `sitemap.xml` 已自動化** —— push 到 `main` 後 GitHub Actions 會自動重建並 commit，**不用手動跑**（詳見 `.github/workflows/reindex.yml`）。
 3. 詳見 `MAINTENANCE.md`。
 

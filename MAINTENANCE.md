@@ -15,7 +15,7 @@ AI 工具更新快，本站價值在於「準確 + 夠新」。每季（建議�
 每篇處理後：
 
 - [ ] 更新該篇 `<meta name="last-verified">` 為今天（即使內容沒改）
-- [ ] 若有實質改動，另更新 `<meta name="last-updated">` + 寫 `CHANGELOG.md`
+- [ ] 若有實質改動，另更新 `<meta name="last-updated">`，並在 `UPDATES.md` 補一筆給讀者看的白話說明
 - [ ] 同步更新 `index.html` 對應卡片的「驗證日」
 - [ ] 若**標題或日期有改**，重跑 `python3 scripts/inject_jsonld.py` 讓 JSON-LD 結構化資料同步
 - [ ] 若該篇納入 NotebookLM 公開筆記本，重新整理來源
