@@ -45,7 +45,7 @@
     if (!modal || !input || !box) return;
     var pf = null, items = [], act = -1, seq = 0, tmr;
     function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]; }); }
-    function hint() { box.innerHTML = '<div class="sm-msg">輸入關鍵字，搜尋 11 篇指南…</div>'; items = []; act = -1; }
+    function hint() { box.innerHTML = '<div class="sm-msg">輸入關鍵字，搜尋 12 篇指南…</div>'; items = []; act = -1; }
     function open() { modal.hidden = false; document.documentElement.style.overflow = 'hidden'; if (!input.value) hint(); setTimeout(function () { input.focus(); }, 20); }
     function close() { modal.hidden = true; document.documentElement.style.overflow = ''; act = -1; }
     function setAct(i) { if (!items.length) return; act = (i + items.length) % items.length; items.forEach(function (el, k) { el.classList.toggle('active', k === act); if (k === act) el.scrollIntoView({ block: 'nearest' }); }); }

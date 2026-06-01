@@ -26,6 +26,7 @@ CATS = {
     "ai-extensions-guide-2026.html":          ("進階 · Agent 擴充", "cat-adv"),
     "claude-code-skills-guide.html":          ("進階 · Agent 擴充", "cat-adv"),
     "claude-opus-4-8-guide.html":             ("進階 · Agent 擴充", "cat-adv"),
+    "ai-harness-guide.html":                  ("進階 · Agent 擴充", "cat-adv"),
     "rag-guide-2026.html":                    ("流程 · 應用", "cat-flow"),
     "ai-sdlc-guide-2026.html":                ("流程 · 應用", "cat-flow"),
 }

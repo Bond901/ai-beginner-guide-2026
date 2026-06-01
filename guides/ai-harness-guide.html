@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<script>(function(){try{var t=localStorage.getItem("theme");if(!t)t=window.matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harness 思維架構全圖 — Prompt → Context → Harness Engineering 演進路線圖</title>
+<meta name="description" content="三次典範轉移完整解析：從 Prompt Engineering 到 Context Engineering，再到 Harness Engineering——涵蓋 RAG、PEV Loop、Reasoning Sandwich 等核心設計模式。整合 GPT、Claude、Gemini 三方觀點，附完整程式碼範例與決策框架。">
+<link rel="canonical" href="https://bond901.github.io/ai-beginner-guide-2026/guides/ai-harness-guide.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Beginner Guide 2026">
+<meta property="og:locale" content="zh_Hant">
+<meta property="og:title" content="Harness 思維架構全圖 — Prompt → Context → Harness Engineering">
+<meta property="og:description" content="三次典範轉移完整解析：從指令設計到確定性 Agent 控制系統的演進路線圖，整合三家 AI 模型觀點。">
+<meta property="og:url" content="https://bond901.github.io/ai-beginner-guide-2026/guides/ai-harness-guide.html">
+<meta property="og:image" content="https://bond901.github.io/ai-beginner-guide-2026/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="last-updated" content="2026-06-01">
+<meta name="last-verified" content="2026-06-01">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;900&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+:root{
+  --ink:#0f0e0d; --paper:#f5f0e8; --warm-mid:#e8e0d0; --border:#c8bfa8;
+  --muted:#6b6353;
+  --hero-accent:#7c3aed;
+
+  /* t1 = Prompt Engineering: amber-terracotta */
+  --t1-color:#b8520f; --t1-bg:#faf0e8;
+  /* t2 = Context Engineering: teal */
+  --t2-color:#1a7a6e; --t2-bg:#e8f5f3;
+  /* t3 = Harness Engineering: indigo */
+  --t3-color:#2d3a8c; --t3-bg:#eef0fa;
+  --t4-color:#6b3db8; --t4-bg:#f0eaf9;
+  --t5-color:#1a6b4a; --t5-bg:#e8f5ee;
+  --t6-color:#8c1a1a; --t6-bg:#f9eaea;
+
+  --t1-on-dark:#e8904a;
+  --t2-on-dark:#6aad8e;
+  --t3-on-dark:#8baee0;
+  --t4-on-dark:#c0a8e8;
+  --t5-on-dark:#7ec79f;
+  --t6-on-dark:#d99a9e;
+
+  --link:#6b3db8;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans TC',sans-serif;font-size:15px;line-height:1.75;color:var(--ink);background:var(--paper);}
+
+/* ── HERO ── */
+.hero{background:var(--ink);color:var(--paper);padding:56px 48px 48px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-60px;right:-60px;width:280px;height:280px;border:1px solid rgba(245,240,232,.12);border-radius:50%;}
+.hero::after{content:'';position:absolute;bottom:-80px;left:20%;width:200px;height:200px;border:1px solid rgba(245,240,232,.08);border-radius:50%;}
+.hero-inner{max-width:820px;margin:0 auto;position:relative;z-index:1;}
+.hero-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--hero-accent);margin-bottom:16px;}
+.hero h1{font-family:'Noto Serif TC',serif;font-weight:900;font-size:2.4rem;line-height:1.25;margin-bottom:16px;max-width:620px;}
+.hero-sub{font-size:14px;color:rgba(245,240,232,.65);max-width:560px;font-weight:300;line-height:1.8;}
+.hero-badges{display:flex;gap:8px;margin-top:28px;flex-wrap:wrap;}
+.badge{padding:5px 14px;border-radius:2px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.05em;color:#fff;}
+.badge-t1{background:var(--t1-color);} .badge-t2{background:var(--t2-color);} .badge-t3{background:var(--t3-color);}
+.badge-t4{background:var(--t4-color);} .badge-t5{background:var(--t5-color);} .badge-t6{background:var(--t6-color);}
+.hero-meta{margin-top:24px;display:flex;gap:22px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;color:rgba(245,240,232,.4);}
+
+/* ── LAYOUT ── */
+.container{max-width:820px;margin:0 auto;padding:0 32px;}
+hr.rule{border:none;border-top:1px solid var(--border);margin:40px 0;}
+.section{padding:48px 0 0;}
+.section-number{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.15em;color:var(--muted);margin-bottom:6px;}
+.section h2{font-family:'Noto Serif TC',serif;font-weight:900;font-size:1.7rem;margin-bottom:18px;line-height:1.3;}
+.section>p.intro{font-size:14px;color:var(--muted);margin-bottom:22px;max-width:680px;}
+
+/* ── ACTIONS BAR ── */
+.actions-bar{display:flex;flex-direction:column;gap:10px;border:1px solid var(--border);background:var(--warm-mid);padding:12px 16px;margin:24px 0 0;}
+.actions-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;}
+.act-btn{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--ink);background:var(--paper);border:1px solid var(--border);border-radius:2px;padding:7px 14px;cursor:pointer;text-decoration:none;transition:background .15s ease,border-color .15s ease,color .15s ease;}
+.act-btn:hover{background:var(--link);border-color:var(--link);color:#fff;}
+.act-hint{font-size:11.5px;color:var(--muted);line-height:1.6;}
+
+/* ── TOC ── */
+.toc{background:var(--warm-mid);border-left:3px solid var(--hero-accent);padding:24px 28px;margin:24px 0 0;}
+.toc-title{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.toc ol{padding-left:20px;font-size:13px;color:var(--muted);line-height:2;}
+.toc a{color:inherit;text-decoration:none;} .toc a:hover{color:var(--link);}
+
+/* ── OVERVIEW CARDS ── */
+.mode-overview{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--border);overflow:hidden;margin:24px 0;}
+.mode-card{padding:22px 18px;border-right:1px solid var(--border);}
+.mode-card:last-child{border-right:none;}
+.mode-card.t1{background:var(--t1-bg);} .mode-card.t2{background:var(--t2-bg);} .mode-card.t3{background:var(--t3-bg);}
+.mode-card.t4{background:var(--t4-bg);} .mode-card.t5{background:var(--t5-bg);} .mode-card.t6{background:var(--t6-bg);}
+.mode-icon{width:36px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:12px;color:#fff;}
+.icon-t1{background:var(--t1-color);} .icon-t2{background:var(--t2-color);} .icon-t3{background:var(--t3-color);}
+.icon-t4{background:var(--t4-color);} .icon-t5{background:var(--t5-color);} .icon-t6{background:var(--t6-color);}
+.mode-card h3{font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:600;margin-bottom:6px;}
+.mode-card.t1 h3{color:var(--t1-color);} .mode-card.t2 h3{color:var(--t2-color);} .mode-card.t3 h3{color:var(--t3-color);}
+.mode-card.t4 h3{color:var(--t4-color);} .mode-card.t5 h3{color:var(--t5-color);} .mode-card.t6 h3{color:var(--t6-color);}
+.mode-card p{font-size:11.5px;color:var(--muted);line-height:1.6;margin:0;}
+
+/* ── TOOL SECTION ── */
+.mode-section{border:1px solid var(--border);margin:28px 0;overflow:hidden;}
+.mode-header{padding:18px 24px;display:flex;align-items:center;gap:14px;}
+.mode-header.t1-h{background:var(--t1-color);} .mode-header.t2-h{background:var(--t2-color);} .mode-header.t3-h{background:var(--t3-color);}
+.mode-header.t4-h{background:var(--t4-color);} .mode-header.t5-h{background:var(--t5-color);} .mode-header.t6-h{background:var(--t6-color);}
+.mode-header h3{font-family:'Noto Serif TC',serif;font-size:1.15rem;font-weight:900;color:#fff;}
+.mode-header .mode-tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.15em;color:rgba(255,255,255,.65);margin-left:auto;white-space:nowrap;}
+.mode-body{padding:24px;background:var(--paper);}
+.mode-body h4.sub{font-weight:700;font-size:13.5px;margin:20px 0 8px;}
+.mode-body p{font-size:13.5px;margin:8px 0;}
+.mode-body ul.uc{list-style:none;margin:10px 0;}
+.mode-body ul.uc li{font-size:13px;padding:4px 0 4px 18px;position:relative;}
+.mode-body ul.uc li::before{content:'▸';position:absolute;left:0;color:var(--muted);}
+
+/* ── FACT GRID ── */
+.fact-grid{display:grid;grid-template-columns:120px 1fr;border:1px solid var(--border);font-size:13px;overflow:hidden;margin:16px 0;}
+.fact-label{background:var(--warm-mid);padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.08em;display:flex;align-items:flex-start;border-bottom:1px solid var(--border);}
+.fact-label:last-of-type{border-bottom:none;}
+.fact-value{padding:12px 16px;border-bottom:1px solid var(--border);line-height:1.65;}
+.fact-value:last-child{border-bottom:none;}
+.fact-value code,.mode-body code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--warm-mid);padding:1px 5px;border-radius:2px;}
+
+/* ── STEPS ── */
+.steps{margin:20px 0;}
+.step{display:flex;gap:16px;margin-bottom:14px;padding:16px;background:var(--warm-mid);border-left:3px solid transparent;}
+.step.t1-step{border-left-color:var(--t1-color);} .step.t2-step{border-left-color:var(--t2-color);} .step.t3-step{border-left-color:var(--t3-color);}
+.step.t4-step{border-left-color:var(--t4-color);} .step.t5-step{border-left-color:var(--t5-color);} .step.t6-step{border-left-color:var(--t6-color);}
+.step-num{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;min-width:28px;line-height:1.4;}
+.step.t1-step .step-num{color:var(--t1-color);} .step.t2-step .step-num{color:var(--t2-color);} .step.t3-step .step-num{color:var(--t3-color);}
+.step.t4-step .step-num{color:var(--t4-color);} .step.t5-step .step-num{color:var(--t5-color);} .step.t6-step .step-num{color:var(--t6-color);}
+.step-content h4{font-size:13px;font-weight:700;margin-bottom:4px;}
+.step-content p{font-size:13px;color:var(--muted);margin:0;line-height:1.55;}
+
+/* ── CODE BLOCK ── */
+.code-block{background:#1a1814;border-radius:4px;padding:14px 18px;margin:12px 0;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#d4c9a8;overflow-x:auto;line-height:1.7;white-space:pre;}
+.code-block .comment{color:#9a8f78;}
+.code-block .cmd{color:#e8904a;}
+.code-block .str{color:#6aad8e;} .code-block .kw{color:#8baee0;}
+
+/* ── COMPARE TABLE ── */
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.compare-table{width:100%;border-collapse:collapse;font-size:13px;margin:20px 0;}
+.compare-table th{padding:10px 12px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;font-weight:600;text-transform:uppercase;border-bottom:2px solid var(--ink);}
+.compare-table th:nth-child(2){background:var(--t1-bg);color:var(--t1-color);}
+.compare-table th:nth-child(3){background:var(--t2-bg);color:var(--t2-color);}
+.compare-table th:nth-child(4){background:var(--t3-bg);color:var(--t3-color);}
+.compare-table th:nth-child(5){background:var(--t4-bg);color:var(--t4-color);}
+.compare-table th:nth-child(6){background:var(--t5-bg);color:var(--t5-color);}
+.compare-table th:nth-child(7){background:var(--t6-bg);color:var(--t6-color);}
+.compare-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top;}
+.compare-table td:first-child{font-weight:500;color:var(--muted);background:var(--warm-mid);white-space:nowrap;}
+.yes{color:#1a7a6e;font-weight:700;} .no{color:#a3232a;} .partial{color:#7a4a12;}
+
+/* ── PLAN / PRICING TABLE ── */
+.plan-table{width:100%;border-collapse:collapse;font-size:12.5px;margin:20px 0;}
+.plan-table th{background:var(--warm-mid);padding:9px 12px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;border:1px solid var(--border);}
+.plan-table td{padding:9px 12px;border:1px solid var(--border);vertical-align:top;line-height:1.5;}
+
+/* ── DECISION TREE ── */
+.decision{background:var(--ink);color:var(--paper);padding:28px 32px;margin:28px 0;}
+.decision h3{font-family:'Noto Serif TC',serif;font-size:1.1rem;margin-bottom:20px;}
+.decision-item{display:flex;gap:12px;margin-bottom:12px;align-items:flex-start;}
+.decision-q{font-size:13px;color:rgba(245,240,232,.72);min-width:300px;padding-top:2px;}
+.decision-arrow{color:var(--hero-accent);font-size:14px;padding-top:1px;}
+.decision-a{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;}
+.a-t1{color:var(--t1-on-dark);} .a-t2{color:var(--t2-on-dark);} .a-t3{color:var(--t3-on-dark);}
+.a-t4{color:var(--t4-on-dark);} .a-t5{color:var(--t5-on-dark);} .a-t6{color:var(--t6-on-dark);}
+
+/* ── TIP BOX ── */
+.tip-box{border:1px solid var(--border);padding:16px 20px;margin:16px 0;display:flex;gap:12px;background:rgba(245,240,232,.6);}
+.tip-box.warn{border-color:#c9a45a;background:#faf3e2;}
+.tip-icon{font-size:18px;flex-shrink:0;}
+.tip-box p{font-size:13px;margin:0;line-height:1.65;}
+
+/* ── GETTING STARTED PATHS ── */
+.paths{display:grid;gap:16px;margin:20px 0;}
+.path-card{border:1px solid var(--border);padding:20px 24px;}
+.path-card.p1{background:var(--t1-bg);} .path-card.p2{background:var(--t2-bg);} .path-card.p3{background:var(--t3-bg);}
+.path-label{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.1em;margin-bottom:10px;}
+.path-card.p1 .path-label{color:var(--t1-color);} .path-card.p2 .path-label{color:var(--t2-color);} .path-card.p3 .path-label{color:var(--t3-color);}
+.path-card ol{padding-left:18px;font-size:13px;line-height:2;}
+
+/* ── SOURCES ── */
+.sources{font-size:12px;color:var(--muted);line-height:1.9;margin:14px 0;}
+.sources a{color:var(--link);text-decoration:none;word-break:break-all;}
+.sources h4{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink);margin:18px 0 8px;}
+
+/* ── FOOTER ── */
+.footer{margin:56px 0 0;padding:24px 0 32px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+.footer a{color:inherit;text-decoration:none;} .footer a:hover{color:var(--link);}
+
+/* ── FLOATING BUTTONS ── */
+.back-to-top{position:fixed;bottom:32px;right:32px;width:40px;height:40px;background:var(--ink);color:var(--paper);border:1px solid var(--border);border-radius:2px;font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;line-height:1;cursor:pointer;opacity:0;transform:translateY(8px);transition:opacity .2s ease,transform .2s ease,background .15s ease;z-index:100;}
+.back-to-top.visible{opacity:1;transform:translateY(0);}
+.back-to-top:hover{background:var(--hero-accent);border-color:var(--hero-accent);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  .hero{padding:36px 20px 32px;} .hero h1{font-size:1.7rem;}
+  .container{padding:0 16px;}
+  .mode-overview{grid-template-columns:repeat(2,1fr);}
+  .mode-card{border-right:none;border-bottom:1px solid var(--border);}
+  .compare-table,.plan-table{font-size:11px;} .compare-table td,.compare-table th{padding:7px 8px;}
+  .compare-table{min-width:560px;}
+  .fact-grid{grid-template-columns:90px 1fr;}
+  .decision-item{flex-direction:column;gap:4px;} .decision-q{min-width:unset;}
+  .footer{flex-direction:column;gap:8px;text-align:center;}
+  .back-to-top{bottom:20px;right:20px;} .back-home{bottom:68px;right:20px;} .search-fab{right:20px;bottom:116px;}
+}
+
+/* ── FLOATING：回首頁 + 搜尋 FAB（堆疊在 back-to-top 之上）── */
+.back-home{position:fixed;bottom:80px;right:32px;width:40px;height:40px;background:var(--ink);color:var(--paper);border:1px solid var(--border);border-radius:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s ease,border-color .15s ease;z-index:100;text-decoration:none;}
+.back-home:hover{background:var(--hero-accent);border-color:var(--hero-accent);}
+.search-fab{position:fixed;right:32px;bottom:128px;width:40px;height:40px;background:var(--ink);color:var(--paper);border:1px solid var(--border);border-radius:2px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:100;}
+.search-fab:hover{background:var(--hero-accent);border-color:var(--hero-accent);}
+
+/* ── PRINT ── */
+@media print{
+  @page{margin:14mm;}
+  body{background:#fff;}
+  *{-webkit-print-color-adjust:exact;color-adjust:exact;print-color-adjust:exact;}
+  .no-print,.actions-bar,.back-to-top{display:none !important;}
+  .mode-card,.fact-grid,.tip-box,.path-card,.step{break-inside:avoid;}
+  .compare-table tr,.plan-table tr{break-inside:avoid;}
+  .compare-table thead,.plan-table thead{display:table-header-group;}
+  .mode-section,.decision,.steps,.table-scroll{overflow:visible;}
+  .code-block{white-space:pre-wrap;word-break:break-word;overflow:visible;}
+  a{color:inherit;text-decoration:none;}
+  .hero{overflow:visible;background:#fff;color:var(--ink);}
+  .hero::before,.hero::after{display:none;}
+  .hero h1{color:var(--ink);} .hero-sub,.hero-meta{color:var(--muted);} .hero-label{color:var(--link);}
+}
+
+/* ── DARK MODE ── */
+@media screen{
+html[data-theme="dark"]{--ink:#ededed;--paper:#121212;--warm-mid:#1d1d1d;--border:#2a2a2a;--muted:#9a9a9a;--link:#ff8a5a;--hero-accent:#a78bfa;--t1-color:var(--t1-on-dark);--t1-bg:#1a1a1a;--t2-color:var(--t2-on-dark);--t2-bg:#1a1a1a;--t3-color:var(--t3-on-dark);--t3-bg:#1a1a1a;--t4-color:var(--t4-on-dark);--t4-bg:#1a1a1a;--t5-color:var(--t5-on-dark);--t5-bg:#1a1a1a;--t6-color:var(--t6-on-dark);--t6-bg:#1a1a1a;}
+html[data-theme="dark"] .hero,html[data-theme="dark"] .decision{background:#0d0d0d;}
+html[data-theme="dark"] .hero h1{color:#f3f3f3;}
+html[data-theme="dark"] .code-block .comment{color:#bbb4a9;}
+html[data-theme="dark"] .yes{color:#83e1d6;} html[data-theme="dark"] .no{color:#d58f92;} html[data-theme="dark"] .partial{color:#e1b283;}
+html[data-theme="dark"] .tip-box.warn{background:#2a2418;border-color:#5a4a2a;}
+html[data-theme="dark"] .search-fab,html[data-theme="dark"] .back-home,html[data-theme="dark"] .back-to-top{background:#1d1d1d;color:#ededed;border-color:#333;}
+html[data-theme="dark"] .search-fab:hover,html[data-theme="dark"] .back-home:hover,html[data-theme="dark"] .back-to-top:hover{background:#ff7a45;border-color:#ff7a45;color:#121212;}
+}
+</style>
+<!-- analytics:goatcounter -->
+<script data-goatcounter="https://bond901.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<!-- jsonld -->
+<script type="application/ld+json">
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Harness 思維架構全圖",
+    "description": "三次典範轉移完整解析：從指令設計到確定性 Agent 控制系統的演進路線圖，整合三家 AI 模型觀點。",
+    "image": "https://bond901.github.io/ai-beginner-guide-2026/assets/og.png",
+    "inLanguage": "zh-Hant",
+    "author": {
+      "@type": "Person",
+      "name": "Bond901",
+      "url": "https://github.com/Bond901"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "AI Beginner Guide 2026",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://bond901.github.io/ai-beginner-guide-2026/assets/og.png"
+      }
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://bond901.github.io/ai-beginner-guide-2026/guides/ai-harness-guide.html"
+    },
+    "datePublished": "2026-06-01T00:00:00+08:00",
+    "dateModified": "2026-06-01T00:00:00+08:00"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "首頁",
+        "item": "https://bond901.github.io/ai-beginner-guide-2026/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "進階 · Agent 擴充",
+        "item": "https://bond901.github.io/ai-beginner-guide-2026/#cat-adv"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Harness 思維架構全圖",
+        "item": "https://bond901.github.io/ai-beginner-guide-2026/guides/ai-harness-guide.html"
+      }
+    ]
+  }
+]
+</script>
+</head>
+<body>
+
+<!-- ══ HERO ══ -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">// Prompt × Context × Harness Engineering · 2026-06-01</div>
+    <h1>Harness 思維架構全圖<br>三次典範轉移解析</h1>
+    <p class="hero-sub">從 Prompt Engineering 到 Context Engineering，再到確定性 Harness 控制系統——整合 GPT、Claude、Gemini 三方觀點的完整演進路線圖，附核心設計模式與程式碼範例。</p>
+    <div class="hero-badges">
+      <span class="badge badge-t1">Prompt Engineering</span>
+      <span class="badge badge-t2">Context Engineering</span>
+      <span class="badge badge-t3">Harness Engineering</span>
+    </div>
+    <div class="hero-meta">
+      <span>適用：初學者 → 資深 AI 工程師</span>
+      <span>查證：2026-06-01</span>
+      <span>三模型交叉審閱</span>
+    </div>
+  </div>
+</div>
+
+<div class="container" data-pagefind-body data-pagefind-meta="tag:進階·Agent · 進階">
+
+<div class="freshness no-print" data-pagefind-ignore>最後更新 <span class="lu">2026-06-01</span><span class="lv-wrap" hidden>　·　最後驗證 <span class="lv"></span></span></div>
+<div class="stale-warn no-print" data-pagefind-ignore hidden>⚠ <span></span></div>
+
+<!-- ══ ACTIONS BAR ══ -->
+<div class="actions-bar no-print" data-pagefind-ignore>
+  <div class="actions-row">
+    <button class="act-btn" onclick="window.print()" title="開啟列印視窗 → 目的地選「另存為 PDF」→ 儲存">⬇ PDF</button>
+    <a class="act-btn" href="https://notebooklm.google.com/" target="_blank" rel="noopener">↗ NotebookLM</a>
+    <button class="act-btn" id="copyUrlBtn" onclick="copyPageURL(this)">⧉ Copy Link</button>
+  </div>
+  <span class="act-hint">① 點 <strong>PDF</strong> 匯出，或 <strong>Copy Link</strong> 複製網址　② 開 <strong>NotebookLM</strong> →「新增來源 → 網站」貼上，加入你的筆記本（需 https 網址）</span>
+</div>
+
+<!-- ══ TOC ══ -->
+<div class="toc">
+  <div class="toc-title">// 目錄</div>
+  <ol>
+    <li><a href="#overview">一眼看懂三層架構</a></li>
+    <li><a href="#prompt">Prompt Engineering — 指令層</a></li>
+    <li><a href="#context">Context Engineering — 視窗層</a></li>
+    <li><a href="#harness">Harness Engineering — 系統層</a></li>
+    <li><a href="#compare">功能完整對比</a></li>
+    <li><a href="#decision-tree">決策樹：遇到問題選哪層？</a></li>
+    <li><a href="#start">立刻開始</a></li>
+    <li><a href="#sources">資料來源</a></li>
+  </ol>
+</div>
+
+<!-- ══ §01 OVERVIEW ══ -->
+<div class="section" id="overview">
+  <div class="section-number">// 01</div>
+  <h2>一眼看懂三層架構</h2>
+  <p class="intro">三層架構是嵌套關係，不是替代關係：Prompt ⊆ Context ⊆ Harness。每一層解決下一層無法獨立解決的問題，工程嚴格性隨層次升高持續遷移（Relocating Rigor）。</p>
+</div>
+<div class="mode-overview">
+  <div class="mode-card t1">
+    <div class="mode-icon icon-t1">📝</div>
+    <h3>Prompt Engineering</h3>
+    <p>設計 LLM 輸入指令的技藝。核心問題：<strong>「我該怎麼問？」</strong>——透過角色、格式、範例、限制引導模型輸出。</p>
+  </div>
+  <div class="mode-card t2">
+    <div class="mode-icon icon-t2">🗂️</div>
+    <h3>Context Engineering</h3>
+    <p>精準管理模型每次推理所見資訊。核心問題：<strong>「模型需要知道什麼？」</strong>——RAG、記憶、工具結果的動態組裝。</p>
+  </div>
+  <div class="mode-card t3">
+    <div class="mode-icon icon-t3">⚙️</div>
+    <h3>Harness Engineering</h3>
+    <p>包圍 Agent 的確定性約束環境。核心問題：<strong>「系統如何防止 Agent 出軌？」</strong>——CI gate、linter、PEV Loop 機械執行。</p>
+  </div>
+</div>
+
+<!-- ══ §02 PROMPT ENGINEERING ══ -->
+<div class="section" id="prompt">
+  <div class="section-number">// 02</div>
+  <h2>Prompt Engineering — 指令層</h2>
+</div>
+<div class="mode-section">
+  <div class="mode-header t1-h">
+    <span style="font-size:20px">📝</span>
+    <h3>Prompt Engineering — 設計輸入指令的技藝</h3>
+    <span class="mode-tag">LAYER 1 · 指令層</span>
+  </div>
+  <div class="mode-body">
+    <div class="fact-grid">
+      <div class="fact-label">能做什麼</div>
+      <div class="fact-value">透過角色設定、格式約束、少樣本範例、思維鏈推理，引導模型在單次對話中產生目標輸出</div>
+      <div class="fact-label">使用介面</div>
+      <div class="fact-value">System Prompt、User Message、Few-shot Examples、XML/JSON 格式標記</div>
+      <div class="fact-label">適合誰</div>
+      <div class="fact-value">所有層級的起點。初學者用於一問一答任務；工程師用於定義 Agent 角色與輸出規格</div>
+      <div class="fact-label">核心技術</div>
+      <div class="fact-value">Zero-shot、Few-shot、Chain-of-Thought（CoT）、Role Prompting、Tree-of-Thought（ToT）、Structured Output</div>
+      <div class="fact-label">侷限</div>
+      <div class="fact-value">概率性合規——模型不保證每次遵守格式；長對話後早期指令被稀釋；無法跨 session 持久</div>
+    </div>
+
+    <h4 class="sub">典型應用場景</h4>
+    <ul class="uc">
+      <li>問答、摘要、翻譯等單次回答型任務</li>
+      <li>定義 AI Agent 的角色身份與專業視角</li>
+      <li>強制結構化輸出（JSON / XML / Markdown 表格）</li>
+      <li>要求模型逐步推理解決複雜數學或邏輯問題</li>
+      <li>文案草稿、程式碼片段生成的品質優化</li>
+    </ul>
+
+    <div class="tip-box">
+      <span class="tip-icon">💡</span>
+      <p><strong>CLEAR 框架：</strong>Context（背景）、Limit（限制）、Examples（範例）、Action（明確動詞）、Review（自我查核標準）。每個任務都應包含這五個元素，是最快提升 Prompt 品質的入門框架。</p>
+    </div>
+
+    <h4 class="sub">工程化 Prompt 模板</h4>
+    <div class="steps">
+      <div class="step t1-step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <h4>定義角色與任務身份（Role Prompting）</h4>
+          <p>明確指定模型的專業視角、經驗背景、目標受眾。避免使用過於寬泛的角色，確保與任務領域相符。</p>
+        </div>
+      </div>
+      <div class="step t1-step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <h4>加入少樣本示範（Few-shot Examples）</h4>
+          <p>提供 2–5 個輸入→輸出範例，固定格式與風格。範例品質直接決定輸出一致性，差的範例比沒有範例更糟。</p>
+        </div>
+      </div>
+      <div class="step t1-step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <h4>啟用思維鏈推理（Chain-of-Thought）</h4>
+          <p>要求模型「先一步步推理再給答案」，顯著提升複雜邏輯與數學任務的正確率。</p>
+        </div>
+      </div>
+      <div class="step t1-step">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <h4>強制結構化輸出（Structured Output）</h4>
+          <p>指定 XML tags 或 JSON schema，搭配 Pydantic 等工具做 schema 驗證，降低格式不穩定風險。</p>
+        </div>
+      </div>
+      <div class="step t1-step">
+        <div class="step-num">05</div>
+        <div class="step-content">
+          <h4>加入查核標準（Review Criteria）</h4>
+          <p>明確說明「不確定時請標示」、「不得加入原文沒有的資訊」、「必須引用來源」，降低幻覺率。</p>
+        </div>
+      </div>
+    </div>
+
+    <h4 class="sub">程式碼範例：工程化問法對比</h4>
+    <div class="code-block"><span class="comment"># ❌ 普通問法</span>
+幫我寫產品介紹。
+
+<span class="comment"># ✅ 工程化問法</span>
+你是 B2B SaaS 產品行銷顧問。
+請為「AI 客服知識庫搜尋工具」寫產品介紹。
+受眾：中小型電商營運主管。
+目標：說明此工具如何降低客服回覆時間。
+限制：不得使用未查證數字；不得誇稱保證提升營收。
+輸出格式：
+  1. 50 字摘要
+  2. 3 個核心賣點
+  3. 1 段正式網站文案
+不確定時：標示「需查證」而非猜測。</div>
+
+    <h4 class="sub">結構化輸出範例（XML schema）</h4>
+    <div class="code-block"><span class="comment">&lt;!-- 要求模型嚴格依此 XML 格式輸出，不含其他文字 --&gt;</span>
+&lt;<span class="cmd">analysis</span>&gt;
+  &lt;<span class="cmd">sentiment</span>&gt;正面|負面|中性&lt;/<span class="cmd">sentiment</span>&gt;
+  &lt;<span class="cmd">confidence</span>&gt;0.0–1.0&lt;/<span class="cmd">confidence</span>&gt;
+  &lt;<span class="cmd">keywords</span>&gt;
+    &lt;<span class="cmd">keyword</span>&gt;…&lt;/<span class="cmd">keyword</span>&gt;
+  &lt;/<span class="cmd">keywords</span>&gt;
+  &lt;<span class="cmd">summary</span>&gt;一句話總結&lt;/<span class="cmd">summary</span>&gt;
+&lt;/<span class="cmd">analysis</span>&gt;</div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- ══ §03 CONTEXT ENGINEERING ══ -->
+<div class="section" id="context">
+  <div class="section-number">// 03</div>
+  <h2>Context Engineering — 視窗層</h2>
+</div>
+<div class="mode-section">
+  <div class="mode-header t2-h">
+    <span style="font-size:20px">🗂️</span>
+    <h3>Context Engineering — 管理模型所見資訊的系統工程</h3>
+    <span class="mode-tag">LAYER 2 · 視窗層</span>
+  </div>
+  <div class="mode-body">
+    <div class="fact-grid">
+      <div class="fact-label">能做什麼</div>
+      <div class="fact-value">動態組裝 context window——RAG 檢索、記憶壓縮、工具定義載入、對話歷史管理，確保模型每次推理看到正確且高密度的資訊</div>
+      <div class="fact-label">使用介面</div>
+      <div class="fact-value">向量資料庫、RAG pipeline、記憶系統（向量 / KV store）、工具定義、session 狀態機</div>
+      <div class="fact-label">適合誰</div>
+      <div class="fact-value">需要多輪對話、長鏈任務、外部知識庫查詢、或跨 session 狀態持久化的開發者與工程師</div>
+      <div class="fact-label">四個層次</div>
+      <div class="fact-value">Working Context（本次可見）、Session（對話事件）、Memory（跨 session 長期知識）、Artifacts（大型檔案與版本化資料）</div>
+      <div class="fact-label">侷限</div>
+      <div class="fact-value">Context Rot（長對話後品質下降）、位置偏差（中段資訊易被忽略）、多 Agent 衝突、概率性合規仍無法根除</div>
+    </div>
+
+    <h4 class="sub">典型應用場景</h4>
+    <ul class="uc">
+      <li>企業知識庫查詢——從文件庫 RAG 檢索最新政策或技術規範</li>
+      <li>長篇研究任務——保留早期對話決策點，防止 Agent 忘記前提</li>
+      <li>多工具 Agent——僅載入當前步驟需要的工具定義，節省 tokens</li>
+      <li>跨 session 個人化——向量存儲用戶偏好、過去決策、專案規則</li>
+      <li>大型 Codebase 分析——按需載入相關檔案而非全量注入</li>
+    </ul>
+
+    <div class="tip-box warn">
+      <span class="tip-icon">⚠️</span>
+      <p><strong>Context Rot 警告：</strong>當 token 使用率超過 75%，或工具輸出佔比超過 60%，模型注意力品質顯著下降——指令遵循率降低、重複相同回答、忽略工具結果。這時應觸發 <code>/compact</code>（Anthropic Claude）或重新開啟乾淨 session 並注入狀態摘要。</p>
+    </div>
+
+    <h4 class="sub">Context Engineering 六大評估指標</h4>
+    <ul class="uc">
+      <li><strong>Relevance（相關性）：</strong>模型看到的是否是任務所需資訊？→ 衡量 retrieval precision</li>
+      <li><strong>Sufficiency（充分性）：</strong>是否遺漏必要資訊？→ 分析失敗案例歸因</li>
+      <li><strong>Economy（經濟性）：</strong>token 成本與延遲是否可接受？→ cache hit rate</li>
+      <li><strong>Provenance（來源性）：</strong>資訊可否追溯？→ citation coverage</li>
+      <li><strong>Isolation（隔離性）：</strong>不相關或不可信內容是否被隔離？→ permission tests</li>
+      <li><strong>Freshness（新鮮度）：</strong>資訊是否過時？→ timestamp policy、source recency</li>
+    </ul>
+
+    <div class="steps">
+      <div class="step t2-step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <h4>清點任務所需資訊層次</h4>
+          <p>區分：Working Context（本次必需）/ Session（對話歷史）/ Memory（跨 session 知識）/ Artifacts（大型檔案），只注入當前層次需要的內容。</p>
+        </div>
+      </div>
+      <div class="step t2-step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <h4>設計 RAG 檢索管線</h4>
+          <p>向量化查詢 → 相似度過濾（threshold ≥ 0.75）→ 片段排序 → 注入 context。RAG 只是 Context Engineering 的一部分，還需處理來源、時效、權限。</p>
+        </div>
+      </div>
+      <div class="step t2-step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <h4>設定 Token 預算分配</h4>
+          <p>建議比例：System 20% / History 30% / RAG 30% / Task 20%。工具定義本身消耗 tokens，只載入當前步驟需要的工具。</p>
+        </div>
+      </div>
+      <div class="step t2-step">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <h4>位置感知設計</h4>
+          <p>LLM 對 context 首尾注意力最高（Stanford「Lost in the Middle」研究）。關鍵約束與指令放首段或末段；用 XML tags 標記重要區域。</p>
+        </div>
+      </div>
+      <div class="step t2-step">
+        <div class="step-num">05</div>
+        <div class="step-content">
+          <h4>建立滾動摘要壓縮</h4>
+          <p>每 N 輪對話，用 LLM 壓縮成摘要替換原始歷史，保留決策點、錯誤記錄、用戶偏好。防止 context 爆炸。</p>
+        </div>
+      </div>
+    </div>
+
+    <h4 class="sub">程式碼範例：基礎 RAG 管線</h4>
+    <div class="code-block"><span class="kw">def</span> <span class="cmd">rag_query</span>(user_question: str) -&gt; str:
+    <span class="comment"># 1. 向量化查詢</span>
+    query_embedding = <span class="cmd">embed</span>(user_question)
+
+    <span class="comment"># 2. 從向量 DB 檢索（threshold 過濾低相關片段）</span>
+    relevant_docs = vector_db.<span class="cmd">search</span>(
+        query_embedding, top_k=<span class="str">5</span>, similarity_threshold=<span class="str">0.75</span>
+    )
+
+    <span class="comment"># 3. 組裝 context（來源追蹤、時效標記）</span>
+    context = <span class="str">"\n\n"</span>.<span class="cmd">join</span>([
+        <span class="str">f"[{doc.source} · {doc.date}]\n{doc.content}"</span>
+        <span class="kw">for</span> doc <span class="kw">in</span> relevant_docs
+    ])
+
+    <span class="comment"># 4. 注入 context + 查核要求</span>
+    prompt = <span class="str">f"""根據以下資料回答問題。引用來源；不確定處請標示。
+
+{context}
+
+問題：{user_question}"""</span>
+    <span class="kw">return</span> llm.<span class="cmd">complete</span>(prompt)</div>
+
+    <h4 class="sub">程式碼範例：三層記憶架構</h4>
+    <div class="code-block"><span class="kw">class</span> <span class="cmd">AgentMemory</span>:
+    <span class="kw">def</span> <span class="cmd">__init__</span>(self):
+        self.working_memory = []   <span class="comment"># 當前 session（in-context）</span>
+        self.episodic_memory = []  <span class="comment"># 跨 session 對話歷史（vector DB）</span>
+        self.semantic_memory = {}  <span class="comment"># 知識庫、文件（vector DB）</span>
+
+    <span class="kw">def</span> <span class="cmd">get_relevant_context</span>(self, task: str, max_tokens: int) -&gt; str:
+        parts = [self._format_working_memory()]  <span class="comment"># 永遠包含</span>
+        parts += self.semantic_memory.<span class="cmd">search</span>(task, top_k=<span class="str">3</span>)
+        <span class="kw">if</span> self._token_count(parts) &lt; max_tokens * <span class="str">0.7</span>:
+            parts += self.episodic_memory.<span class="cmd">search</span>(task, top_k=<span class="str">2</span>)
+        <span class="kw">return</span> self._truncate_to_budget(parts, max_tokens)</div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- ══ §04 HARNESS ENGINEERING ══ -->
+<div class="section" id="harness">
+  <div class="section-number">// 04</div>
+  <h2>Harness Engineering — 系統層</h2>
+</div>
+<div class="mode-section">
+  <div class="mode-header t3-h">
+    <span style="font-size:20px">⚙️</span>
+    <h3>Harness Engineering — 確定性 Agent 控制環境</h3>
+    <span class="mode-tag">LAYER 3 · 系統層</span>
+  </div>
+  <div class="mode-body">
+    <div class="fact-grid">
+      <div class="fact-label">能做什麼</div>
+      <div class="fact-value">以確定性架構包覆機率性 AI 核心——CI gate 機械執行、架構 linter、PEV Loop、自癒機制、觀測層，讓錯誤「結構上無法再發生」</div>
+      <div class="fact-label">五大組件</div>
+      <div class="fact-value">Context Files（AGENTS.md / CLAUDE.md）、MCP Tool Gateway、Mechanical Enforcement（linter + CI gate）、Code GC Agent、Observability Layer</div>
+      <div class="fact-label">核心設計模式</div>
+      <div class="fact-value">PEV Loop（Plan → Execute → Verify）、Ralph Loop（跨 session 持久化）、Reasoning Sandwich（高推理模型做首尾，快速模型做中段）、Progressive Disclosure（Just-In-Time context 注入）</div>
+      <div class="fact-label">適合誰</div>
+      <div class="fact-value">運行 Coding Agent 的工程師、企業級 AI Agent 系統設計者、需要生產品質保障的 AI 應用開發者</div>
+      <div class="fact-label">合規性質</div>
+      <div class="fact-value"><strong>確定性</strong>——CI gate 是程式碼，不是語言說服。模型無法感知也無法繞過 linter。這是與 Prompt/Context 層最關鍵的差異</div>
+    </div>
+
+    <h4 class="sub">典型應用場景</h4>
+    <ul class="uc">
+      <li>AI Coding Agent 修 bug——任務規格化 + 工具白名單 + pytest gate + rollback</li>
+      <li>企業合約審查——Pydantic schema 驗證 + 自癒重試迴路（Self-Healing Loop）</li>
+      <li>多 Agent 協作——context firewall 防止覆蓋，shared state 一致性保障</li>
+      <li>安全敏感場景——prompt injection 防禦、最小權限工具、human-in-the-loop 審批</li>
+      <li>持續重構——背景 Code GC Agent 自動掃描技術債，開 refactoring PR</li>
+    </ul>
+
+    <div class="tip-box">
+      <span class="tip-icon">🔑</span>
+      <p><strong>Hashimoto 原則：</strong>「每次 Agent 犯一個錯誤，你就要工程化一個解決方案，確保 Agent 永遠不會再犯同樣的錯誤。」——這就是 Harness 思維的核心：不調整 prompt，而是設計讓這個錯誤結構上不可能再發生的系統。</p>
+    </div>
+
+    <h4 class="sub">PEV Loop — 最重要的 Harness 架構模式</h4>
+    <div class="steps">
+      <div class="step t3-step">
+        <div class="step-num">P</div>
+        <div class="step-content">
+          <h4>Plan（高推理模型）</h4>
+          <p>用高能力模型（如 claude-opus）將複雜任務分解為子任務，輸出 plan.md。這一步不執行，只規劃，確保方向正確再動手。</p>
+        </div>
+      </div>
+      <div class="step t3-step">
+        <div class="step-num">E</div>
+        <div class="step-content">
+          <h4>Execute（快速模型）</h4>
+          <p>用快速模型（如 claude-sonnet）批量執行子任務——讀寫檔案、工具調用。僅操作在工具白名單與 scope 內授權的路徑。</p>
+        </div>
+      </div>
+      <div class="step t3-step">
+        <div class="step-num">V</div>
+        <div class="step-content">
+          <h4>Verify（高推理模型再次）</h4>
+          <p>高能力模型對照 plan 驗證執行結果；CI gate 機械執行測試。未通過 → 帶錯誤 feedback 返回 Execute。通過 → 提交結果。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tip-box">
+      <span class="tip-icon">🥪</span>
+      <p><strong>Reasoning Sandwich：</strong>LangChain Terminal Bench 2.0 實驗——僅修改 harness（不改模型權重），任務完成率從 52.8% 提升至 66.5%。成本優化：只在 Plan 和 Verify 階段使用昂貴模型，執行階段用快速模型。</p>
+    </div>
+
+    <h4 class="sub">程式碼範例：架構依賴方向 Linter（機械強制執行）</h4>
+    <div class="code-block"><span class="comment"># ❌ 依賴 prompt 說服（概率性）：</span>
+<span class="comment"># "請遵循 Types→Config→Repo→Service 依賴方向"</span>
+<span class="comment"># → Agent 在第 47 步仍可能引入違規依賴</span>
+
+<span class="comment"># ✅ Harness 機械執行（確定性）：</span>
+<span class="kw">class</span> <span class="cmd">ArchitectureLinter</span>:
+    ALLOWED_DEPS = {
+        <span class="str">"ui"</span>: [<span class="str">"service"</span>], <span class="str">"service"</span>: [<span class="str">"repo"</span>],
+        <span class="str">"repo"</span>: [<span class="str">"config"</span>], <span class="str">"config"</span>: [<span class="str">"types"</span>], <span class="str">"types"</span>: []
+    }
+
+    <span class="kw">def</span> <span class="cmd">check</span>(self, module: str, imports: list) -&gt; list:
+        violations = []
+        <span class="kw">for</span> imp <span class="kw">in</span> imports:
+            <span class="kw">if</span> imp <span class="kw">not in</span> self.ALLOWED_DEPS.get(module, []):
+                violations.<span class="cmd">append</span>(
+                    <span class="str">f"❌ {module} → {imp} 違反架構依賴方向"</span>
+                )
+        <span class="kw">return</span> violations
+
+    <span class="kw">def</span> <span class="cmd">generate_feedback</span>(self, violations: list) -&gt; str:
+        <span class="comment"># 將 linter 錯誤自動注入 Agent 的下一個 context</span>
+        <span class="kw">return</span> <span class="str">f"偵測到 {len(violations)} 個架構違規，請立即修正再繼續：\n"</span> \
+               + <span class="str">"\n"</span>.<span class="cmd">join</span>(violations)</div>
+
+    <h4 class="sub">程式碼範例：CI 品質門（YAML）</h4>
+    <div class="code-block"><span class="comment"># .github/workflows/harness-gates.yml</span>
+<span class="cmd">name</span>: Harness Quality Gates
+<span class="cmd">on</span>: [pull_request]
+<span class="cmd">jobs</span>:
+  architecture-check:
+    <span class="cmd">runs-on</span>: ubuntu-latest
+    <span class="cmd">steps</span>:
+      - <span class="cmd">uses</span>: actions/checkout@v4
+      - <span class="cmd">name</span>: 架構依賴方向檢查
+        <span class="cmd">run</span>: python tools/arch-linter.py --fail-on-violation
+      - <span class="cmd">name</span>: 測試覆蓋率門檻（80%）
+        <span class="cmd">run</span>: pytest --cov=src --cov-fail-under=80
+      - <span class="cmd">name</span>: 安全漏洞掃描
+        <span class="cmd">run</span>: bandit -r src/
+<span class="comment"># 關鍵：模型無法感知此 gate 的存在，無法繞過</span></div>
+
+    <h4 class="sub">程式碼範例：Pydantic Schema + 自癒機制</h4>
+    <div class="code-block"><span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel, Field, field_validator
+<span class="kw">from</span> typing <span class="kw">import</span> List, Literal
+
+<span class="kw">class</span> <span class="cmd">ContractAnalysis</span>(BaseModel):
+    contract_parties: List[str] = Field(description=<span class="str">"合約簽署方列表"</span>)
+    total_amount: float = Field(description=<span class="str">"合約總金額（TWD）"</span>)
+    risk_level: Literal[<span class="str">"Low"</span>, <span class="str">"Medium"</span>, <span class="str">"High"</span>]
+
+    @field_validator(<span class="str">"total_amount"</span>)
+    @classmethod
+    <span class="kw">def</span> <span class="cmd">validate_amount</span>(cls, v: float) -&gt; float:
+        <span class="kw">if</span> v &lt; 0: <span class="kw">raise</span> ValueError(<span class="str">"金額不可為負數"</span>)
+        <span class="kw">return</span> v
+
+<span class="kw">class</span> <span class="cmd">LLMHarness</span>:
+    <span class="kw">def</span> <span class="cmd">execute</span>(self, raw_text: str, max_retries=<span class="str">3</span>) -&gt; ContractAnalysis:
+        error_ctx = <span class="str">""</span>
+        <span class="kw">for</span> attempt <span class="kw">in</span> range(max_retries):
+            <span class="kw">try</span>:
+                raw = self._call_llm(raw_text, error_ctx)
+                <span class="kw">return</span> ContractAnalysis(**json.<span class="cmd">loads</span>(raw))  <span class="comment"># 驗證</span>
+            <span class="kw">except</span> (json.JSONDecodeError, ValueError) <span class="kw">as</span> e:
+                error_ctx = str(e)  <span class="comment"># 帶錯誤重試（自癒迴路）</span>
+        <span class="kw">raise</span> RuntimeError(<span class="str">f"超過 {max_retries} 次重試後仍未通過驗證"</span>)</div>
+
+    <h4 class="sub">最小可行 Harness（MVH）8 大元件</h4>
+    <ul class="uc">
+      <li><strong>Task Spec Template：</strong>任務目標、scope、限制、完成條件</li>
+      <li><strong>Project Context File（AGENTS.md）：</strong>架構地圖、build/test 指令、禁止事項——是地圖而非百科全書</li>
+      <li><strong>Tool Allowlist：</strong>只開放 <code>read_file</code>, <code>grep</code>, <code>edit_file</code>, <code>run_tests</code> 等必要工具</li>
+      <li><strong>Deny Rules：</strong>禁止刪除 secrets、禁止 <code>rm -rf</code>、deploy 需批准</li>
+      <li><strong>Checkpointing：</strong>每次任務前建立 git branch 或 snapshot</li>
+      <li><strong>Verification Commands：</strong>固定測試命令（<code>pytest</code>, <code>pnpm test</code>, <code>mypy</code>）</li>
+      <li><strong>Trace Log：</strong>記錄工具調用、錯誤、修復、驗證結果——沒有 trace 的行動視為不可接受</li>
+      <li><strong>Human Review Gate：</strong>合併、部署、刪除、高風險變更需人類批准</li>
+    </ul>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- ══ §05 COMPARE TABLE ══ -->
+<div class="section" id="compare">
+  <div class="section-number">// 05</div>
+  <h2>功能完整對比</h2>
+  <p class="intro">三層架構各有專屬問題域，不互相取代。合規性質的差異（概率性 vs. 確定性）是最關鍵的分水嶺。</p>
+</div>
+<div class="table-scroll">
+<table class="compare-table">
+  <thead>
+    <tr>
+      <th>比較項目</th>
+      <th>Prompt Engineering</th>
+      <th>Context Engineering</th>
+      <th>Harness Engineering</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>核心問題</td>
+      <td>我該怎麼問？</td>
+      <td>模型需要知道什麼？</td>
+      <td>系統如何防止 Agent 出軌？</td>
+    </tr>
+    <tr>
+      <td>設計對象</td>
+      <td>指令文字與格式</td>
+      <td>Context Window 內容結構</td>
+      <td>Agent 外部的約束環境</td>
+    </tr>
+    <tr>
+      <td>時間邊界</td>
+      <td>單次對話</td>
+      <td>單個 context window</td>
+      <td>跨 session 與任務生命週期</td>
+    </tr>
+    <tr>
+      <td>控制類型</td>
+      <td>語言引導</td>
+      <td>資訊架構</td>
+      <td>系統性約束 + 反饋迴路</td>
+    </tr>
+    <tr>
+      <td>合規性質</td>
+      <td><span class="no">概率性</span>（模型不保證遵守）</td>
+      <td><span class="partial">概率性</span>（資訊更準但仍有機率失效）</td>
+      <td><span class="yes">確定性</span>（CI gate 機械執行）</td>
+    </tr>
+    <tr>
+      <td>典型失效</td>
+      <td>格式錯亂、指令遺忘、幻覺</td>
+      <td>Context Rot、位置偏差、多 Agent 衝突</td>
+      <td>架構漂移、越權行動、無法回滾</td>
+    </tr>
+    <tr>
+      <td>主要工作產品</td>
+      <td>System Prompt / Few-shot 範例</td>
+      <td>RAG 管線 / 記憶架構 / 壓縮策略</td>
+      <td>AGENTS.md / CI Gate / PEV Loop / Trace Log</td>
+    </tr>
+    <tr>
+      <td>工程職能類比</td>
+      <td>文案 / 創意寫作</td>
+      <td>系統設計 / 資料工程</td>
+      <td>平台工程 / DevOps</td>
+    </tr>
+    <tr>
+      <td>代表工具</td>
+      <td>Prompt Playground、Prompt 管理工具</td>
+      <td>LangChain、RAG 框架、MCP、向量 DB</td>
+      <td>CI/CD、Linter、Observability 平台</td>
+    </tr>
+    <tr>
+      <td>直觀類比</td>
+      <td>給騎師任務說明書</td>
+      <td>給騎師地圖與即時情報</td>
+      <td>設計賽道、欄杆與計時系統</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ══ §06 DECISION TREE ══ -->
+<div class="decision" id="decision-tree">
+  <h3>🌿 遇到問題，選哪一層優先修正？</h3>
+  <div class="decision-item">
+    <div class="decision-q">模型輸出格式不穩定、遺漏關鍵欄位</div>
+    <div class="decision-arrow">→</div>
+    <div class="decision-a a-t1">Prompt Engineering</div>
+  </div>
+  <div class="decision-item">
+    <div class="decision-q">回答缺少文件中的重要資訊</div>
+    <div class="decision-arrow">→</div>
+    <div class="decision-a a-t2">Context Engineering（RAG 優化）</div>
+  </div>
+  <div class="decision-item">
+    <div class="decision-q">回答引用過時或已失效的資料</div>
+    <div class="decision-arrow">→</div>
+    <div class="decision-a a-t2">Context Engineering（Freshness 管理）</div>
+  </div>
+  <div class="decision-item">
+    <div class="decision-q">長對話後，早期指令被 Agent 遺忘</div>
+    <div class="decision-arrow">→</div>
+    <div class="decision-a a-t2">Context Engineering（壓縮 / Checkpoint）</div>
+  </div>
+  <div class="decision-item">
+    <div class="decision-q">Agent 讀取或修改了不在 scope 內的檔案</div>
+    <div class="decision-arrow">→</div>
+    <div class="decision-a a-t3">Harness Engineering（工具白名單 + Deny Rules）</div>
+  </div>
+  <div class="decision-item">
+    <div class="decision-q">Agent 不確定任務是否完成，自行宣稱完成</div>
+    <div class="decision-arrow">→</div>
+    <div class="decision-a a-t3">Harness Engineering（Verification 條件 + Verify 步驟）</div>
+  </div>
+  <div class="decision-item">
+    <div class="decision-q">安全漏洞、Prompt Injection、越權行動風險</div>
+    <div class="decision-arrow">→</div>
+    <div class="decision-a a-t3">Harness Engineering（最小權限 + 隔離 + Audit Log）</div>
+  </div>
+  <div class="decision-item">
+    <div class="decision-q">Agent 失敗後重複犯同樣的錯誤</div>
+    <div class="decision-arrow">→</div>
+    <div class="decision-a a-t3">Harness + Context（失敗歸因 + Memory + 自癒迴路）</div>
+  </div>
+  <div class="decision-item">
+    <div class="decision-q">小改動造成既有功能退化（regression）</div>
+    <div class="decision-arrow">→</div>
+    <div class="decision-a a-t3">Harness Engineering（Evaluation Harness + 回歸測試）</div>
+  </div>
+  <div class="decision-item">
+    <div class="decision-q">Token 成本與延遲過高</div>
+    <div class="decision-arrow">→</div>
+    <div class="decision-a a-t2">Context Engineering（Economy 優化 + Progressive Disclosure）</div>
+  </div>
+</div>
+
+<!-- ══ §07 GETTING STARTED ══ -->
+<div class="section" id="start">
+  <div class="section-number">// 07</div>
+  <h2>立刻開始</h2>
+  <p class="intro">根據你的角色選擇起點。三條路徑不互斥——工程師仍需精通 Prompt，進階者的基礎是前兩層。</p>
+</div>
+<div class="paths">
+  <div class="path-card p1">
+    <div class="path-label">PATH A — 初學者 / 一般使用者</div>
+    <ol>
+      <li>套用 CLEAR 框架（Context / Limit / Examples / Action / Review）寫每個任務 prompt</li>
+      <li>要求模型以 XML 或 JSON 格式輸出，固定結構便於後續處理</li>
+      <li>加入「不確定時標示，不可加入原文沒有的資訊」等查核指令</li>
+      <li>把第一次輸出當草稿，帶著具體改進點迭代 2–3 次再定稿</li>
+      <li>學習資源：<a href="https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview" target="_blank" rel="noopener">Anthropic Prompt Engineering Guide</a></li>
+    </ol>
+  </div>
+  <div class="path-card p2">
+    <div class="path-label">PATH B — 工程師 / AI 開發者</div>
+    <ol>
+      <li>建立 AGENTS.md / CLAUDE.md——寫成地圖（index 指向子文件），不是百科全書（全部塞入）</li>
+      <li>實作基礎 RAG 管線，設定 token 預算（System 20% / History 30% / RAG 30% / Task 20%）</li>
+      <li>定義工具白名單（<code>allowed_tools</code>）與 deny rules（禁止路徑、禁止命令）</li>
+      <li>設計 PEV Loop：高推理模型做 Plan + Verify，快速模型做 Execute</li>
+      <li>建立 CI 品質門（architecture linter + test gate），部署結構化 trace 日誌</li>
+      <li>每次 Agent 犯錯 → 工程化一個確定性解決方案，不調 prompt</li>
+    </ol>
+  </div>
+  <div class="path-card p3">
+    <div class="path-label">PATH C — 企業 / 進階研究者</div>
+    <ol>
+      <li>設計 H3 等級 Harness（任務規格、權限系統、失敗歸因、驗證報告、人類介入紀錄）</li>
+      <li>部署 Reasoning Sandwich：計劃與驗證用高能力模型，執行用快速模型，控制成本</li>
+      <li>建立最小可行 Harness（MVH）八元件：Task Spec / AGENTS.md / Tool Allowlist / Deny Rules / Checkpoint / Verification Commands / Trace Log / Human Review Gate</li>
+      <li>部署背景 Code GC Agent，持續掃描 codebase divergence，自動開 refactoring PR</li>
+      <li>建立 Evaluation Harness，定期對基準任務集做 regression，量化 Harness 改動的實際效果</li>
+      <li>關鍵腳本（release / migration / cron）務必三模型交叉 audit：Claude + Gemini + GPT</li>
+    </ol>
+  </div>
+</div>
+
+<!-- ══ §08 SOURCES ══ -->
+<div class="section" id="sources">
+  <div class="section-number">// 08</div>
+  <h2>資料來源 / Sources</h2>
+  <p class="intro">本指南整合三份 AI 生成源文件，已交叉比對衝突，優先採用學術文獻與官方文件。</p>
+</div>
+<div class="sources">
+  <h4>三份源文件（本次整合基礎）</h4>
+  <strong>ai-harness-by-gpt.md</strong>（GPT 生成，查證 2026-06-01）：學術引用最完整，包含 arXiv 論文索引，覆蓋安全治理章節，為本指南學術定義的主要依據。<br>
+  <strong>ai-harness-by-claude.md</strong>（Claude 生成，2026-06-01）：設計模式（PEV Loop、Ralph Loop、Reasoning Sandwich、Hashline Format）與程式碼範例最豐富，OpenAI 1M LOC 案例研究詳細。<br>
+  <strong>ai-harness-by-gemini.md</strong>（Gemini 生成，2026-06-01）：Pydantic 自癒機制範例清晰，架構四模組定義簡潔，適合快速入門。
+
+  <h4>官方文件 / Primary Sources</h4>
+  Anthropic Prompt Engineering Overview：<a href="https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview" target="_blank" rel="noopener">docs.anthropic.com/…/prompt-engineering/overview</a><br>
+  OpenAI Harness Engineering Report (2026-02-11)：<a href="https://openai.com/index/harness-engineering/" target="_blank" rel="noopener">openai.com/index/harness-engineering/</a><br>
+  Model Context Protocol Docs：<a href="https://modelcontextprotocol.io/docs/getting-started/intro" target="_blank" rel="noopener">modelcontextprotocol.io</a><br>
+  Martin Fowler / ThoughtWorks Harness Engineering (2026-02-17)：<a href="https://www.martinfowler.com/articles/exploring-gen-ai/harness-engineering-memo.html" target="_blank" rel="noopener">martinfowler.com/…/harness-engineering-memo.html</a><br>
+  Augment Code Harness Engineering Guide：<a href="https://www.augmentcode.com/guides/harness-engineering-ai-coding-agents" target="_blank" rel="noopener">augmentcode.com/guides/harness-engineering-ai-coding-agents</a>
+
+  <h4>學術論文</h4>
+  Zhong &amp; Zhu, "AI Harness Engineering" arXiv:2605.13357：<a href="https://arxiv.org/abs/2605.13357" target="_blank" rel="noopener">arxiv.org/abs/2605.13357</a><br>
+  Lin et al., "Agentic Harness Engineering" arXiv:2604.25850：<a href="https://arxiv.org/abs/2604.25850" target="_blank" rel="noopener">arxiv.org/abs/2604.25850</a><br>
+  Mei et al., "Context Engineering Survey" arXiv:2507.13334：<a href="https://arxiv.org/abs/2507.13334" target="_blank" rel="noopener">arxiv.org/abs/2507.13334</a><br>
+  Ning et al., "Code as Agent Harness" arXiv:2605.18747：<a href="https://arxiv.org/abs/2605.18747" target="_blank" rel="noopener">arxiv.org/abs/2605.18747</a><br>
+  Qu et al., "Overeager Coding Agents" arXiv:2605.18583：<a href="https://arxiv.org/abs/2605.18583" target="_blank" rel="noopener">arxiv.org/abs/2605.18583</a>
+
+  <h4>術語來源差異說明 / Caveats</h4>
+  「Harness」術語的起源有兩個脈絡，三份源文件各有側重：<strong>（1）實踐社群</strong>——Claude 源文件主要援引 Mitchell Hashimoto Blog（2026-02-05）、OpenAI Report（2026-02-11）與 ThoughtWorks 分析（2026-02-17）為「三大獨立收斂事件」；<strong>（2）學術定義</strong>——GPT 源文件引用 arXiv 2605.13357（Zhong &amp; Zhu）作為「AI Harness Engineering」的正式學術定義。兩個脈絡並不矛盾：Hashimoto 等人是實踐命名者，arXiv 論文是學術系統化，本指南兩者並用。<br><br>
+  「88% 企業 AI Agent 專案未能投入生產」數據引自 Claude 源文件（Codiste Research 2026），原文件未提供 DOI 或完整引用，標記為<strong>未驗證數據</strong>，供參考但不作為論據。
+</div>
+
+<!-- ══ FOOTER ══ -->
+<div class="footer" data-pagefind-ignore>
+  <span>AI Beginner Guide 2026 · Bond901</span>
+  <a href="../index.html">← 回首頁</a>
+</div>
+
+</div><!-- /container -->
+
+<div class="about-nav no-print" data-pagefind-ignore style="max-width:820px;margin:0 auto;padding:0 32px 30px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);"><a href="../about.html" style="color:inherit;text-decoration:none;">關於 · 編輯原則與方法論</a></div>
+<a class="back-home no-print" data-pagefind-ignore href="../index.html" title="回到首頁" aria-label="回到首頁"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10.5V20h14v-9.5"/></svg></a>
+<button type="button" id="searchTrigger" class="search-fab no-print" data-pagefind-ignore aria-label="搜尋指南（Cmd K）" title="搜尋（⌘K）"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></button>
+<button class="back-to-top" id="backToTop" data-pagefind-ignore aria-label="Back to top">↑</button>
+<script>
+(function(){
+  var btn=document.getElementById('backToTop');
+  if(btn){window.addEventListener('scroll',function(){btn.classList.toggle('visible',window.scrollY>400);},{passive:true});
+  btn.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});}
+})();
+function copyPageURL(btn){
+  var orig=btn.textContent;
+  var flash=function(msg){btn.textContent=msg;setTimeout(function(){btn.textContent=orig;},1800);};
+  var ok=function(){flash('✓ 已複製');};var fail=function(){flash('複製失敗，請手動複製');};
+  if(location.protocol==='file:'){alert('您正在以本機檔案 (file://) 開啟。\nNotebookLM 的「網站來源」需要可公開存取的 https 網址。\n請先部署，或改用「⬇ PDF」。');return;}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(location.href).then(ok).catch(fail);}
+  else{var ta=document.createElement('textarea');ta.value=location.href;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.top='-9999px';document.body.appendChild(ta);ta.select();var d=false;try{d=document.execCommand('copy');}catch(e){d=false;}document.body.removeChild(ta);d?ok():fail();}
+}
+</script>
+<!-- search:modal -->
+<div id="searchModal" class="search-modal no-print" data-pagefind-ignore hidden role="dialog" aria-modal="true" aria-label="搜尋指南">
+<div class="sm-backdrop"></div>
+<div class="sm-panel">
+<div class="sm-input-row"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:var(--muted)"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input id="searchInput" type="text" placeholder="搜尋指南…" autocomplete="off" spellcheck="false" aria-label="搜尋指南"><button type="button" id="searchClose" class="sm-esc">esc</button></div>
+<div id="searchResults" class="sm-results" role="listbox" aria-label="搜尋結果"></div>
+<div class="sm-footer"><span><kbd>↑↓</kbd> 瀏覽</span><span><kbd>↵</kbd> 開啟</span><span><kbd>esc</kbd> 關閉</span></div>
+</div>
+</div>
+<button type="button" id="themeToggle" class="theme-toggle no-print" aria-label="切換深色或淺色主題" title="切換主題"><svg class="ic-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></svg><svg class="ic-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+<script src="../assets/site.js" defer></script>
+</body>
+</html>
