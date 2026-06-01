@@ -1,6 +1,6 @@
 # AI Beginner Guide 2026
 
-> 2026 年 AI 工具入門指南集：從核心概念到實戰操作，11 篇完整指南幫助初學者快速上手主流 AI 工具。
+> 2026 年 AI 工具入門指南集：從核心概念到實戰操作，12 篇完整指南幫助初學者快速上手主流 AI 工具。
 
 **線上閱讀**：[Bond901.github.io/ai-beginner-guide-2026](https://Bond901.github.io/ai-beginner-guide-2026)
 
@@ -44,6 +44,7 @@
 | [AI Agent 擴充機制](guides/ai-extensions-guide-2026.html) | Skill、MCP、Plugin 三層擴充架構的定位差異、運作原理與實務組裝策略 |
 | [Claude Code Skills 技術指南](guides/claude-code-skills-guide.html) | 把重複流程封裝成可重用的 SKILL.md——三層漸進式載入、frontmatter、叫用控制、腳本與 subagent，以及最佳實務與安全 |
 | [Claude Opus 4.8 技術指南](guides/claude-opus-4-8-guide.html) | Anthropic 對外最強模型的五大功能（Effort Control、Dynamic Workflows、Fast Mode、Mid-conv System、Adaptive Thinking）與 4.7→4.8 API 遷移實務 |
+| [Harness 思維架構全圖](guides/ai-harness-guide.html) | Prompt → Context → Harness Engineering 三次典範轉移——RAG、PEV Loop、Reasoning Sandwich 等核心設計模式，整合 GPT / Claude / Gemini 三方觀點 |
 
 ### 🔄 流程 · 應用
 

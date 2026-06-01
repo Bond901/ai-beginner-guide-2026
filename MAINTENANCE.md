@@ -64,15 +64,31 @@ AI 工具更新快，本站價值在於「準確 + 夠新」。每季（建議�
 - `cat-<分類>` 用該指南所屬分類（`cat-base` / `cat-tools` / `cat-adv` / `cat-flow`），對應首頁四大分類錨點。
 - `card-verified` 的日期 = 該頁 `last-verified`。
 
-**同步更新散落各處的寫死篇數**（目前是「11 篇」，加一篇要一起改成「12 篇」）：
+**同步更新散落各處的寫死篇數 + 指南清單**（加一篇＝全站「N 篇」一起 +1；目前 12 篇）。動手前先 `grep -rn '11 篇\|12 篇\|Guides' index.html README.md assets/site.js assets/og-banner.html` 抓出所有點，逐一改：
 
-- 該分類標題列的「N 篇 · …」計數（`.cat-meta`）。
+**`index.html`（首頁，5 處）**
+
+- 分類標題列的「N 篇 · …」計數（`.cat-meta`）。
 - Hero 副標：「…N 篇完整指南帶你快速上手…」。
 - Hero 的「N Guides」徽章。
 - 索引區開場：「N 篇指南，依主題分成四類…」。
-- `<head>` 的 `<meta name="description">` 與 `og:description`（兩處同一句，開頭「…N 篇繁體中文 AI 工具入門指南…」）。
+- `<head>` 的 `<meta name="description">` 與 `og:description`（同一句，開頭「…N 篇繁體中文 AI 工具入門指南…」）。
+
+**`README.md`（GitHub repo 首頁，2 處）**
+
+- 開頭引言「…N 篇完整指南…」的篇數。
+- 「指南列表」對應分類表格**新增一列**（連結＋一句話描述）——不是只改數字，新指南本身要列進去。
+
+**`assets/site.js`（1 處）**
+
+- 搜尋提示「輸入關鍵字，搜尋 N 篇指南…」（`hint()` 內）。
+
+**`assets/og-banner.html` ＋ `assets/og.png`（社群分享圖）**
+
+- 改 og-banner.html 的「N 篇深入指南」數字；**但 og.png 是預先 render 的點陣圖**——要在瀏覽器開 og-banner.html，把 `#og`（1200×630）重新截圖／匯出覆蓋 `assets/og.png`，分享縮圖才會真的變（純改 .html 不會動到圖）。
 
 > 改完 `og:description` 後務必重跑第 4 步的 `inject_jsonld.py`——首頁 `WebSite` JSON-LD 的描述由這個 meta 衍生，得一起更新。
+> 篇數散落是已知技術債（`CHANGELOG.md` BL-3：未來抽成單一來源）；在那之前，**以上 grep ＋ 逐點清單就是硬性檢查表**，少改一處公開站就會數字打架。
 
 ### 4. JSON-LD（`CATS` 補一行 → 重跑腳本）
 
