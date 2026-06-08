@@ -29,6 +29,7 @@ CATS = {
     "ai-harness-guide.html":                  ("進階 · Agent 擴充", "cat-adv"),
     "rag-guide-2026.html":                    ("流程 · 應用", "cat-flow"),
     "ai-sdlc-guide-2026.html":                ("流程 · 應用", "cat-flow"),
+    "vibe-coding-tools-guide.html":           ("流程 · 應用", "cat-flow"),
 }
 
 GUARD = re.compile(r"[ \t]*<!-- jsonld -->.*?</script>\n?", re.S)

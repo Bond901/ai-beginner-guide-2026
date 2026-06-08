@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<script>(function(){try{var t=localStorage.getItem("theme");if(!t)t=window.matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vibe Coding 工具全景圖 — 從想法到上線的協作工具地圖</title>
+<meta name="description" content="vibe coding 初學者的工具與架構地圖：AI coding agent、Git/GitHub、Supabase、部署、Cloudflare、觀測——每一層解決什麼問題、何時才需要它，附 $0 起步組合與安全守則。">
+<link rel="canonical" href="https://bond901.github.io/ai-beginner-guide-2026/guides/vibe-coding-tools-guide.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Beginner Guide 2026">
+<meta property="og:locale" content="zh_Hant">
+<meta property="og:title" content="Vibe Coding 工具全景圖">
+<meta property="og:description" content="vibe coding 初學者的工具與架構地圖：AI coding agent、Git/GitHub、Supabase、部署、Cloudflare、觀測——每一層解決什麼問題、何時才需要它，附 $0 起步組合與安全守則。">
+<meta property="og:url" content="https://bond901.github.io/ai-beginner-guide-2026/guides/vibe-coding-tools-guide.html">
+<meta property="og:image" content="https://bond901.github.io/ai-beginner-guide-2026/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="last-updated" content="2026-06-08">
+<meta name="last-verified" content="2026-06-08">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;900&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+:root{
+  --ink:#0f0e0d; --paper:#f5f0e8; --warm-mid:#e8e0d0; --border:#c8bfa8;
+  --muted:#6b6353;
+  --hero-accent:#6d4bd4;      /* vibe-coding violet */
+
+  --t1-color:#2d3a8c; --t1-bg:#eef0fa;   /* AI agent — indigo */
+  --t2-color:#1a7a6e; --t2-bg:#e8f5f3;   /* Git/GitHub — teal */
+  --t3-color:#1a7a4a; --t3-bg:#e8f5ee;   /* Supabase — green */
+  --t4-color:#1f5fa8; --t4-bg:#e9f1fa;   /* 部署 — blue */
+  --t5-color:#c4631a; --t5-bg:#fbf0e4;   /* Cloudflare — orange */
+  --t6-color:#a0273f; --t6-bg:#f9e8ec;   /* 觀測 — rose */
+
+  --t1-on-dark:#8baee0; --t2-on-dark:#6aad8e; --t3-on-dark:#5fc28a;
+  --t4-on-dark:#74a8df; --t5-on-dark:#e8a04a; --t6-on-dark:#d98499;
+
+  --link:#b8460f;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans TC',sans-serif;font-size:15px;line-height:1.75;color:var(--ink);background:var(--paper);}
+
+/* ── HERO ── */
+.hero{background:var(--ink);color:var(--paper);padding:56px 48px 48px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-60px;right:-60px;width:280px;height:280px;border:1px solid rgba(245,240,232,.12);border-radius:50%;}
+.hero::after{content:'';position:absolute;bottom:-80px;left:20%;width:200px;height:200px;border:1px solid rgba(245,240,232,.08);border-radius:50%;}
+.hero-inner{max-width:820px;margin:0 auto;position:relative;z-index:1;}
+.hero-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--hero-accent);margin-bottom:16px;}
+.hero h1{font-family:'Noto Serif TC',serif;font-weight:900;font-size:2.4rem;line-height:1.25;margin-bottom:16px;max-width:620px;}
+.hero-sub{font-size:14px;color:rgba(245,240,232,.65);max-width:560px;font-weight:300;line-height:1.8;}
+.hero-badges{display:flex;gap:8px;margin-top:28px;flex-wrap:wrap;}
+.badge{padding:5px 14px;border-radius:2px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.05em;color:#fff;}
+.badge-t1{background:var(--t1-color);} .badge-t2{background:var(--t2-color);} .badge-t3{background:var(--t3-color);}
+.badge-t4{background:var(--t4-color);} .badge-t5{background:var(--t5-color);} .badge-t6{background:var(--t6-color);}
+.hero-meta{margin-top:24px;display:flex;gap:22px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;color:rgba(245,240,232,.4);}
+
+/* ── LAYOUT ── */
+.container{max-width:820px;margin:0 auto;padding:0 32px;}
+hr.rule{border:none;border-top:1px solid var(--border);margin:40px 0;}
+.section{padding:48px 0 0;}
+.section-number{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.15em;color:var(--muted);margin-bottom:6px;}
+.section h2{font-family:'Noto Serif TC',serif;font-weight:900;font-size:1.7rem;margin-bottom:18px;line-height:1.3;}
+.section>p.intro{font-size:14px;color:var(--muted);margin-bottom:22px;max-width:680px;}
+
+/* ── ACTIONS BAR ── */
+.actions-bar{display:flex;flex-direction:column;gap:10px;border:1px solid var(--border);background:var(--warm-mid);padding:12px 16px;margin:24px 0 0;}
+.actions-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;}
+.act-btn{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--ink);background:var(--paper);border:1px solid var(--border);border-radius:2px;padding:7px 14px;cursor:pointer;text-decoration:none;transition:background .15s ease,border-color .15s ease,color .15s ease;}
+.act-btn:hover{background:var(--link);border-color:var(--link);color:#fff;}
+.act-hint{font-size:11.5px;color:var(--muted);line-height:1.6;}
+
+/* ── TOC ── */
+.toc{background:var(--warm-mid);border-left:3px solid var(--hero-accent);padding:24px 28px;margin:24px 0 0;}
+.toc-title{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.toc ol{padding-left:20px;font-size:13px;color:var(--muted);line-height:2;}
+.toc a{color:inherit;text-decoration:none;} .toc a:hover{color:var(--link);}
+
+/* ── OVERVIEW CARDS ── */
+.mode-overview{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--border);overflow:hidden;margin:24px 0;}
+.mode-card{padding:22px 18px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+.mode-card.t1{background:var(--t1-bg);} .mode-card.t2{background:var(--t2-bg);} .mode-card.t3{background:var(--t3-bg);}
+.mode-card.t4{background:var(--t4-bg);} .mode-card.t5{background:var(--t5-bg);} .mode-card.t6{background:var(--t6-bg);}
+.mode-icon{width:36px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:12px;color:#fff;}
+.icon-t1{background:var(--t1-color);} .icon-t2{background:var(--t2-color);} .icon-t3{background:var(--t3-color);}
+.icon-t4{background:var(--t4-color);} .icon-t5{background:var(--t5-color);} .icon-t6{background:var(--t6-color);}
+.mode-card h3{font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:600;margin-bottom:6px;}
+.mode-card.t1 h3{color:var(--t1-color);} .mode-card.t2 h3{color:var(--t2-color);} .mode-card.t3 h3{color:var(--t3-color);}
+.mode-card.t4 h3{color:var(--t4-color);} .mode-card.t5 h3{color:var(--t5-color);} .mode-card.t6 h3{color:var(--t6-color);}
+.mode-card p{font-size:11.5px;color:var(--muted);line-height:1.6;margin:0;}
+
+/* ── TOOL SECTION ── */
+.mode-section{border:1px solid var(--border);margin:28px 0;overflow:hidden;}
+.mode-header{padding:18px 24px;display:flex;align-items:center;gap:14px;}
+.mode-header.t1-h{background:var(--t1-color);} .mode-header.t2-h{background:var(--t2-color);} .mode-header.t3-h{background:var(--t3-color);}
+.mode-header.t4-h{background:var(--t4-color);} .mode-header.t5-h{background:var(--t5-color);} .mode-header.t6-h{background:var(--t6-color);}
+.mode-header h3{font-family:'Noto Serif TC',serif;font-size:1.15rem;font-weight:900;color:#fff;}
+.mode-header .mode-tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.15em;color:rgba(255,255,255,.65);margin-left:auto;white-space:nowrap;}
+.mode-body{padding:24px;background:var(--paper);}
+.mode-body h4.sub{font-weight:700;font-size:13.5px;margin:20px 0 8px;}
+.mode-body p{font-size:13.5px;margin:8px 0;}
+.mode-body ul.uc{list-style:none;margin:10px 0;}
+.mode-body ul.uc li{font-size:13px;padding:4px 0 4px 18px;position:relative;}
+.mode-body ul.uc li::before{content:'▸';position:absolute;left:0;color:var(--muted);}
+
+/* ── FACT GRID ── */
+.fact-grid{display:grid;grid-template-columns:120px 1fr;border:1px solid var(--border);font-size:13px;overflow:hidden;margin:16px 0;}
+.fact-label{background:var(--warm-mid);padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.08em;display:flex;align-items:flex-start;border-bottom:1px solid var(--border);}
+.fact-label:last-of-type{border-bottom:none;}
+.fact-value{padding:12px 16px;border-bottom:1px solid var(--border);line-height:1.65;}
+.fact-value:last-child{border-bottom:none;}
+.fact-value code,.mode-body code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--warm-mid);padding:1px 5px;border-radius:2px;}
+
+/* ── STEPS ── */
+.steps{margin:20px 0;}
+.step{display:flex;gap:16px;margin-bottom:14px;padding:16px;background:var(--warm-mid);border-left:3px solid transparent;}
+.step.t1-step{border-left-color:var(--t1-color);} .step.t2-step{border-left-color:var(--t2-color);} .step.t3-step{border-left-color:var(--t3-color);}
+.step.t4-step{border-left-color:var(--t4-color);} .step.t5-step{border-left-color:var(--t5-color);} .step.t6-step{border-left-color:var(--t6-color);}
+.step-num{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;min-width:28px;line-height:1.4;}
+.step.t1-step .step-num{color:var(--t1-color);} .step.t2-step .step-num{color:var(--t2-color);} .step.t3-step .step-num{color:var(--t3-color);}
+.step.t4-step .step-num{color:var(--t4-color);} .step.t5-step .step-num{color:var(--t5-color);} .step.t6-step .step-num{color:var(--t6-color);}
+.step-content h4{font-size:13px;font-weight:700;margin-bottom:4px;}
+.step-content p{font-size:13px;color:var(--muted);margin:0;line-height:1.55;}
+
+/* ── CODE BLOCK ── */
+.code-block{background:#1a1814;border-radius:4px;padding:14px 18px;margin:12px 0;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#d4c9a8;overflow-x:auto;line-height:1.7;white-space:pre;}
+.code-block .comment{color:#9a8f78;}
+.code-block .cmd{color:#e8904a;}
+.code-block .str{color:#6aad8e;} .code-block .kw{color:#8baee0;}
+
+/* ── COMPARE TABLE ── */
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.compare-table{width:100%;border-collapse:collapse;font-size:13px;margin:20px 0;}
+.compare-table th{padding:10px 12px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;font-weight:600;text-transform:uppercase;border-bottom:2px solid var(--ink);}
+.compare-table th:nth-child(2){background:var(--t1-bg);color:var(--t1-color);}
+.compare-table th:nth-child(3){background:var(--t2-bg);color:var(--t2-color);}
+.compare-table th:nth-child(4){background:var(--t3-bg);color:var(--t3-color);}
+.compare-table th:nth-child(5){background:var(--t4-bg);color:var(--t4-color);}
+.compare-table th:nth-child(6){background:var(--t5-bg);color:var(--t5-color);}
+.compare-table th:nth-child(7){background:var(--t6-bg);color:var(--t6-color);}
+.compare-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top;}
+.compare-table td:first-child{font-weight:500;color:var(--muted);background:var(--warm-mid);white-space:nowrap;}
+.yes{color:#1a7a6e;font-weight:700;} .no{color:#a3232a;} .partial{color:#7a4a12;}
+
+/* ── PLAN / PRICING TABLE ── */
+.plan-table{width:100%;border-collapse:collapse;font-size:12.5px;margin:20px 0;}
+.plan-table th{background:var(--warm-mid);padding:9px 12px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;border:1px solid var(--border);}
+.plan-table td{padding:9px 12px;border:1px solid var(--border);vertical-align:top;line-height:1.5;}
+.plan-table td code{font-family:'JetBrains Mono',monospace;font-size:11.5px;}
+
+/* ── DECISION TREE ── */
+.decision{background:var(--ink);color:var(--paper);padding:28px 32px;margin:28px 0;}
+.decision h3{font-family:'Noto Serif TC',serif;font-size:1.1rem;margin-bottom:20px;}
+.decision-item{display:flex;gap:12px;margin-bottom:12px;align-items:flex-start;}
+.decision-q{font-size:13px;color:rgba(245,240,232,.72);min-width:300px;padding-top:2px;}
+.decision-arrow{color:var(--hero-accent);font-size:14px;padding-top:1px;}
+.decision-a{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;}
+.a-t1{color:var(--t1-on-dark);} .a-t2{color:var(--t2-on-dark);} .a-t3{color:var(--t3-on-dark);}
+.a-t4{color:var(--t4-on-dark);} .a-t5{color:var(--t5-on-dark);} .a-t6{color:var(--t6-on-dark);}
+
+/* ── TIP BOX ── */
+.tip-box{border:1px solid var(--border);padding:16px 20px;margin:16px 0;display:flex;gap:12px;background:rgba(245,240,232,.6);}
+.tip-box.warn{border-color:#c9a45a;background:#faf3e2;}
+.tip-icon{font-size:18px;flex-shrink:0;}
+.tip-box p{font-size:13px;margin:0;line-height:1.65;}
+
+/* ── GETTING STARTED PATHS ── */
+.paths{display:grid;gap:16px;margin:20px 0;}
+.path-card{border:1px solid var(--border);padding:20px 24px;}
+.path-card.p1{background:var(--t1-bg);} .path-card.p2{background:var(--t2-bg);} .path-card.p3{background:var(--t3-bg);}
+.path-card.p4{background:var(--t4-bg);} .path-card.p5{background:var(--t5-bg);} .path-card.p6{background:var(--t6-bg);}
+.path-label{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.1em;margin-bottom:10px;}
+.path-card.p1 .path-label{color:var(--t1-color);} .path-card.p2 .path-label{color:var(--t2-color);} .path-card.p3 .path-label{color:var(--t3-color);}
+.path-card.p4 .path-label{color:var(--t4-color);} .path-card.p5 .path-label{color:var(--t5-color);} .path-card.p6 .path-label{color:var(--t6-color);}
+.path-card ol{padding-left:18px;font-size:13px;line-height:2;}
+.path-card p{font-size:12.5px;color:var(--muted);margin-top:8px;}
+
+/* ── SOURCES ── */
+.sources{font-size:12px;color:var(--muted);line-height:1.9;margin:14px 0;}
+.sources a{color:var(--link);text-decoration:none;word-break:break-all;}
+.sources h4{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink);margin:18px 0 8px;}
+
+/* ── FOOTER ── */
+.footer{margin:56px 0 0;padding:24px 0 32px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+.footer a{color:inherit;text-decoration:none;} .footer a:hover{color:var(--link);}
+
+/* ── FLOATING BUTTONS ── */
+.back-home{position:fixed;bottom:80px;right:32px;width:40px;height:40px;background:var(--ink);color:var(--paper);border:1px solid var(--border);border-radius:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s ease,border-color .15s ease;z-index:100;text-decoration:none;}
+.back-home:hover{background:var(--hero-accent);border-color:var(--hero-accent);}
+.search-fab{position:fixed;right:32px;bottom:128px;width:40px;height:40px;background:var(--ink);color:var(--paper);border:1px solid var(--border);border-radius:2px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:100;}
+.search-fab:hover{background:var(--hero-accent);border-color:var(--hero-accent);}
+.back-to-top{position:fixed;bottom:32px;right:32px;width:40px;height:40px;background:var(--ink);color:var(--paper);border:1px solid var(--border);border-radius:2px;font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;line-height:1;cursor:pointer;opacity:0;transform:translateY(8px);transition:opacity .2s ease,transform .2s ease,background .15s ease;z-index:100;}
+.back-to-top.visible{opacity:1;transform:translateY(0);}
+.back-to-top:hover{background:var(--hero-accent);border-color:var(--hero-accent);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  .hero{padding:36px 20px 32px;} .hero h1{font-size:1.7rem;}
+  .container{padding:0 16px;}
+  .mode-overview{grid-template-columns:repeat(2,1fr);}
+  .mode-card{border-right:none;}
+  .compare-table,.plan-table{font-size:11px;} .compare-table td,.compare-table th{padding:7px 8px;}
+  .compare-table{min-width:560px;}
+  .fact-grid{grid-template-columns:90px 1fr;}
+  .decision-item{flex-direction:column;gap:4px;} .decision-q{min-width:unset;}
+  .footer{flex-direction:column;gap:8px;text-align:center;}
+  .back-home{bottom:68px;right:20px;} .back-to-top{bottom:20px;right:20px;} .search-fab{right:20px;bottom:116px;}
+}
+
+/* ── PRINT ── */
+@media print{
+  @page{margin:14mm;}
+  body{background:#fff;}
+  *{-webkit-print-color-adjust:exact;color-adjust:exact;print-color-adjust:exact;}
+  .no-print,.actions-bar,.back-to-top,.back-home{display:none !important;}
+  .mode-card,.fact-grid,.tip-box,.path-card,.step{break-inside:avoid;}
+  .compare-table tr,.plan-table tr{break-inside:avoid;}
+  .compare-table thead,.plan-table thead{display:table-header-group;}
+  .mode-section,.decision,.steps,.table-scroll{overflow:visible;}
+  .code-block{white-space:pre-wrap;word-break:break-word;overflow:visible;}
+  a{color:inherit;text-decoration:none;}
+  .hero{overflow:visible;background:#fff;color:var(--ink);}
+  .hero::before,.hero::after{display:none;}
+  .hero h1{color:var(--ink);} .hero-sub,.hero-meta{color:var(--muted);} .hero-label{color:var(--link);}
+}
+
+/* ── DARK MODE ── */
+@media screen{
+html[data-theme="dark"]{--ink:#ededed;--paper:#121212;--warm-mid:#1d1d1d;--border:#2a2a2a;--muted:#9a9a9a;--link:#ff8a5a;--hero-accent:#a78bfa;--t1-color:var(--t1-on-dark);--t1-bg:#1a1a1a;--t2-color:var(--t2-on-dark);--t2-bg:#1a1a1a;--t3-color:var(--t3-on-dark);--t3-bg:#1a1a1a;--t4-color:var(--t4-on-dark);--t4-bg:#1a1a1a;--t5-color:var(--t5-on-dark);--t5-bg:#1a1a1a;--t6-color:var(--t6-on-dark);--t6-bg:#1a1a1a;}
+html[data-theme="dark"] .hero,html[data-theme="dark"] .decision{background:#0d0d0d;}
+html[data-theme="dark"] .hero h1{color:#f3f3f3;}
+html[data-theme="dark"] .code-block .comment{color:#bbb4a9;}
+html[data-theme="dark"] .yes{color:#83e1d6;} html[data-theme="dark"] .no{color:#d58f92;} html[data-theme="dark"] .partial{color:#e1b283;}
+html[data-theme="dark"] .tip-box.warn{background:#2a2418;border-color:#5a4a2a;}
+html[data-theme="dark"] .search-fab,html[data-theme="dark"] .back-home,html[data-theme="dark"] .back-to-top{background:#1d1d1d;color:#ededed;border-color:#333;}
+html[data-theme="dark"] .search-fab:hover,html[data-theme="dark"] .back-home:hover,html[data-theme="dark"] .back-to-top:hover{background:#ff7a45;border-color:#ff7a45;color:#121212;}
+}
+</style>
+<!-- jsonld -->
+<script type="application/ld+json">
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Vibe Coding 工具全景圖",
+    "description": "vibe coding 初學者的工具與架構地圖：AI coding agent、Git/GitHub、Supabase、部署、Cloudflare、觀測——每一層解決什麼問題、何時才需要它，附 $0 起步組合與安全守則。",
+    "image": "https://bond901.github.io/ai-beginner-guide-2026/assets/og.png",
+    "inLanguage": "zh-Hant",
+    "author": {
+      "@type": "Person",
+      "name": "Bond901",
+      "url": "https://github.com/Bond901"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "AI Beginner Guide 2026",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://bond901.github.io/ai-beginner-guide-2026/assets/og.png"
+      }
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://bond901.github.io/ai-beginner-guide-2026/guides/vibe-coding-tools-guide.html"
+    },
+    "datePublished": "2026-06-08T00:00:00+08:00",
+    "dateModified": "2026-06-08T00:00:00+08:00"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "首頁",
+        "item": "https://bond901.github.io/ai-beginner-guide-2026/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "流程 · 應用",
+        "item": "https://bond901.github.io/ai-beginner-guide-2026/#cat-flow"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Vibe Coding 工具全景圖",
+        "item": "https://bond901.github.io/ai-beginner-guide-2026/guides/vibe-coding-tools-guide.html"
+      }
+    ]
+  }
+]
+</script>
+</head>
+<body>
+
+<!-- ══ HERO ══ -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">// VIBE CODING · 2026</div>
+    <h1>Vibe Coding 工具全景圖<br>從想法到上線的協作地圖</h1>
+    <p class="hero-sub">用自然語言描述、AI 生成程式碼，你負責判斷與把關。這份地圖告訴你：從 idea 到上線，每一層該用什麼工具、解決什麼問題、何時才真的需要它。</p>
+    <div class="hero-badges">
+      <span class="badge badge-t1">AI Agent</span>
+      <span class="badge badge-t2">Git · GitHub</span>
+      <span class="badge badge-t3">Supabase</span>
+      <span class="badge badge-t4">部署</span>
+      <span class="badge badge-t5">Cloudflare</span>
+      <span class="badge badge-t6">觀測</span>
+    </div>
+    <div class="hero-meta"><span>對齊 2026-06-08</span><span>初學者導向</span><span>三模型交叉彙整</span></div>
+  </div>
+</div>
+
+<div class="container" data-pagefind-body data-pagefind-meta="tag:流程·應用 · 流程">
+
+<div class="freshness no-print" data-pagefind-ignore>最後更新 <span class="lu">2026-06-08</span><span class="lv-wrap" hidden>　·　最後驗證 <span class="lv"></span></span></div>
+<div class="stale-warn no-print" data-pagefind-ignore hidden>⚠ <span></span></div>
+
+<!-- ══ ACTIONS BAR ══ -->
+<div class="actions-bar no-print" data-pagefind-ignore>
+  <div class="actions-row">
+    <button class="act-btn" onclick="window.print()" title="開啟列印視窗 → 目的地選「另存為 PDF」→ 儲存">⬇ PDF</button>
+    <a class="act-btn" href="https://notebooklm.google.com/" target="_blank" rel="noopener">↗ NotebookLM</a>
+    <button class="act-btn" id="copyUrlBtn" onclick="copyPageURL(this)">⧉ Copy Link</button>
+  </div>
+  <span class="act-hint">① 點 <strong>PDF</strong> 匯出檔案，或 <strong>Copy Link</strong> 複製網址　② 開 <strong>NotebookLM</strong> →「新增來源 → 網站」貼上，加入你的筆記本</span>
+</div>
+
+<!-- ══ TOC ══ -->
+<div class="toc">
+  <div class="toc-title">// 目錄</div>
+  <ol>
+    <li><a href="#overview">一張圖看懂整個協作流程</a></li>
+    <li><a href="#tool1">AI Coding Agent — 你的起點</a></li>
+    <li><a href="#tool2">Git + GitHub — 協作骨架</a></li>
+    <li><a href="#tool3">Supabase — 開箱即用的後端</a></li>
+    <li><a href="#tool4">部署 — 從 push 到上線</a></li>
+    <li><a href="#tool5">Cloudflare — 網域 · CDN · 安全</a></li>
+    <li><a href="#tool6">觀測 — Analytics + 錯誤監控</a></li>
+    <li><a href="#compare">六層一次看懂</a></li>
+    <li><a href="#decision">我要做 X，用什麼？</a></li>
+    <li><a href="#pricing">免費額度速查</a></li>
+    <li><a href="#start">推薦架構 · 依產品挑一條</a></li>
+    <li><a href="#sources">資料來源</a></li>
+  </ol>
+</div>
+
+<!-- ══ §01 OVERVIEW ══ -->
+<div class="section" id="overview">
+  <div class="section-number">// 01</div>
+  <h2>一張圖看懂整個協作流程</h2>
+  <p class="intro">Vibe coding 的核心不是「讓 AI 隨便改程式」，而是一條<strong>受控流程</strong>。AI 是被放進既有軟體交付流程裡的執行者——它能改程式，但 Git、PR、CI、部署與監控，才是讓這些修改「可追蹤、可審查、可回復」的骨架。</p>
+  <div class="code-block"><span class="comment"># 受控的 vibe coding 流程</span>
+想法 / 需求
+   ↓
+<span class="kw">AI Coding Agent</span>   Codex / Claude Code / Antigravity / Cursor
+   ↓  本機分支 branch → <span class="cmd">git commit</span>
+<span class="kw">GitHub Pull Request</span>   人類 review diff
+   ↓  GitHub Actions 自動測試 / 建置 / 掃描
+<span class="kw">部署</span>   Vercel / Cloudflare Pages / Railway / VPS
+   ↓
+<span class="kw">資料層</span>   Supabase / Firebase / Neon
+   ↓
+<span class="kw">網域與安全</span>   Cloudflare DNS / CDN / Workers / R2
+   ↓
+<span class="kw">觀測</span>   GoatCounter / Sentry / Billing alert</div>
+</div>
+<div class="mode-overview">
+  <div class="mode-card t1"><div class="mode-icon icon-t1">🤖</div><h3>AI Coding Agent</h3><p>把自然語言變成程式碼。App builder 或本地 AI 編輯器。</p></div>
+  <div class="mode-card t2"><div class="mode-icon icon-t2">🔀</div><h3>Git + GitHub</h3><p>程式碼時光機 + 協作控制台。PR 是防 AI 污染主線的關卡。</p></div>
+  <div class="mode-card t3"><div class="mode-icon icon-t3">🗄️</div><h3>Supabase</h3><p>Postgres + Auth + Storage 一站搞定後端八成需求。</p></div>
+  <div class="mode-card t4"><div class="mode-icon icon-t4">🚀</div><h3>部署</h3><p>git push 後自動上線。Vercel / CF Pages / Railway / VPS。</p></div>
+  <div class="mode-card t5"><div class="mode-icon icon-t5">☁️</div><h3>Cloudflare</h3><p>網域、CDN、SSL、防護——產品的隱形入口層。</p></div>
+  <div class="mode-card t6"><div class="mode-icon icon-t6">📊</div><h3>觀測</h3><p>知道有人用（Analytics）、知道哪裡壞了（Sentry）。</p></div>
+</div>
+
+<!-- ══ §02 AI CODING AGENT ══ -->
+<div class="section" id="tool1"><div class="section-number">// 02</div><h2>AI Coding Agent — 你的起點</h2></div>
+<div class="mode-section">
+  <div class="mode-header t1-h"><span style="font-size:20px">🤖</span><h3>AI Coding Agent — 把自然語言變成程式碼</h3><span class="mode-tag">起點</span></div>
+  <div class="mode-body">
+    <div class="fact-grid">
+      <div class="fact-label">能做什麼</div><div class="fact-value">讀程式庫、跨檔案修改、執行指令、建立 commit / pull request。像「初階工程師 ＋ 終端機 ＋ 編輯器」——必須限制權限並審查輸出。</div>
+      <div class="fact-label">兩種型態</div><div class="fact-value"><strong>App Builder</strong>（瀏覽器直接從文字生成全棧，免安裝）：Lovable、Bolt.new、v0、Replit Agent。<br><strong>AI 編輯器</strong>（本地、看得到改得到每行 code）：Cursor、Windsurf、Claude Code、OpenAI Codex、Google Antigravity。</div>
+      <div class="fact-label">適合誰</div><div class="fact-value">完全沒基礎 → App Builder 跑通第一個 app；想真正學 / 做產品 → AI 編輯器（學著看懂 diff）。</div>
+      <div class="fact-label">注意</div><div class="fact-value">先選工作流，不是先選模型。重點不是「它會不會寫」，而是「每次改完你看不看 diff」。</div>
+    </div>
+    <ul class="uc">
+      <li>沒程式基礎、想快速驗證 idea → Bolt.new / Lovable</li>
+      <li>偏好 terminal、要跨多檔重構、寫測試修 lint → Claude Code / Codex</li>
+      <li>原本用 Gemini CLI → 評估遷移 Antigravity（見下方提醒）</li>
+    </ul>
+    <div class="tip-box warn"><span class="tip-icon">⚠️</span><p><strong>安全第一條守則：</strong>OWASP 特別點名——許多人讓 agent 在 <code>auto-accept</code> 模式下、用開發者完整權限執行且無人監督，這是最大風險。最低限度：<strong>每次修改前先開 branch、改完看 diff、跑測試後才 commit</strong>，別讓 AI 一次改 30 個檔案才檢查。</p></div>
+    <h4 class="sub">給 AI 的安全型 prompt（先分析、後動手）</h4>
+    <div class="code-block"><span class="comment"># 先不要改檔案</span>
+請先閱讀專案結構，<span class="kw">不要</span>修改檔案。
+1. 找出與「<span class="str">[功能需求]</span>」相關的檔案
+2. 說明你要改哪些檔案、各自原因
+3. 提出測試方式
+4. 等我確認後再動手；改完列出 changed files、測試結果、剩餘風險</div>
+    <div class="tip-box"><span class="tip-icon">📌</span><p><strong>Antigravity 遷移提醒：</strong>依 Google 官方 release notes，Gemini CLI 與 Gemini Code Assist IDE extensions 將於 <strong>2026-06-18</strong> 起停止為個人版（Code Assist for individuals、AI Pro、AI Ultra）服務，建議遷移到 Antigravity / Antigravity CLI。</p></div>
+  </div>
+</div>
+
+<!-- ══ §03 GIT + GITHUB ══ -->
+<div class="section" id="tool2"><div class="section-number">// 03</div><h2>Git + GitHub — 可追蹤、可回復的協作骨架</h2></div>
+<div class="mode-section">
+  <div class="mode-header t2-h"><span style="font-size:20px">🔀</span><h3>Git + GitHub — 版本控制與協作</h3><span class="mode-tag">骨架</span></div>
+  <div class="mode-body">
+    <div class="fact-grid">
+      <div class="fact-label">Git 是什麼</div><div class="fact-value">本地的「程式碼時光機」：每次 <code>commit</code> 等於拍一張快照，出錯可隨時回到之前任一時間點。</div>
+      <div class="fact-label">GitHub 是什麼</div><div class="fact-value">雲端備份 ＋ 協作（Pull Request 審查）＋ 自動部署（GitOps）。PR 不是形式，是<strong>防止 AI 直接污染主線</strong>的關卡。</div>
+      <div class="fact-label">六個必懂詞</div><div class="fact-value"><code>repository</code>（倉庫）、<code>commit</code>（快照）、<code>branch</code>（分支）、<code>diff</code>（看 AI 改了什麼）、<code>merge</code>（合併）、<code>revert/reset</code>（改壞救回）。</div>
+      <div class="fact-label">GitOps</div><div class="fact-value">push 一次 → Vercel / Railway 收到 webhook → 自動 build + deploy（1–2 分鐘）→ 網站自動更新。「更新網站」變成一行 <code>git push</code>。</div>
+    </div>
+    <h4 class="sub">最常用的基本流程</h4>
+    <div class="code-block"><span class="comment"># 第一次</span>
+<span class="cmd">git</span> init
+<span class="cmd">git</span> add .
+<span class="cmd">git</span> commit -m <span class="str">"first commit"</span>
+<span class="cmd">git</span> remote add origin <span class="str">https://github.com/你的帳號/專案.git</span>
+<span class="cmd">git</span> push -u origin main
+<span class="comment"># 之後每次改動</span>
+<span class="cmd">git</span> add .  &amp;&amp;  <span class="cmd">git</span> commit -m <span class="str">"描述這次做了什麼"</span>  &amp;&amp;  <span class="cmd">git</span> push</div>
+    <div class="tip-box"><span class="tip-icon">💡</span><p><strong>協作節奏：</strong>AI 每完成一個小任務 → 你看 diff → 跑測試 → commit。剛起步不用先懂 merge conflict，先把「init → add → commit → push」跑熟，其他用到再學。GitHub 免費方案：public / private repo 無限、GitHub Actions 2,000 分鐘/月。</p></div>
+  </div>
+</div>
+
+<!-- ══ §04 SUPABASE ══ -->
+<div class="section" id="tool3"><div class="section-number">// 04</div><h2>Supabase — 開箱即用的後端</h2></div>
+<div class="mode-section">
+  <div class="mode-header t3-h"><span style="font-size:20px">🗄️</span><h3>Supabase — 資料庫 · Auth · Storage</h3><span class="mode-tag">後端捷徑</span></div>
+  <div class="mode-body">
+    <div class="fact-grid">
+      <div class="fact-label">包含什麼</div><div class="fact-value">PostgreSQL（核心資料）＋ Auth（Email/Google/GitHub 登入）＋ Row Level Security（列級權限）＋ Storage（圖片檔案）＋ Realtime（即時）＋ Edge Functions（server-side TypeScript，常接 webhook / Stripe）。一個平台搞定後端八成需求。</div>
+      <div class="fact-label">為何 AI 愛</div><div class="fact-value">Lovable 預設後端即 Supabase；完整 TypeScript SDK 讓 AI 生成的 code 品質穩定；官方文件清楚，AI 不易幻覺出錯誤 API。</div>
+      <div class="fact-label">替代品</div><div class="fact-value">Firebase（Google、NoSQL/Firestore、vendor lock-in 較高）；Neon / PlanetScale（serverless Postgres/MySQL，支援分支資料庫）。</div>
+      <div class="fact-label">免費方案</div><div class="fact-value">500 MB DB、50,000 MAU、500,000 Edge Function 呼叫/月、2 個專案（<strong>閒置 7 天會自動暫停</strong>，需手動恢復）。付費 $25/月起。</div>
+    </div>
+    <h4 class="sub">基本用法（supabase-js）</h4>
+    <div class="code-block"><span class="kw">import</span> { createClient } <span class="kw">from</span> <span class="str">'@supabase/supabase-js'</span>
+<span class="kw">const</span> supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+<span class="comment">// 查詢</span>
+<span class="kw">const</span> { data } = <span class="kw">await</span> supabase.from(<span class="str">'posts'</span>).select(<span class="str">'*'</span>)
+<span class="comment">// 使用者登入</span>
+<span class="kw">await</span> supabase.auth.signInWithOAuth({ provider: <span class="str">'google'</span> })</div>
+    <div class="tip-box warn"><span class="tip-icon">⚠️</span><p><strong>三大致命錯誤：</strong>① 關掉 RLS → 使用者讀到別人的資料；② 把 <code>service role key</code> 放前端 → 重大資料外洩；③ 讓 AI 自動改 schema → 破壞資料結構。正解：<strong>所有表預設開 RLS（用 <code>auth.uid()</code> 限制只能動自己的資料）、service key 只放 server、migration 一律人工 review、dev/prod 分開</strong>。</p></div>
+  </div>
+</div>
+
+<!-- ══ §05 部署 ══ -->
+<div class="section" id="tool4"><div class="section-number">// 05</div><h2>部署 — 從 git push 到網站上線</h2></div>
+<div class="mode-section">
+  <div class="mode-header t4-h"><span style="font-size:20px">🚀</span><h3>部署 — 選對平台</h3><span class="mode-tag">上線</span></div>
+  <div class="mode-body">
+    <div class="fact-grid">
+      <div class="fact-label">Vercel</div><div class="fact-value">Next.js 創造者、社群最多人用。連 GitHub → 自動偵測框架 → 零配置 build → 上線；每次 push 給 Preview URL。後端輕量（直接串 Supabase）。Hobby 免費 / Pro $20/月。</div>
+      <div class="fact-label">Cloudflare Pages</div><div class="fact-value">全球邊緣效能最佳（300+ 節點），靜態站首選。搭 Workers + D1（SQLite）+ R2（物件儲存）構成低成本全棧。</div>
+      <div class="fact-label">Railway / Render</div><div class="fact-value">最接近「整個 app 丟上去就能跑」。支援<strong>持久化 container</strong>：WebSocket、background worker、cron、內建 Postgres/Redis。有自己的 Express / FastAPI 後端時用。</div>
+      <div class="fact-label">VPS</div><div class="fact-value">Hostinger（入門便宜）/ Hetzner（CP 值王）/ DigitalOcean（教學最多）。完全控制環境，配 Docker 自架服務。<strong>初學者先別碰</strong>——要自己管防火牆、SSL、更新、備份。</div>
+    </div>
+    <div class="tip-box"><span class="tip-icon">🧭</span><p><strong>何時才需要 VPS？</strong>只是靜態站 / landing → Cloudflare Pages 或 Vercel；只是表單 + 登入 + CRUD → Supabase。需要<strong>長駐程序、Docker、WebSocket、背景任務、自架 n8n/PostHog</strong> 才上 VPS。先用 PaaS，等有真實用戶、成本上升再評估遷移。</p></div>
+  </div>
+</div>
+
+<!-- ══ §06 CLOUDFLARE ══ -->
+<div class="section" id="tool5"><div class="section-number">// 06</div><h2>Cloudflare — 網域、CDN、安全的隱形入口層</h2></div>
+<div class="mode-section">
+  <div class="mode-header t5-h"><span style="font-size:20px">☁️</span><h3>Cloudflare — DNS · CDN · 安全 · 邊緣</h3><span class="mode-tag">入口層</span></div>
+  <div class="mode-body">
+    <div class="fact-grid">
+      <div class="fact-label">角色</div><div class="fact-value">產品的入口與安全邊界：你的域名 →〔DNS〕→〔CDN 快取〕→〔WAF / DDoS〕→ 你的 Vercel / Railway server。</div>
+      <div class="fact-label">核心（免費）</div><div class="fact-value"><strong>DNS</strong>（把域名指到網站）、<strong>CDN 快取</strong>（全球節點加速）、<strong>DDoS 防護</strong>、<strong>SSL/TLS</strong>（自動 HTTPS）、<strong>Tunnel</strong>（本地服務暫時對外）。</div>
+      <div class="fact-label">進階</div><div class="fact-value"><strong>Workers</strong>（邊緣 serverless）、<strong>R2</strong>（物件儲存，<strong>無 egress 出口流量費</strong>）、<strong>Pages</strong>、<strong>AI Gateway</strong>（快取/監控 AI 呼叫，防 vibe coding 死循環爆帳單）、<strong>Turnstile</strong>（取代 CAPTCHA 的隱私友善防機器人）。</div>
+      <div class="fact-label">費用</div><div class="fact-value">絕大多數個人 / 小產品初期只需<strong>免費方案</strong>。</div>
+    </div>
+    <h4 class="sub">把自訂域名串到 Vercel（標準流程）</h4>
+    <div class="steps">
+      <div class="step t5-step"><div class="step-num">01</div><div class="step-content"><h4>買域名</h4><p>在 Namecheap / Google Domains 等購買。</p></div></div>
+      <div class="step t5-step"><div class="step-num">02</div><div class="step-content"><h4>改 nameserver</h4><p>把域名的 nameserver 指向 Cloudflare（如 <code>ns1.cloudflare.com</code>）。</p></div></div>
+      <div class="step t5-step"><div class="step-num">03</div><div class="step-content"><h4>加 CNAME</h4><p>Cloudflare DNS 加一筆 CNAME：Target = Vercel 給的 <code>cname.vercel-dns.com</code>。</p></div></div>
+      <div class="step t5-step"><div class="step-num">04</div><div class="step-content"><h4>Vercel 綁域名 + 等傳播</h4><p>Vercel → Domains 加入域名，等 DNS 傳播完成（最多數小時）。</p></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ §07 觀測 ══ -->
+<div class="section" id="tool6"><div class="section-number">// 07</div><h2>觀測 — 知道有人用、知道哪裡壞了</h2></div>
+<div class="mode-section">
+  <div class="mode-header t6-h"><span style="font-size:20px">📊</span><h3>觀測 — Analytics + 錯誤監控</h3><span class="mode-tag">上線後必備</span></div>
+  <div class="mode-body">
+    <div class="fact-grid">
+      <div class="fact-label">為何不用 GA4</div><div class="fact-value">介面複雜、需要 Cookie consent banner（影響轉換）、資料傳給 Google（GDPR 風險）、99% 功能小網站用不到。MVP 階段你只需要：有多少人來、從哪來、看了什麼。</div>
+      <div class="fact-label">Analytics</div><div class="fact-value"><strong>GoatCounter</strong>（1 KB、無 cookie、非商業免費，極簡）／<strong>Plausible</strong>（功能完整、含 Funnel/Goals，$9/月起）／<strong>Umami</strong>（MIT、可完全免費自架）／<strong>PostHog</strong>（熱點圖 + session 錄影，全功能產品分析）。</div>
+      <div class="fact-label">錯誤監控</div><div class="fact-value"><strong>Sentry</strong>——上線後 AI 生成的 code 出錯自動報警（Error / Tracing / Session Replay）。只看 analytics 不看 errors＝有流量但使用者其實卡關。沒監控等於盲飛。</div>
+      <div class="fact-label">Secrets</div><div class="fact-value">API key 永不 commit；Supabase <code>service role key</code> 不進前端；AI 不碰 production secrets；dev / staging / prod 環境變數分開（<code>.env.local</code> → GitHub Secrets → 平台 env vars）。</div>
+    </div>
+    <h4 class="sub">GoatCounter 安裝（一行）</h4>
+    <div class="code-block"><span class="kw">&lt;script</span> data-goatcounter=<span class="str">"https://你的帳號.goatcounter.com/count"</span>
+        async src=<span class="str">"//gc.zgo.at/count.js"</span><span class="kw">&gt;&lt;/script&gt;</span></div>
+    <div class="tip-box"><span class="tip-icon">💸</span><p><strong>順帶防爆帳單：</strong>用 AI agent 時，Cloudflare <strong>AI Gateway</strong> 可快取與監控 AI 請求，防止 vibe coding 過程中因死循環引發高額 API 帳單；AWS 第一次用務必設 <strong>Billing Alerts</strong>。</p></div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- ══ §08 COMPARE ══ -->
+<div class="section" id="compare"><div class="section-number">// 08</div><h2>六層一次看懂</h2>
+<p class="intro">不是每層 MVP 都必需。下表幫你判斷「哪些現在就要、哪些用到再說」。</p></div>
+<div class="table-scroll">
+<table class="compare-table">
+  <thead><tr><th>比較項目</th><th>AI Agent</th><th>Git/GitHub</th><th>Supabase</th><th>部署</th><th>Cloudflare</th><th>觀測</th></tr></thead>
+  <tbody>
+    <tr><td>解決的問題</td><td>寫程式</td><td>版本/協作</td><td>資料/登入</td><td>上線</td><td>網域/安全</td><td>監控</td></tr>
+    <tr><td>MVP 必需</td><td><span class="yes">✓</span></td><td><span class="yes">✓</span></td><td><span class="partial">看需求</span></td><td><span class="yes">✓</span></td><td><span class="partial">DNS 需要</span></td><td><span class="partial">建議</span></td></tr>
+    <tr><td>免費起步</td><td><span class="yes">✓</span></td><td><span class="yes">✓</span></td><td><span class="yes">✓</span></td><td><span class="yes">✓</span></td><td><span class="yes">✓</span></td><td><span class="yes">✓</span></td></tr>
+    <tr><td>主要風險</td><td>權限 / 不看 diff</td><td>—</td><td>RLS / key 外洩</td><td>—</td><td>—</td><td>secrets 外洩</td></tr>
+    <tr><td>初期可跳過</td><td><span class="no">否</span></td><td><span class="no">否</span></td><td>純靜態站可</td><td><span class="no">否</span></td><td>僅 DNS</td><td>可稍後</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ══ §09 DECISION ══ -->
+<div class="decision">
+  <h3>🌿 我要做 X，用什麼？</h3>
+  <div class="decision-item"><div class="decision-q">快速出 prototype 驗證 idea</div><div class="decision-arrow">→</div><div class="decision-a a-t1">Bolt.new / Lovable</div></div>
+  <div class="decision-item"><div class="decision-q">正式做一個 Next.js SaaS</div><div class="decision-arrow">→</div><div class="decision-a a-t4">Cursor + GitHub + Supabase + Vercel</div></div>
+  <div class="decision-item"><div class="decision-q">需要自己的後端 API server</div><div class="decision-arrow">→</div><div class="decision-a a-t4">Railway（Node / Python）</div></div>
+  <div class="decision-item"><div class="decision-q">超省錢、長期跑的 service</div><div class="decision-arrow">→</div><div class="decision-a a-t5">Hetzner VPS + Docker</div></div>
+  <div class="decision-item"><div class="decision-q">網站要全球快速載入</div><div class="decision-arrow">→</div><div class="decision-a a-t5">Cloudflare Pages</div></div>
+  <div class="decision-item"><div class="decision-q">資料庫 + Auth 一起處理</div><div class="decision-arrow">→</div><div class="decision-a a-t3">Supabase</div></div>
+  <div class="decision-item"><div class="decision-q">只需要看頁面流量</div><div class="decision-arrow">→</div><div class="decision-a a-t6">GoatCounter（免費）</div></div>
+  <div class="decision-item"><div class="decision-q">需要完整 funnel 分析</div><div class="decision-arrow">→</div><div class="decision-a a-t6">Plausible（$9/月起）</div></div>
+  <div class="decision-item"><div class="decision-q">上線後要抓錯誤</div><div class="decision-arrow">→</div><div class="decision-a a-t6">Sentry</div></div>
+  <div class="decision-item"><div class="decision-q">大公司合規 / 複雜 infra</div><div class="decision-arrow">→</div><div class="decision-a a-t2">AWS（先設 Billing Alert）</div></div>
+</div>
+
+<!-- ══ §10 PRICING ══ -->
+<div class="section" id="pricing"><div class="section-number">// 09</div><h2>免費額度速查</h2>
+<p class="intro">數值為 2026-06 對齊，方案常變動，以官方頁面為準。</p></div>
+<table class="plan-table">
+  <thead><tr><th>工具</th><th>免費方案</th><th>付費起點</th></tr></thead>
+  <tbody>
+    <tr><td><strong>GitHub</strong></td><td>public / private repo 無限、Actions 2,000 分鐘/月</td><td>—</td></tr>
+    <tr><td><strong>Cursor</strong></td><td>免費版（基礎補全）</td><td>Pro <code>$20/月</code></td></tr>
+    <tr><td><strong>Supabase</strong></td><td>500 MB DB、50K MAU、2 專案（閒置 7 天暫停）</td><td><code>$25/月</code></td></tr>
+    <tr><td><strong>Vercel</strong></td><td>Hobby（個人 / 學習）</td><td>Pro <code>$20/月</code></td></tr>
+    <tr><td><strong>Cloudflare</strong></td><td>DNS / CDN / SSL / Pages / Workers(10 萬req/日)</td><td>Pro <code>$20/月</code></td></tr>
+    <tr><td><strong>GoatCounter</strong></td><td>非商業免費 / 自架免費</td><td><code>$15/月</code>（商業）</td></tr>
+    <tr><td><strong>Plausible</strong></td><td>自架開源（AGPL）</td><td><code>$9/月</code>（10K pv）</td></tr>
+    <tr><td><strong>Umami</strong></td><td>自架免費 / Cloud 100 萬 events/月</td><td>依用量</td></tr>
+    <tr><td><strong>Sentry</strong></td><td>免費層</td><td>依用量</td></tr>
+    <tr><td><strong>AWS</strong></td><td>Always Free + 首年 12 個月免費（分三類）</td><td>用量制 ⚠️ 設 Billing Alert</td></tr>
+  </tbody>
+</table>
+<div class="tip-box"><span class="tip-icon">🆓</span><p><strong>$0/月 Starter Stack：</strong>Cursor（免費）或 Bolt.new ＋ GitHub ＋ Supabase ＋ Vercel ＋ Cloudflare ＋ GoatCounter。全部加起來 <strong>$0/月</strong>，只需買域名（約 $10–15/年）。有真實用戶後再升 Supabase $25、Vercel $20、Plausible $9。</p></div>
+
+<!-- ══ §11 GETTING STARTED ══ -->
+<div class="section" id="start"><div class="section-number">// 10</div><h2>推薦架構 · 依產品挑一條</h2>
+<p class="intro">不要一次學完所有工具；先依你要做的東西，挑一條最小可行路徑走完。</p></div>
+<div class="paths">
+  <div class="path-card p1"><div class="path-label">架構 A — 個人站 / Landing / Blog</div>
+    <ol><li>GitHub（放原始碼）</li><li>Cloudflare Pages 或 Vercel（部署）</li><li>Cloudflare DNS（域名）</li><li>GoatCounter（流量）</li></ol>
+    <p>不需要：資料庫、登入、VPS、AWS、複雜後端。</p></div>
+  <div class="path-card p4"><div class="path-label">架構 B — SaaS MVP / CRUD（最推薦預設）</div>
+    <ol><li>GitHub → AI coding agent → Pull Request</li><li>GitHub Actions（自動測試）</li><li>Vercel 或 Cloudflare Pages（前端）</li><li>Supabase（Auth + Postgres + Storage）</li><li>Cloudflare DNS ＋ GoatCounter + Sentry</li></ol>
+    <p>適合：todo / kanban、會員系統、表單產品、AI wrapper、內部 admin。</p></div>
+  <div class="path-card p5"><div class="path-label">架構 C — 需要背景任務 / 自架服務</div>
+    <ol><li>GitHub → GitHub Actions</li><li>VPS 或 AWS Lightsail</li><li>Docker Compose（app + db + worker + queue）</li><li>Cloudflare DNS + CDN ＋ Sentry + logs</li></ol>
+    <p>適合：爬蟲/排程、自架 n8n/PostHog、WebSocket 即時協作。代價：要自己管 Linux、SSH、防火牆、備份、更新。</p></div>
+  <div class="path-card p6"><div class="path-label">架構 D — 企業級 / 高流量</div>
+    <ol><li>GitHub → CI/CD</li><li>AWS / GCP / Azure（managed DB + 物件儲存 + CDN）</li><li>IAM + Observability + Cost management</li></ol>
+    <p>有團隊、有合規、有大量流量、需多區域部署才上；只是 MVP 用這套是過度工程化。</p></div>
+</div>
+<div class="tip-box"><span class="tip-icon">🧱</span><p><strong>初學者學習順序：</strong>① 先會「不把專案弄壞」（Git commit/branch/diff、PR、<code>.env</code>/<code>.gitignore</code>）→ ② 讓產品能上線（部署 + DNS + Supabase）→ ③ 讓產品能維護（Actions + Sentry + staging + billing alert）→ ④ 再考慮 VPS / AWS（Linux + Docker + 備份還原）。</p></div>
+
+<!-- ══ §12 SOURCES ══ -->
+<div class="section" id="sources"><div class="section-number">// 附錄</div><h2>資料來源 / Sources</h2>
+  <div class="sources">
+    <p>本頁由三份獨立草稿（Claude / Gemini / GPT 各自產出）交叉彙整：取最完整涵蓋、保留官方第一手引用、分歧處以權威來源為準。</p>
+    <h4>官方第一手 / Primary</h4>
+    OpenAI Codex：<a href="https://developers.openai.com/codex/cloud" target="_blank" rel="noopener">developers.openai.com/codex</a><br>
+    Anthropic Claude Code：<a href="https://docs.anthropic.com/en/docs/claude-code/overview" target="_blank" rel="noopener">docs.anthropic.com/claude-code</a><br>
+    Google Antigravity / Gemini Code Assist release notes：<a href="https://developers.google.com/gemini-code-assist/resources/release-notes" target="_blank" rel="noopener">developers.google.com/gemini-code-assist</a><br>
+    Git：<a href="https://git-scm.com/" target="_blank" rel="noopener">git-scm.com</a> · GitHub Docs：<a href="https://docs.github.com/" target="_blank" rel="noopener">docs.github.com</a><br>
+    Supabase Docs（含 RLS / Edge Functions）：<a href="https://supabase.com/docs" target="_blank" rel="noopener">supabase.com/docs</a><br>
+    Vercel：<a href="https://vercel.com/docs/git/vercel-for-github" target="_blank" rel="noopener">vercel.com/docs</a> · Cloudflare：<a href="https://developers.cloudflare.com/" target="_blank" rel="noopener">developers.cloudflare.com</a><br>
+    AWS Well-Architected：<a href="https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html" target="_blank" rel="noopener">docs.aws.amazon.com/wellarchitected</a><br>
+    GoatCounter：<a href="https://www.goatcounter.com/" target="_blank" rel="noopener">goatcounter.com</a> · Sentry：<a href="https://docs.sentry.io/" target="_blank" rel="noopener">docs.sentry.io</a><br>
+    OWASP（Secure Coding with AI / Secure Code Review）：<a href="https://cheatsheetseries.owasp.org/cheatsheets/Secure_Coding_with_AI_Cheat_Sheet.html" target="_blank" rel="noopener">cheatsheetseries.owasp.org</a>
+    <h4>未能驗證 / Caveats</h4>
+    • 免費額度與價格為 2026-06 對齊，常變動——以各官方頁面為準。<br>
+    • Gemini CLI / Code Assist 個人版停止服務日（2026-06-18）依 Google 官方 release notes；遷移細節請於上線前再確認。<br>
+    • 工具定位（如 Supabase vs Firebase、各部署平台適用情境）為通用建議，實際選擇依專案需求調整。
+  </div>
+</div>
+
+<!-- ══ FOOTER ══ -->
+<div class="footer" data-pagefind-ignore>
+  <span>AI Beginner Guide 2026 · Bond901</span>
+  <a href="../index.html">← 回首頁</a>
+</div>
+
+</div><!-- /container -->
+
+<div class="about-nav no-print" data-pagefind-ignore style="max-width:820px;margin:0 auto;padding:0 32px 30px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);"><a href="../about.html" style="color:inherit;text-decoration:none;">關於 · 編輯原則與方法論</a></div>
+<a class="back-home no-print" data-pagefind-ignore href="../index.html" title="回到首頁" aria-label="回到首頁"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10.5V20h14v-9.5"/></svg></a>
+<button type="button" id="searchTrigger" class="search-fab no-print" data-pagefind-ignore aria-label="搜尋指南（Cmd K）" title="搜尋（⌘K）"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></button>
+<button class="back-to-top" id="backToTop" data-pagefind-ignore aria-label="Back to top">↑</button>
+
+<script>
+(function(){
+  var top=document.getElementById('backToTop');
+  if(top){
+    window.addEventListener('scroll',function(){top.classList.toggle('visible',window.scrollY>400);},{passive:true});
+    top.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+  }
+})();
+function copyPageURL(btn){
+  var orig=btn.textContent;
+  var flash=function(msg){btn.textContent=msg;setTimeout(function(){btn.textContent=orig;},1800);};
+  var ok=function(){flash('✓ 已複製');};
+  var fail=function(){flash('複製失敗，請手動複製');};
+  if(location.protocol==='file:'){
+    alert('您正在以本機檔案 (file://) 開啟。\nNotebookLM 的「網站來源」需要可公開存取的 https 網址，無法讀取本機路徑。\n請先部署到 GitHub Pages 等，或改用旁邊的「⬇ PDF」匯出上傳。');
+    return;
+  }
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(location.href).then(ok).catch(fail);
+  }else{
+    var ta=document.createElement('textarea');ta.value=location.href;ta.setAttribute('readonly','');
+    ta.style.position='fixed';ta.style.top='-9999px';document.body.appendChild(ta);ta.select();
+    var done=false;try{done=document.execCommand('copy');}catch(e){done=false;}
+    document.body.removeChild(ta);done?ok():fail();
+  }
+}
+</script>
+<!-- search:modal -->
+<div id="searchModal" class="search-modal no-print" data-pagefind-ignore hidden role="dialog" aria-modal="true" aria-label="搜尋指南">
+<div class="sm-backdrop"></div>
+<div class="sm-panel">
+<div class="sm-input-row"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:var(--muted)"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input id="searchInput" type="text" placeholder="搜尋指南…" autocomplete="off" spellcheck="false" aria-label="搜尋指南"><button type="button" id="searchClose" class="sm-esc">esc</button></div>
+<div id="searchResults" class="sm-results" role="listbox" aria-label="搜尋結果"></div>
+<div class="sm-footer"><span><kbd>↑↓</kbd> 瀏覽</span><span><kbd>↵</kbd> 開啟</span><span><kbd>esc</kbd> 關閉</span></div>
+</div>
+</div>
+<button type="button" id="themeToggle" class="theme-toggle no-print" aria-label="切換深色或淺色主題" title="切換主題"><svg class="ic-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></svg><svg class="ic-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+<script src="../assets/site.js" defer></script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # AI Beginner Guide 2026
 
-> 2026 年 AI 工具入門指南集：從核心概念到實戰操作，12 篇完整指南幫助初學者快速上手主流 AI 工具。
+> 2026 年 AI 工具入門指南集：從核心概念到實戰操作，13 篇完整指南幫助初學者快速上手主流 AI 工具。
 
 **線上閱讀**：[Bond901.github.io/ai-beginner-guide-2026](https://Bond901.github.io/ai-beginner-guide-2026)
 
@@ -52,6 +52,7 @@
 |------|-------------|
 | [RAG 檢索增強生成 完整指南](guides/rag-guide-2026.html) | 讓 AI 參照外部知識回答——Chunking、Embedding、Retrieval、Generation、Evaluation 五階段管線，到 CRAG / Self-RAG / GraphRAG / Agentic 進階架構、失敗模式與評估方法 |
 | [AI 時代軟體開發流程](guides/ai-sdlc-guide-2026.html) | 從需求分析到部署維運——AI 如何重塑 SDLC 每個階段的角色分工與工作流程 |
+| [Vibe Coding 工具全景圖](guides/vibe-coding-tools-guide.html) | 用 AI 寫程式、你負責把關——從 idea 到上線的工具地圖：AI agent、Git/GitHub、Supabase、部署、Cloudflare、觀測，每層解決什麼問題、何時才需要它，附 $0 起步組合與安全守則 |
 
 ## 怎麼開始（依程度／目的）
 
