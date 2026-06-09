@@ -233,8 +233,8 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:40px 0; }
   font-size:12px; color:#d4c9a8; overflow-x:auto; line-height:1.7;
   white-space:pre;
 }
-.code-block .comment{color:#7a7060;}
-.code-block .cmd   {color:#d4541a;}
+.code-block .comment{color:var(--c-7a7060);}
+.code-block .cmd   {color:var(--c-d4541a);}
 .code-block .str   {color:#6aad8e;}
 .code-block .kw    {color:#8baee0;}
 .code-block .tag   {color:#c0a8e8;}
@@ -248,7 +248,7 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:40px 0; }
 }
 .file-tree .dir  {color:#8baee0;}
 .file-tree .file {color:#6aad8e;}
-.file-tree .note {color:#7a7060;}
+.file-tree .note {color:var(--c-7a7060);}
 
 /* ── FOUR LAYER CARDS ── */
 .layer-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin:20px 0; }
@@ -293,9 +293,9 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:40px 0; }
   color:var(--muted); background:var(--warm-mid); white-space:nowrap;
 }
 .compare-table tr:last-child td { border-bottom:none; }
-.yes   {color:#1a7a6e; font-weight:700;}
-.no    {color:#c0555a;}
-.partial{color:#a06020;}
+.yes   {color:var(--c-1a7a6e); font-weight:700;}
+.no    {color:var(--c-c0555a);}
+.partial{color:var(--c-a06020);}
 
 /* ── QUALITY TABLE ── */
 .qa-table { width:100%; border-collapse:collapse; font-size:13px; margin:20px 0; }
@@ -307,7 +307,7 @@ hr.rule { border:none; border-top:1px solid var(--border); margin:40px 0; }
 }
 .qa-table td { padding:9px 14px; border:1px solid var(--border); line-height:1.6; }
 .qa-table td:first-child { font-weight:600; color:var(--muted); background:var(--warm-mid); white-space:nowrap; }
-.pass { color:#1a7a6e; font-weight:700; }
+.pass { color:var(--c-1a7a6e); font-weight:700; }
 
 /* ── DECISION ── */
 .decision {
@@ -425,6 +425,10 @@ html[data-theme="dark"] .search-fab,html[data-theme="dark"] .back-home,html[data
 html[data-theme="dark"] .search-fab:hover,html[data-theme="dark"] .back-home:hover,html[data-theme="dark"] .back-to-top:hover{background:#ff7a45;border-color:#ff7a45;color:#121212;}
 }
 
+
+/* dark-mode contrast fix: hardcoded text colors -> tokenized (light unchanged, dark brightened) */
+:root{--c-1a7a6e:#1a7a6e;--c-7a7060:#7a7060;--c-a06020:#a06020;--c-c0555a:#c0555a;--c-d4541a:#d4541a;}
+html[data-theme="dark"]{--c-1a7a6e:#98e1d8;--c-7a7060:#c5bfb5;--c-a06020:#e1bd98;--c-c0555a:#db9ea1;--c-d4541a:#e1af98;}
 </style>
 <!-- analytics:goatcounter -->
 <script data-goatcounter="https://bond901.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -1189,14 +1193,14 @@ html[data-theme="dark"] .search-fab:hover,html[data-theme="dark"] .back-home:hov
           <div class="step-num">①</div>
           <div class="step-content">
             <h4>寫「人格形容」而非「可執行行為」</h4>
-            <p><span style="color:#c0555a">❌ 低效：</span><code>Be smart, careful, and proactive.</code><br><span style="color:#1a7a6e">✓ 高效：</span><code>Before editing code, inspect existing patterns. After editing, run narrowest test and report exact command + result.</code></p>
+            <p><span style="color:var(--c-c0555a)">❌ 低效：</span><code>Be smart, careful, and proactive.</code><br><span style="color:var(--c-1a7a6e)">✓ 高效：</span><code>Before editing code, inspect existing patterns. After editing, run narrowest test and report exact command + result.</code></p>
           </div>
         </div>
         <div class="step t4-step">
           <div class="step-num">②</div>
           <div class="step-content">
             <h4>互相矛盾的規則</h4>
-            <p><span style="color:#c0555a">❌ 衝突：</span><code>Always ask before making assumptions.</code> + <code>Default to implementation without asking questions.</code><br><span style="color:#1a7a6e">✓ 合一：</span><code>Ask at most one blocking clarification when implementation would be unsafe. Otherwise state assumptions and proceed.</code></p>
+            <p><span style="color:var(--c-c0555a)">❌ 衝突：</span><code>Always ask before making assumptions.</code> + <code>Default to implementation without asking questions.</code><br><span style="color:var(--c-1a7a6e)">✓ 合一：</span><code>Ask at most one blocking clarification when implementation would be unsafe. Otherwise state assumptions and proceed.</code></p>
           </div>
         </div>
         <div class="step t4-step">

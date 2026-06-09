@@ -166,7 +166,7 @@
     margin-bottom: 18px;
     line-height: 1.3;
   }
-  .section p { color: #2e3528; margin-bottom: 14px; max-width: 680px; }
+  .section p { color:var(--c-2e3528); margin-bottom: 14px; max-width: 680px; }
 
   /* OVERVIEW CARDS */
   .mode-overview {
@@ -239,7 +239,7 @@
     margin-left: auto;
   }
   .mode-body { padding: 24px; background: var(--paper); }
-  .mode-body p { font-size: 14px; color: #2e3528; margin-bottom: 12px; }
+  .mode-body p { font-size: 14px; color:var(--c-2e3528); margin-bottom: 12px; }
 
   /* FACT GRID */
   .fact-grid {
@@ -266,7 +266,7 @@
   .fact-label:last-of-type { border-bottom: none; }
   .fact-value {
     padding: 12px 16px;
-    color: #1e2518;
+    color:var(--c-1e2518);
     border-bottom: 1px solid var(--border);
     line-height: 1.65;
   }
@@ -312,7 +312,7 @@
     overflow-x: auto;
     line-height: 1.6;
   }
-  .code-block .comment { color: #607050; }
+  .code-block .comment { color:var(--c-607050); }
   .code-block .cmd { color: #4db87a; }
   .code-block .str { color: #a8d88a; }
   .code-block .kw  { color: #88b8e8; }
@@ -353,8 +353,8 @@
   .compare-table tr:hover td { background: rgba(196,203,184,0.18); }
   .compare-table tr:hover td:first-child { background: var(--warm-mid); }
   .yes     { color: var(--ag-color); font-weight: 700; }
-  .no      { color: #b03030; }
-  .partial { color: #a06020; }
+  .no      { color:var(--c-b03030); }
+  .partial { color:var(--c-a06020); }
 
   /* TIP BOX */
   .tip-box {
@@ -366,7 +366,7 @@
     background: #f8faf4;
   }
   .tip-icon { font-size: 18px; flex-shrink: 0; }
-  .tip-box p { font-size: 13px; color: #2e3528; margin: 0; line-height: 1.65; }
+  .tip-box p { font-size: 13px; color:var(--c-2e3528); margin: 0; line-height: 1.65; }
   .tip-box strong { color: var(--ink); }
 
   /* DECISION BOX */
@@ -513,6 +513,10 @@ html[data-theme="dark"] .search-fab,html[data-theme="dark"] .back-home,html[data
 html[data-theme="dark"] .search-fab:hover,html[data-theme="dark"] .back-home:hover,html[data-theme="dark"] .back-to-top:hover{background:#ff7a45;border-color:#ff7a45;color:#121212;}
 }
 
+
+/* dark-mode contrast fix: hardcoded text colors -> tokenized (light unchanged, dark brightened) */
+:root{--c-1e2518:#1e2518;--c-2e3528:#2e3528;--c-607050:#607050;--c-a06020:#a06020;--c-b03030:#b03030;}
+html[data-theme="dark"]{--c-1e2518:#bccbaf;--c-2e3528:#bcc6b3;--c-607050:#bdc8b2;--c-a06020:#e1bd98;--c-b03030:#e19898;}
 </style>
 <!-- analytics:goatcounter -->
 <script data-goatcounter="https://bond901.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -683,7 +687,7 @@ html[data-theme="dark"] .search-fab:hover,html[data-theme="dark"] .back-home:hov
         </div>
 
         <h4 style="margin:18px 0 10px; font-size:13px; font-weight:700; color:var(--ag-color);">📖 實際使用情境</h4>
-        <ul style="padding-left:18px; font-size:13px; color:#2e3528; line-height:2;">
+        <ul style="padding-left:18px; font-size:13px; color:var(--c-2e3528); line-height:2;">
           <li>「從零開始，建立一個帶有 JWT 認證的 REST API，含測試與 Docker 配置」</li>
           <li>「跨三個 repo 將所有 Python 2 程式碼遷移至 Python 3，保留測試通過率」</li>
           <li>「設定每晚凌晨 2 點自動執行的資料庫備份與清理排程工作流」</li>
@@ -766,7 +770,7 @@ html[data-theme="dark"] .search-fab:hover,html[data-theme="dark"] .back-home:hov
         </div>
 
         <h4 style="margin:18px 0 10px; font-size:13px; font-weight:700; color:var(--nlm-color);">📖 實際使用情境</h4>
-        <ul style="padding-left:18px; font-size:13px; color:#2e3528; line-height:2;">
+        <ul style="padding-left:18px; font-size:13px; color:var(--c-2e3528); line-height:2;">
           <li>「上傳 30 篇學術論文，問：這些研究對 X 理論的共識和分歧各是什麼？」</li>
           <li>「上傳公司內部的所有 SOP 文件，建立一個新人問答知識庫」</li>
           <li>「將這學期的所有筆記上傳，自動生成考試複習指南與模擬測驗題」</li>
@@ -839,7 +843,7 @@ html[data-theme="dark"] .search-fab:hover,html[data-theme="dark"] .back-home:hov
         </div>
 
         <h4 style="margin:18px 0 10px; font-size:13px; font-weight:700; color:var(--ais-color);">📖 實際使用情境</h4>
-        <ul style="padding-left:18px; font-size:13px; color:#2e3528; line-height:2;">
+        <ul style="padding-left:18px; font-size:13px; color:var(--c-2e3528); line-height:2;">
           <li>「測試不同 Temperature 值對文章創作多樣性的影響，找到最佳參數」</li>
           <li>「設計一個客服 Chatbot 的 System Instruction，測試各種邊界情境」</li>
           <li>「取得 API Key，下載 Python 範例程式碼，整合進自己的後端服務」</li>
@@ -915,7 +919,7 @@ response = model.<span class="cmd">generate_content</span>(<span class="str">"�
         </div>
 
         <h4 style="margin:18px 0 10px; font-size:13px; font-weight:700; color:var(--gem-color);">📖 實際使用情境</h4>
-        <ul style="padding-left:18px; font-size:13px; color:#2e3528; line-height:2;">
+        <ul style="padding-left:18px; font-size:13px; color:var(--c-2e3528); line-height:2;">
           <li>建立「週報生成器」Gem：每週五貼入重點，自動輸出固定格式的週報</li>
           <li>建立「Code Review 專家」Gem：上傳公司 coding style guide，讓它以特定標準審查程式碼</li>
           <li>建立「英文對話導師」Gem：設定為只用英文回應、每次糾正語法錯誤</li>
@@ -1119,7 +1123,7 @@ response = model.<span class="cmd">generate_content</span>(<span class="str">"�
 
       <div style="border:1px solid var(--border); padding:20px 24px; background:var(--gem-bg);">
         <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--gem-color); font-weight:700; letter-spacing:0.1em; margin-bottom:10px;">PATH A — 完全新手 / 辦公室使用者</div>
-        <ol style="padding-left:18px; font-size:13px; color:#2e3528; line-height:2.1;">
+        <ol style="padding-left:18px; font-size:13px; color:var(--c-2e3528); line-height:2.1;">
           <li>前往 <strong>gemini.google.com</strong>，用 Google 帳號登入</li>
           <li>先體驗基本對話，熟悉 Gemini 的回應方式</li>
           <li>建立第一個 <strong>Gem</strong>：選擇一個你每週都會重複做的任務（如寫週報），把固定格式寫入指令</li>
@@ -1129,7 +1133,7 @@ response = model.<span class="cmd">generate_content</span>(<span class="str">"�
 
       <div style="border:1px solid var(--border); padding:20px 24px; background:var(--nlm-bg);">
         <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--nlm-color); font-weight:700; letter-spacing:0.1em; margin-bottom:10px;">PATH B — 研究員 / 分析師 / 學生</div>
-        <ol style="padding-left:18px; font-size:13px; color:#2e3528; line-height:2.1;">
+        <ol style="padding-left:18px; font-size:13px; color:var(--c-2e3528); line-height:2.1;">
           <li>前往 <strong>notebooklm.google.com</strong>，建立一個新筆記本</li>
           <li>上傳你的研究文件（PDF / Google Doc 均可）</li>
           <li>先問「這些文件的主要論點是什麼？」測試引述功能</li>
@@ -1140,7 +1144,7 @@ response = model.<span class="cmd">generate_content</span>(<span class="str">"�
 
       <div style="border:1px solid var(--border); padding:20px 24px; background:var(--ais-bg);">
         <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--ais-color); font-weight:700; letter-spacing:0.1em; margin-bottom:10px;">PATH C — 開發者 / 產品經理</div>
-        <ol style="padding-left:18px; font-size:13px; color:#2e3528; line-height:2.1;">
+        <ol style="padding-left:18px; font-size:13px; color:var(--c-2e3528); line-height:2.1;">
           <li>前往 <strong>aistudio.google.com</strong>，取得你的 API Key</li>
           <li>在 Prompt Gallery 找一個接近你需求的範例，在沙盒中直接修改測試</li>
           <li>調整 Temperature 值，觀察不同參數對輸出的影響</li>
@@ -1151,7 +1155,7 @@ response = model.<span class="cmd">generate_content</span>(<span class="str">"�
 
       <div style="border:1px solid var(--border); padding:20px 24px; background:var(--ag-bg);">
         <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--ag-color); font-weight:700; letter-spacing:0.1em; margin-bottom:10px;">PATH D — 軟體工程師 / DevOps</div>
-        <ol style="padding-left:18px; font-size:13px; color:#2e3528; line-height:2.1;">
+        <ol style="padding-left:18px; font-size:13px; color:var(--c-2e3528); line-height:2.1;">
           <li>下載 <strong>Antigravity 桌面 App</strong>，以 GCP 憑證登入</li>
           <li>建立新專案，指向一個現有的小型 repo</li>
           <li>第一個任務用 <code>/grill-me</code>：「幫我分析這個專案的架構弱點，先提問再行動」</li>

@@ -160,7 +160,7 @@
     line-height: 1.3;
   }
   .section p {
-    color: #3a3530;
+    color:var(--c-3a3530);
     margin-bottom: 14px;
     max-width: 680px;
   }
@@ -245,7 +245,7 @@
   }
   .mode-body p {
     font-size: 14px;
-    color: #3a3530;
+    color:var(--c-3a3530);
     margin-bottom: 12px;
   }
 
@@ -274,7 +274,7 @@
   .fact-label:last-of-type { border-bottom: none; }
   .fact-value {
     padding: 12px 16px;
-    color: #2a2520;
+    color:var(--c-2a2520);
     border-bottom: 1px solid var(--border);
     line-height: 1.65;
   }
@@ -332,8 +332,8 @@
     overflow-x: auto;
     line-height: 1.6;
   }
-  .code-block .comment { color: #7a7060; }
-  .code-block .cmd { color: #d4541a; }
+  .code-block .comment { color:var(--c-7a7060); }
+  .code-block .cmd { color:var(--c-d4541a); }
   .code-block .str { color: #6aad8e; }
   .code-block .kw { color: #8baee0; }
 
@@ -372,7 +372,7 @@
   .compare-table tr:hover td { background: rgba(200,191,168,0.15); }
   .compare-table tr:hover td:first-child { background: var(--warm-mid); }
   .yes { color: var(--accent-teal); font-weight: 700; }
-  .no { color: #c0555a; }
+  .no { color:var(--c-c0555a); }
   .partial { color: var(--accent-orange); }
 
   /* TIPS */
@@ -385,7 +385,7 @@
     background: #fdf9f2;
   }
   .tip-icon { font-size: 18px; flex-shrink: 0; }
-  .tip-box p { font-size: 13px; color: #3a3530; margin: 0; line-height: 1.65; }
+  .tip-box p { font-size: 13px; color:var(--c-3a3530); margin: 0; line-height: 1.65; }
   .tip-box strong { color: var(--ink); }
 
   /* DECISION TREE */
@@ -538,6 +538,10 @@ html[data-theme="dark"] .search-fab,html[data-theme="dark"] .back-home,html[data
 html[data-theme="dark"] .search-fab:hover,html[data-theme="dark"] .back-home:hover,html[data-theme="dark"] .back-to-top:hover{background:#ff7a45;border-color:#ff7a45;color:#121212;}
 }
 
+
+/* dark-mode contrast fix: hardcoded text colors -> tokenized (light unchanged, dark brightened) */
+:root{--c-2a2520:#2a2520;--c-3a3530:#3a3530;--c-7a7060:#7a7060;--c-c0555a:#c0555a;--c-d4541a:#d4541a;}
+html[data-theme="dark"]{--c-2a2520:#c6bdb4;--c-3a3530:#c3bdb6;--c-7a7060:#c5bfb5;--c-c0555a:#db9ea1;--c-d4541a:#e1af98;}
 </style>
 <!-- analytics:goatcounter -->
 <script data-goatcounter="https://bond901.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -700,7 +704,7 @@ html[data-theme="dark"] .search-fab:hover,html[data-theme="dark"] .back-home:hov
         </div>
 
         <h4 style="margin:18px 0 10px; font-size:13px; font-weight:700; color:var(--chat-color);">📖 實際使用情境</h4>
-        <ul style="padding-left:18px; font-size:13px; color:#3a3530; line-height:2;">
+        <ul style="padding-left:18px; font-size:13px; color:var(--c-3a3530); line-height:2;">
           <li>「幫我把這封英文 Email 翻成中文，語氣要正式」</li>
           <li>「解釋一下機器學習中的 overfitting 是什麼意思」</li>
           <li>「草擬一份會議紀錄，重點如下：…」</li>
@@ -769,7 +773,7 @@ html[data-theme="dark"] .search-fab:hover,html[data-theme="dark"] .back-home:hov
         </div>
 
         <h4 style="margin:18px 0 10px; font-size:13px; font-weight:700; color:var(--cowork-color);">📖 實際使用情境</h4>
-        <ul style="padding-left:18px; font-size:13px; color:#3a3530; line-height:2;">
+        <ul style="padding-left:18px; font-size:13px; color:var(--c-3a3530); line-height:2;">
           <li>「這個資料夾有 40 份供應商報價 PDF，幫我彙整成一張比較 Excel 表，包含品項、單價、交期」</li>
           <li>「讀我 Gmail 最近 50 封信，找出所有需要我回覆的 action item 列成清單」</li>
           <li>「把 Slack #general 頻道本週的重點摘要成一份週報，存成 Word 檔」</li>
@@ -850,7 +854,7 @@ html[data-theme="dark"] .search-fab:hover,html[data-theme="dark"] .back-home:hov
         </div>
 
         <h4 style="margin:18px 0 10px; font-size:13px; font-weight:700; color:var(--code-color);">📖 實際使用情境</h4>
-        <ul style="padding-left:18px; font-size:13px; color:#3a3530; line-height:2;">
+        <ul style="padding-left:18px; font-size:13px; color:var(--c-3a3530); line-height:2;">
           <li>「在這個 signup form 加入 email 格式驗證，修改相關測試」</li>
           <li>「分析整個專案架構，找出效能瓶頸並提出改善方案」</li>
           <li>「把這個 Python 2 專案遷移到 Python 3，保留所有功能」</li>
@@ -1152,7 +1156,7 @@ html[data-theme="dark"] .search-fab:hover,html[data-theme="dark"] .back-home:hov
 
       <div style="border:1px solid var(--border); padding:20px 24px; background:var(--chat-bg);">
         <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--chat-color); font-weight:700; letter-spacing:0.1em; margin-bottom:10px;">PATH A — 完全新手</div>
-        <ol style="padding-left:18px; font-size:13px; color:#3a3530; line-height:2.1;">
+        <ol style="padding-left:18px; font-size:13px; color:var(--c-3a3530); line-height:2.1;">
           <li>前往 <strong>claude.ai</strong>，免費建立帳號</li>
           <li>開一個 New Chat，用中文問任何問題（例：「幫我解釋量子電腦是什麼」）</li>
           <li>試試上傳 PDF / 圖片讓 Claude 分析</li>
@@ -1162,7 +1166,7 @@ html[data-theme="dark"] .search-fab:hover,html[data-theme="dark"] .back-home:hov
 
       <div style="border:1px solid var(--border); padding:20px 24px; background:var(--cowork-bg);">
         <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--cowork-color); font-weight:700; letter-spacing:0.1em; margin-bottom:10px;">PATH B — 非技術工作者想要自動化</div>
-        <ol style="padding-left:18px; font-size:13px; color:#3a3530; line-height:2.1;">
+        <ol style="padding-left:18px; font-size:13px; color:var(--c-3a3530); line-height:2.1;">
           <li>下載 <strong>Claude Desktop</strong>（claude.com/download），升級 Pro</li>
           <li>切換到 <strong>Cowork</strong> 分頁</li>
           <li>先試一個簡單任務：「讀桌面上的 report.pdf，列出其中的三個主要結論，存成 summary.txt」</li>
@@ -1172,7 +1176,7 @@ html[data-theme="dark"] .search-fab:hover,html[data-theme="dark"] .back-home:hov
 
       <div style="border:1px solid var(--border); padding:20px 24px; background:var(--code-bg);">
         <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--code-color); font-weight:700; letter-spacing:0.1em; margin-bottom:10px;">PATH C — 工程師 / 想學程式的人</div>
-        <ol style="padding-left:18px; font-size:13px; color:#3a3530; line-height:2.1;">
+        <ol style="padding-left:18px; font-size:13px; color:var(--c-3a3530); line-height:2.1;">
           <li>升級 Pro，安裝 CLI：<code>curl -fsSL https://claude.ai/install.sh | sh</code></li>
           <li>進入一個現有的小專案目錄，執行 <code>claude</code></li>
           <li>第一個任務：「描述這個專案的架構，不要修改任何檔案」（先觀察）</li>

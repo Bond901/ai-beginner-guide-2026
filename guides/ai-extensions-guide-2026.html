@@ -121,7 +121,7 @@ hr.rule{border:none;border-top:1px solid var(--border);margin:40px 0;}
 
 /* CODE BLOCK */
 .code-block{background:#1a1814;border-radius:4px;padding:14px 18px;margin:12px 0;font-family:'JetBrains Mono',monospace;font-size:12px;color:#d4c9a8;overflow-x:auto;line-height:1.7;white-space:pre;}
-.code-block .cm{color:#7a7060;} .code-block .ck{color:#8baee0;}
+.code-block .cm{color:var(--c-7a7060);} .code-block .ck{color:#8baee0;}
 .code-block .cs{color:#6aad8e;} .code-block .ca{color:#e8904a;}
 
 /* GEN TABLE */
@@ -140,7 +140,7 @@ hr.rule{border:none;border-top:1px solid var(--border);margin:40px 0;}
 .compare-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top;font-size:12px;line-height:1.6;}
 .compare-table td:first-child{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);background:var(--warm-mid);white-space:nowrap;}
 .compare-table tr:last-child td{border-bottom:none;}
-.yes{color:#1a7a6e;font-weight:700;} .no{color:#c0555a;} .partial{color:#a06020;}
+.yes{color:var(--c-1a7a6e);font-weight:700;} .no{color:var(--c-c0555a);} .partial{color:var(--c-a06020);}
 
 /* LAYER DIAGRAM */
 .layer-stack{display:flex;flex-direction:column;gap:0;margin:16px 0;}
@@ -256,6 +256,10 @@ html[data-theme="dark"] .search-fab,html[data-theme="dark"] .back-home,html[data
 html[data-theme="dark"] .search-fab:hover,html[data-theme="dark"] .back-home:hover,html[data-theme="dark"] .back-to-top:hover{background:#ff7a45;border-color:#ff7a45;color:#121212;}
 }
 
+
+/* dark-mode contrast fix: hardcoded text colors -> tokenized (light unchanged, dark brightened) */
+:root{--c-1a7a6e:#1a7a6e;--c-7a7060:#7a7060;--c-8c1a1a:#8c1a1a;--c-a06020:#a06020;--c-c0555a:#c0555a;}
+html[data-theme="dark"]{--c-1a7a6e:#98e1d8;--c-7a7060:#c5bfb5;--c-8c1a1a:#e19898;--c-a06020:#e1bd98;--c-c0555a:#db9ea1;}
 </style>
 <!-- analytics:goatcounter -->
 <script data-goatcounter="https://bond901.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -570,9 +574,9 @@ html[data-theme="dark"] .search-fab:hover,html[data-theme="dark"] .back-home:hov
       <table class="gen-table">
         <tr><th>類型</th><th>範例</th><th>風險等級</th><th>最低控制要求</th></tr>
         <tr><td>Read-only context server</td><td>文件、知識庫、設計稿、Log 查詢</td><td class="partial">中</td><td>資料範圍限制、資料分類</td></tr>
-        <tr><td>Action server</td><td>GitHub、Linear、Slack、Gmail、部署工具</td><td style="color:#c0555a;font-weight:700;">高</td><td>Approval + Audit + Preview</td></tr>
-        <tr><td>Local system server</td><td>檔案系統、Shell、瀏覽器、自動化工具</td><td style="color:#c0555a;font-weight:700;">高</td><td>Sandbox + 最小 OS 權限 + 目錄限制</td></tr>
-        <tr><td>Internal platform server</td><td>客服、CRM、付款、帳務、資料庫</td><td style="color:#8c1a1a;font-weight:700;">極高</td><td>OAuth + 審批流程 + 完整 Audit Log</td></tr>
+        <tr><td>Action server</td><td>GitHub、Linear、Slack、Gmail、部署工具</td><td style="color:var(--c-c0555a);font-weight:700;">高</td><td>Approval + Audit + Preview</td></tr>
+        <tr><td>Local system server</td><td>檔案系統、Shell、瀏覽器、自動化工具</td><td style="color:var(--c-c0555a);font-weight:700;">高</td><td>Sandbox + 最小 OS 權限 + 目錄限制</td></tr>
+        <tr><td>Internal platform server</td><td>客服、CRM、付款、帳務、資料庫</td><td style="color:var(--c-8c1a1a);font-weight:700;">極高</td><td>OAuth + 審批流程 + 完整 Audit Log</td></tr>
       </table>
       <div class="tip-box"><span class="tip-icon">⚠️</span><p><strong>MCP 官方規格警告：</strong>MCP 可提供任意資料存取與程式碼執行路徑，必須取得使用者明確同意並謹慎處理安全與資料隱私。Host 不應在未取得使用者同意下向 server 暴露使用者資料。工具描述除非來自可信 server，否則應視為不可信。</p></div>
     </div>

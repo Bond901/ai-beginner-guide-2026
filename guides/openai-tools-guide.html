@@ -140,7 +140,7 @@
     margin-bottom: 18px;
     line-height: 1.3;
   }
-  .section > p { color: #2a3022; margin-bottom: 14px; max-width: 680px; }
+  .section > p { color:var(--c-2a3022); margin-bottom: 14px; max-width: 680px; }
 
   /* ── OVERVIEW CARDS ── */
   .mode-overview {
@@ -195,7 +195,7 @@
     color: rgba(255,255,255,0.55); margin-left: auto;
   }
   .mode-body { padding: 24px; background: var(--paper); }
-  .mode-body > p { font-size: 14px; color: #2a3022; margin-bottom: 12px; }
+  .mode-body > p { font-size: 14px; color:var(--c-2a3022); margin-bottom: 12px; }
 
   /* ── FACT GRID ── */
   .fact-grid {
@@ -217,7 +217,7 @@
   .fact-value {
     padding: 12px 16px;
     border-bottom: 1px solid var(--border);
-    line-height: 1.65; color: #1a2016;
+    line-height: 1.65; color:var(--c-1a2016);
   }
   .fact-value:last-child { border-bottom: none; }
 
@@ -252,8 +252,8 @@
     overflow-x: auto; line-height: 1.65;
     white-space: pre;
   }
-  .code-block .comment { color: #5a7050; }
-  .code-block .cmd     { color: #10a37f; }
+  .code-block .comment { color:var(--c-5a7050); }
+  .code-block .cmd     { color:var(--c-10a37f); }
   .code-block .str     { color: #8ecfaa; }
   .code-block .kw      { color: #88b8e8; }
   .code-block .flag    { color: #e8c884; }
@@ -280,8 +280,8 @@
   .compare-table tr:hover td { background: rgba(191,202,184,0.18); }
   .compare-table tr:hover td:first-child { background: var(--warm-mid); }
   .yes     { color: var(--t1-color); font-weight: 700; }
-  .no      { color: #b03030; }
-  .partial { color: #a06018; }
+  .no      { color:var(--c-b03030); }
+  .partial { color:var(--c-a06018); }
 
   /* ── DECISION ── */
   .decision {
@@ -303,7 +303,7 @@
     display: flex; gap: 12px; background: rgba(242,245,240,0.65);
   }
   .tip-icon { font-size: 18px; flex-shrink: 0; }
-  .tip-box p { font-size: 13px; color: #2a3022; margin: 0; line-height: 1.65; }
+  .tip-box p { font-size: 13px; color:var(--c-2a3022); margin: 0; line-height: 1.65; }
   .tip-box strong { color: var(--ink); }
 
   /* ── PROMPT BOX ── */
@@ -319,7 +319,7 @@
     line-height: 1.75;
     white-space: pre-wrap;
   }
-  .prompt-box .ph { color: #5a8870; font-style: italic; }
+  .prompt-box .ph { color:var(--c-5a8870); font-style: italic; }
 
   /* ── DIVIDER ── */
   hr.rule { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
@@ -403,6 +403,10 @@ html[data-theme="dark"] .search-fab,html[data-theme="dark"] .back-home,html[data
 html[data-theme="dark"] .search-fab:hover,html[data-theme="dark"] .back-home:hover,html[data-theme="dark"] .back-to-top:hover{background:#ff7a45;border-color:#ff7a45;color:#121212;}
 }
 
+
+/* dark-mode contrast fix: hardcoded text colors -> tokenized (light unchanged, dark brightened) */
+:root{--c-10a37f:#10a37f;--c-1a2016:#1a2016;--c-1a2040:#1a2040;--c-1a2a18:#1a2a18;--c-2a1a08:#2a1a08;--c-2a3022:#2a3022;--c-5a7050:#5a7050;--c-5a8870:#5a8870;--c-a06018:#a06018;--c-b03030:#b03030;}
+html[data-theme="dark"]{--c-10a37f:#98e1cf;--c-1a2016:#bac9b0;--c-1a2040:#a1aad9;--c-1a2a18:#afcfab;--c-2a1a08:#e1bf98;--c-2a3022:#bec8b1;--c-5a7050:#b9c8b2;--c-5a8870:#afcabc;--c-a06018:#e1bf98;--c-b03030:#e19898;}
 </style>
 <!-- analytics:goatcounter -->
 <script data-goatcounter="https://bond901.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -566,7 +570,7 @@ html[data-theme="dark"] .search-fab:hover,html[data-theme="dark"] .back-home:hov
         </div>
 
         <h4 style="margin:18px 0 10px; font-size:13px; font-weight:700; color:var(--t1-color);">📋 八大核心功能一覽</h4>
-        <ul style="padding-left:18px; font-size:13px; color:#2a3022; line-height:2.1;">
+        <ul style="padding-left:18px; font-size:13px; color:var(--c-2a3022); line-height:2.1;">
           <li><strong>文字對話</strong>：問答、概念解釋、文字改寫、草稿撰寫</li>
           <li><strong>圖片輸入 / 生成</strong>：分析截圖、圖表、上傳圖片，或生成圖片</li>
           <li><strong>文件上傳</strong>：PDF、簡報、純文字——摘要、擷取資訊、問答</li>
@@ -674,12 +678,12 @@ html[data-theme="dark"] .search-fab:hover,html[data-theme="dark"] .back-home:hov
             </tr>
           </thead>
           <tbody>
-            <tr><td style="padding:9px 12px; border:1px solid var(--border);">理解專案</td><td style="padding:9px 12px; border:1px solid var(--border); font-family:'JetBrains Mono',monospace; font-size:12px; color:#1a2016;">請說明這個專案的架構與主要模組。</td></tr>
-            <tr><td style="padding:9px 12px; border:1px solid var(--border);">找 bug</td><td style="padding:9px 12px; border:1px solid var(--border); font-family:'JetBrains Mono',monospace; font-size:12px; color:#1a2016;">請找出登入流程可能失敗的原因，並提出最小修改。</td></tr>
-            <tr><td style="padding:9px 12px; border:1px solid var(--border);">寫功能</td><td style="padding:9px 12px; border:1px solid var(--border); font-family:'JetBrains Mono',monospace; font-size:12px; color:#1a2016;">請新增使用者設定頁面，遵循現有程式碼風格。</td></tr>
-            <tr><td style="padding:9px 12px; border:1px solid var(--border);">重構</td><td style="padding:9px 12px; border:1px solid var(--border); font-family:'JetBrains Mono',monospace; font-size:12px; color:#1a2016;">請把重複邏輯抽成共用函式，不改變既有行為。</td></tr>
-            <tr><td style="padding:9px 12px; border:1px solid var(--border);">補測試</td><td style="padding:9px 12px; border:1px solid var(--border); font-family:'JetBrains Mono',monospace; font-size:12px; color:#1a2016;">請為這個函式補上單元測試，涵蓋成功與錯誤情境。</td></tr>
-            <tr><td style="padding:9px 12px; border:1px solid var(--border);">Code Review</td><td style="padding:9px 12px; border:1px solid var(--border); font-family:'JetBrains Mono',monospace; font-size:12px; color:#1a2016;">請 review 最近修改，指出邏輯錯誤與未處理的 edge case。</td></tr>
+            <tr><td style="padding:9px 12px; border:1px solid var(--border);">理解專案</td><td style="padding:9px 12px; border:1px solid var(--border); font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--c-1a2016);">請說明這個專案的架構與主要模組。</td></tr>
+            <tr><td style="padding:9px 12px; border:1px solid var(--border);">找 bug</td><td style="padding:9px 12px; border:1px solid var(--border); font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--c-1a2016);">請找出登入流程可能失敗的原因，並提出最小修改。</td></tr>
+            <tr><td style="padding:9px 12px; border:1px solid var(--border);">寫功能</td><td style="padding:9px 12px; border:1px solid var(--border); font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--c-1a2016);">請新增使用者設定頁面，遵循現有程式碼風格。</td></tr>
+            <tr><td style="padding:9px 12px; border:1px solid var(--border);">重構</td><td style="padding:9px 12px; border:1px solid var(--border); font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--c-1a2016);">請把重複邏輯抽成共用函式，不改變既有行為。</td></tr>
+            <tr><td style="padding:9px 12px; border:1px solid var(--border);">補測試</td><td style="padding:9px 12px; border:1px solid var(--border); font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--c-1a2016);">請為這個函式補上單元測試，涵蓋成功與錯誤情境。</td></tr>
+            <tr><td style="padding:9px 12px; border:1px solid var(--border);">Code Review</td><td style="padding:9px 12px; border:1px solid var(--border); font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--c-1a2016);">請 review 最近修改，指出邏輯錯誤與未處理的 edge case。</td></tr>
           </tbody>
         </table>
 
@@ -999,7 +1003,7 @@ html[data-theme="dark"] .search-fab:hover,html[data-theme="dark"] .back-home:hov
 
       <div style="border:1px solid var(--border); padding:20px 24px; background:var(--t1-bg);">
         <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--t1-color); font-weight:700; letter-spacing:0.1em; margin-bottom:10px;">PATH A — 完全新手 / 知識工作者</div>
-        <ol style="padding-left:18px; font-size:13px; color:#1a2a18; line-height:2.1;">
+        <ol style="padding-left:18px; font-size:13px; color:var(--c-1a2a18); line-height:2.1;">
           <li>前往 <strong>chatgpt.com</strong>，不登入先試用，熟悉對話感覺</li>
           <li>試著用結構化 Prompt：「請扮演 X，我的目標是 Y，請用條列式輸出」</li>
           <li>上傳一份 PDF 或試算表，問「這份文件的主要結論是什麼？」</li>
@@ -1010,7 +1014,7 @@ html[data-theme="dark"] .search-fab:hover,html[data-theme="dark"] .back-home:hov
 
       <div style="border:1px solid var(--border); padding:20px 24px; background:var(--t2-bg);">
         <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--t2-color); font-weight:700; letter-spacing:0.1em; margin-bottom:10px;">PATH B — 開發者 / 不熟 Terminal</div>
-        <ol style="padding-left:18px; font-size:13px; color:#1a2040; line-height:2.1;">
+        <ol style="padding-left:18px; font-size:13px; color:var(--c-1a2040); line-height:2.1;">
           <li>確認有 ChatGPT Plus 以上方案（包含 Codex）</li>
           <li>下載 <strong>Codex App</strong>（macOS / Windows），以 ChatGPT 帳號登入</li>
           <li>選擇一個有 Git 的小型專案資料夾</li>
@@ -1021,7 +1025,7 @@ html[data-theme="dark"] .search-fab:hover,html[data-theme="dark"] .back-home:hov
 
       <div style="border:1px solid var(--border); padding:20px 24px; background:var(--t3-bg);">
         <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--t3-color); font-weight:700; letter-spacing:0.1em; margin-bottom:10px;">PATH C — 工程師 / 熟悉 Terminal</div>
-        <ol style="padding-left:18px; font-size:13px; color:#2a1a08; line-height:2.1;">
+        <ol style="padding-left:18px; font-size:13px; color:var(--c-2a1a08); line-height:2.1;">
           <li>安裝：<code>npm install -g @openai/codex</code> 或 <code>brew install codex</code></li>
           <li>進入 Git 專案，先建立 checkpoint：<code>git commit -m "before codex"</code></li>
           <li>執行 <code>codex</code>，第一次登入後輸入：「請閱讀此專案架構，不要修改任何檔案」</li>
