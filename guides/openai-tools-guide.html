@@ -407,6 +407,10 @@ html[data-theme="dark"] .search-fab:hover,html[data-theme="dark"] .back-home:hov
 /* dark-mode contrast fix: hardcoded text colors -> tokenized (light unchanged, dark brightened) */
 :root{--c-10a37f:#10a37f;--c-1a2016:#1a2016;--c-1a2040:#1a2040;--c-1a2a18:#1a2a18;--c-2a1a08:#2a1a08;--c-2a3022:#2a3022;--c-5a7050:#5a7050;--c-5a8870:#5a8870;--c-a06018:#a06018;--c-b03030:#b03030;}
 html[data-theme="dark"]{--c-10a37f:#98e1cf;--c-1a2016:#bac9b0;--c-1a2040:#a1aad9;--c-1a2a18:#afcfab;--c-2a1a08:#e1bf98;--c-2a3022:#bec8b1;--c-5a7050:#b9c8b2;--c-5a8870:#afcabc;--c-a06018:#e1bf98;--c-b03030:#e19898;}
+
+/* dark-mode contrast fix round2: flip non-flipping light box backgrounds in dark */
+html[data-theme="dark"] .tip-box{background:#1a1a1a;}
+html[data-theme="dark"] .compare-table tr:hover td{background:rgba(255,255,255,.06);}
 </style>
 <!-- analytics:goatcounter -->
 <script data-goatcounter="https://bond901.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>

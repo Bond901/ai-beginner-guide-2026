@@ -542,6 +542,9 @@ html[data-theme="dark"] .search-fab:hover,html[data-theme="dark"] .back-home:hov
 /* dark-mode contrast fix: hardcoded text colors -> tokenized (light unchanged, dark brightened) */
 :root{--c-2a2520:#2a2520;--c-3a3530:#3a3530;--c-7a7060:#7a7060;--c-c0555a:#c0555a;--c-d4541a:#d4541a;}
 html[data-theme="dark"]{--c-2a2520:#c6bdb4;--c-3a3530:#c3bdb6;--c-7a7060:#c5bfb5;--c-c0555a:#db9ea1;--c-d4541a:#e1af98;}
+
+/* dark-mode contrast fix round2: flip non-flipping light box backgrounds in dark */
+html[data-theme="dark"] .compare-table tr:hover td{background:rgba(255,255,255,.06);}
 </style>
 <!-- analytics:goatcounter -->
 <script data-goatcounter="https://bond901.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
